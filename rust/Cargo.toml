@@ -1,7 +1,7 @@
 [workspace]
 resolver = "2"
 
-members = ["runtime"]
+members = ["runtime", "client", "pallet-dummy"]
 
 # The list of dependencies below (which can be both direct and indirect dependencies) are crates
 # that are suspected to be CPU-intensive, and that are unlikely to require debugging (as some of
