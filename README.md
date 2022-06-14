@@ -19,3 +19,15 @@ Tool execution flow: Signed extrinsic incoming -> Verification -> Listing in QDA
 - Security notifications to be followed: [Polkadot releases](https://github.com/paritytech/polkadot/releases)
 - Idea on sending release notifications to QDAO Dev Matrix (requested advice from Parity)
 - Next step: runnable node PoC, with the relevant pallets
+
+### 2022.06.14. - ExoGlue PoC
+- We were using Python3 and the SubstrateInterface module
+- Decided to use WSS over HTTP POST
+- Successfully connected to the WSS endpoint of QRUCIAL DAO node
+- Successfully subscribed to event updates
+- When the TemplatePallet is called through an extrinsics, the message is cought and the execution proceeds
+- PoC can be tested by running
+  - $ ./qdao-node --dev
+  - $ python3 exotools_poc.py
+  - $ nc -nvlp 8080
+  - Executing the extrinsics from https://polkadot.js.org/apps/
