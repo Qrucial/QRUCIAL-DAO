@@ -31,3 +31,14 @@ Tool execution flow: Signed extrinsic incoming -> Verification -> Listing in QDA
   - $ python3 exotools_poc.py
   - $ nc -nvlp 8080
   - Executing the extrinsics from https://polkadot.js.org/apps/
+
+### 2022.06.15. - Keystore management for ExoSys
+- Rewriting the grant request as W3F requested
+- Decision to use separate private key for each node (from the native keystore)
+- AppCrypto, --key-type --> exos (unique to this project). Generate with:
+    - ./qdao-node key insert --key-type exos --scheme sr25519
+    - File path example: .local/share/qdao-node/chains/local_testnet/keystore/65786f7346ebddef8cd9bb167dc30878d7113b7e168e6f0646beffd77d69d39bad76b47a
+    - So this SCALE encodes to filename
+    - This can be enumerated from the pallet
+- Next step: using the generated key for ExoSys
+
