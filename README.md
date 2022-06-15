@@ -1,10 +1,11 @@
 # QRUCIAL-DAO
-Web3 security DAO.
+Web3 security DAO. 
 
 Built on top of Substrate, Qrucial DAO is a system for transparent audits and certifications, issuing non-transferable NFTs to the audited systems themselves.
 
 Tool execution flow: Signed extrinsic incoming -> Verification -> Listing in QDAO State -> Event triggered (glue reads JSON RPC) -> Execution and result output -> Glue Extrinsic -> Aggregate and verify restuls -> Report delivery (encrypted, details tba)
 
+We are currently in the process of requesting a grant from W3F: [Proposal Repository](https://github.com/smilingSix/Grants-Program)
 
 ## Development notes
 
