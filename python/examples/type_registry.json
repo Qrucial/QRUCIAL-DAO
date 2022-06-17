@@ -1,0 +1,29 @@
+{
+  "runtime_id": 0,
+  "types": {
+    "Keys": {
+      "type": "struct",
+      "type_mapping": [
+         ["grandpa", "AccountId"],
+         ["aura", "AccountId"],
+         ["im_online", "AccountId"],
+         ["authority_discovery", "AccountId"],
+         ["parachains", "AccountId"]
+      ]
+    },
+    "ContractExecResult": "ContractExecResultTo260",
+    "ValidatorPrefs": "ValidatorPrefsWithBlocked",
+    "AccountInfo": "AccountInfoWithTripleRefCount"
+  },
+  "versioning": [
+    {
+      "runtime_range": [0, null],
+      "types": {
+        "Address": "MultiAddress",
+        "LookupSource": "MultiAddress",
+        "AccountInfo": "AccountInfoWithTripleRefCount",
+        "ValidatorPrefs": "ValidatorPrefsWithBlocked"
+      }
+    }
+  ]
+}

@@ -3,7 +3,7 @@ Web3 security DAO.
 
 Built on top of Substrate, Qrucial DAO is a system for transparent audits and certifications, issuing non-transferable NFTs to the audited systems themselves.
 
-Tool execution flow: Signed extrinsic incoming -> Verification -> Listing in QDAO State -> Event triggered (glue reads JSON RPC) -> Execution and result output -> Glue Extrinsic -> Aggregate and verify restuls -> Report delivery (encrypted, details tba)
+Tool execution flow: Signed extrinsic incoming -> Verification -> Listing in QDAO State -> Event triggered (exosys reads JSON RPC) -> Execution and result output -> ExoSys Extrinsic -> Aggregate and verify restuls -> Report delivery (encrypted, details tba)
 
 We are currently in the process of requesting a grant from W3F: [Proposal Repository](https://github.com/smilingSix/Grants-Program)
 
@@ -21,7 +21,7 @@ We are currently in the process of requesting a grant from W3F: [Proposal Reposi
 - Idea on sending release notifications to QDAO Dev Matrix (requested advice from Parity)
 - Next step: runnable node PoC, with the relevant pallets
 
-### 2022.06.14. - ExoGlue PoC
+### 2022.06.14. - ExoSys PoC
 - We were using Python3 and the SubstrateInterface module
 - Decided to use WSS over HTTP POST
 - Successfully connected to the WSS endpoint of QRUCIAL DAO node
@@ -43,3 +43,12 @@ We are currently in the process of requesting a grant from W3F: [Proposal Reposi
     - This can be enumerated from the pallet
 - Next step: using the generated key for ExoSys
 
+### 2022.06.17. - Sending extrinsics to ExoSys pallet
+- Staying consistent in names, so we don't use "glue", but ExoSys as main term
+- Implementing QDAO version of: https://github.com/polkascan/py-substrate-interface#create-and-send-signed-extrinsics
+- We have tested sending our own Call, but we were receiving errors
+- Debugging issue of py-substrate-interface returning None for call_decoder(ScaleBytes(enc_data))
+- Analyzing the RPC WS connection and how RPC works with network sniffer
+- Clearing up the python PoC code
+- New grant idea: py-substrate-interface is not async. Could be done with asyncio.
+- Next step: finish python PoC and consider switching to rust/subxt for ExoSys
