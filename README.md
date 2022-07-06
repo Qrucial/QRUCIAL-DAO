@@ -5,7 +5,10 @@ Built on top of Substrate, Qrucial DAO is a system for transparent audits and ce
 
 Tool execution flow: Signed extrinsic incoming -> Verification -> Listing in QDAO State -> Event triggered (exosys reads JSON RPC) -> Execution and result output -> ExoSys Extrinsic -> Aggregate and verify restuls -> Report delivery (encrypted, details tba)
 
-We are currently in the process of requesting a grant from W3F: [Proposal Repository](https://github.com/smilingSix/Grants-Program)
+We have a W3F grant approved and are working on the 1st milestone: [Proposal Repository](https://github.com/smilingSix/Grants-Program)
+
+QDAO wiki [can be found here](https://github.com/Qrucial/QRUCIAL-DAO/wiki).
+
 
 ## Development notes
 
