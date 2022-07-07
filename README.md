@@ -55,3 +55,14 @@ QDAO wiki [can be found here](https://github.com/Qrucial/QRUCIAL-DAO/wiki).
 - Clearing up the python PoC code
 - New grant idea: py-substrate-interface is not async. Could be done with asyncio.
 - Next step: finish python PoC and consider switching to rust/subxt for ExoSys
+
+### 2022.07.07. - Grant Milestone 1. Kickoff
+
+- Introduction to milestone requirements to the team
+- Docker setup kickoff: we deliver ExoTool as docker and we deliver Substrate as docker (alternatively with a compilation guide). To be researched deeper by knockoff. We found GitLab's docker setup similar to what we need.
+    - https://docs.gitlab.com/ee/ci/docker/using_docker_build.html
+- Substrate runtime: we need to extend current runtime with reputation based governance. Assigned to: wigy and six 
+    - Refactor: governance influencing the Elo score
+- AuditorRep: auditors will be able to enter the Reputation system by succeeding a hacking challenge or by getting listed through by QDAO members (bad behaviour of invited person makes the invitor slashed). Multiple invitations can be done only over reputation 1000 (this number might change). Low rep members can only invite one. 
+- Report Storage: nodes provide it through HTTP API. QDAO filesystem. Signed/encrypted.
+- Frontend for milestone 1: polkadotjs + minimal frontend + integration tests
