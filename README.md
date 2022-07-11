@@ -57,7 +57,6 @@ QDAO wiki [can be found here](https://github.com/Qrucial/QRUCIAL-DAO/wiki).
 - Next step: finish python PoC and consider switching to rust/subxt for ExoSys
 
 ### 2022.07.07. - Grant Milestone 1. Kickoff
-
 - Introduction to milestone requirements to the team
 - Docker setup kickoff: we deliver ExoTool as docker and we deliver Substrate as docker (alternatively with a compilation guide). To be researched deeper by knockoff. We found GitLab's docker setup similar to what we need.
     - https://docs.gitlab.com/ee/ci/docker/using_docker_build.html
@@ -66,3 +65,17 @@ QDAO wiki [can be found here](https://github.com/Qrucial/QRUCIAL-DAO/wiki).
 - AuditorRep: auditors will be able to enter the Reputation system by succeeding a hacking challenge or by getting listed through by QDAO members (bad behaviour of invited person makes the invitor slashed). Multiple invitations can be done only over reputation 1000 (this number might change). Low rep members can only invite one. 
 - Report Storage: nodes provide it through HTTP API. QDAO filesystem. Signed/encrypted.
 - Frontend for milestone 1: polkadotjs + minimal frontend + integration tests
+
+### 2022.07.11. - ExoTool testing
+- Docker is the main system to handle execution, on top of Ubuntu
+- On the long run we might support NixOS, Alpine and others
+- Considering https://github.com/trailofbits/eth-security-toolbox --> for EVM later
+- qdao-dev0 server setup with docker / ExoTool
+    - Ubuntu VPS
+    - Install Docker: https://docs.docker.com/engine/install/ubuntu/
+    - Create QDAO ExoTool image: https://docs.docker.com/develop/develop-images/baseimages/
+        - Base from: https://docs.docker.com/get-started/
+        - Then add the security tools. See wiki: https://github.com/Qrucial/QRUCIAL-DAO/wiki
+    - ink! smart contract "cargo audit --json" testing with QDAO ExoTool image: https://docs.substrate.io/tutorials/smart-contracts/first-smart-contract/
+- TBA for future: how to distribute images?
+- Next steps: automatize the whole process and then connect it to ExoSys
