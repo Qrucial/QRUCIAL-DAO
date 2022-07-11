@@ -13,6 +13,7 @@ QDAO wiki [can be found here](https://github.com/Qrucial/QRUCIAL-DAO/wiki).
 ## Development notes
 
 ### 2022.06.10. - Runtime and core system
+Participants: six, wigy
 - Review of plans, topologies and Substrate runtime/crates config
 - Planning native NT-NFT (non transferrable, non fungible token) to the system runtime
 - Ideas on incentivizing DHT/storage for storing the reports
@@ -25,6 +26,7 @@ QDAO wiki [can be found here](https://github.com/Qrucial/QRUCIAL-DAO/wiki).
 - Next step: runnable node PoC, with the relevant pallets
 
 ### 2022.06.14. - ExoSys PoC
+Participants: six, wigy
 - We were using Python3 and the SubstrateInterface module
 - Decided to use WSS over HTTP POST
 - Successfully connected to the WSS endpoint of QRUCIAL DAO node
@@ -37,6 +39,7 @@ QDAO wiki [can be found here](https://github.com/Qrucial/QRUCIAL-DAO/wiki).
   - Executing the extrinsics from https://polkadot.js.org/apps/
 
 ### 2022.06.15. - Keystore management for ExoSys
+Participants: six, wigy
 - Rewriting the grant request as W3F requested
 - Decision to use separate private key for each node (from the native keystore)
 - AppCrypto, --key-type --> exos (unique to this project). Generate with:
@@ -47,6 +50,7 @@ QDAO wiki [can be found here](https://github.com/Qrucial/QRUCIAL-DAO/wiki).
 - Next step: using the generated key for ExoSys
 
 ### 2022.06.17. - Sending extrinsics to ExoSys pallet
+Participants: six, wigy
 - Staying consistent in names, so we don't use "glue", but ExoSys as main term
 - Implementing QDAO version of: https://github.com/polkascan/py-substrate-interface#create-and-send-signed-extrinsics
 - We have tested sending our own Call, but we were receiving errors
@@ -57,6 +61,7 @@ QDAO wiki [can be found here](https://github.com/Qrucial/QRUCIAL-DAO/wiki).
 - Next step: finish python PoC and consider switching to rust/subxt for ExoSys
 
 ### 2022.07.07. - Grant Milestone 1. Kickoff
+Participants: six, ra33it0, wigy, knockoff
 - Introduction to milestone requirements to the team
 - Docker setup kickoff: we deliver ExoTool as docker and we deliver Substrate as docker (alternatively with a compilation guide). To be researched deeper by knockoff. We found GitLab's docker setup similar to what we need.
     - https://docs.gitlab.com/ee/ci/docker/using_docker_build.html
@@ -67,6 +72,7 @@ QDAO wiki [can be found here](https://github.com/Qrucial/QRUCIAL-DAO/wiki).
 - Frontend for milestone 1: polkadotjs + minimal frontend + integration tests
 
 ### 2022.07.11. - ExoTool testing
+Participants: knockoff, six
 - Docker is the main system to handle execution, on top of Ubuntu
 - On the long run we might support NixOS, Alpine and others
 - Considering https://github.com/trailofbits/eth-security-toolbox --> for EVM later
@@ -77,5 +83,9 @@ QDAO wiki [can be found here](https://github.com/Qrucial/QRUCIAL-DAO/wiki).
         - Base from: https://docs.docker.com/get-started/
         - Then add the security tools. See wiki: https://github.com/Qrucial/QRUCIAL-DAO/wiki
     - ink! smart contract "cargo audit --json" testing with QDAO ExoTool image: https://docs.substrate.io/tutorials/smart-contracts/first-smart-contract/
+- Design solution for QDAO: distribute a script that grabs the node binary, installs requirements (docker) and connects them together.
 - TBA for future: how to distribute images?
 - Next steps: automatize the whole process and then connect it to ExoSys
+    - Make "cargo audit --json" working with a standard rust project
+        - This requires to be able to receive the files of the project (eg. Docker connected FS)
+        - Where/how to save the output (eg. report folder)
