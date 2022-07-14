@@ -89,3 +89,19 @@ Participants: knockoff, six
     - Make "cargo audit --json" working with a standard rust project
         - This requires to be able to receive the files of the project (eg. Docker connected FS)
         - Where/how to save the output (eg. report folder)
+
+### 2022.07.14. - ExoSys and ExoTool connection development
+Participants: wigy, six, ra33it0
+- In ExoSys: we can now make a distiction between Extrinsics Success and Failure.
+- In ExoSys: We already have the scale encoded data.
+- Plan created with the following todo points:
+    - Save runtime metadata of QDAO into source code of ExoSys Daemon.
+        - Note: whenever the runtime changes we need to updated the ExoSys Daemon as well.
+        - Note: we need to make sure no block's event is missed aka spec verion. To be checked with Alexander.
+    - Log the successful events to disk and also the arguments of extrinsics calls.
+    - Based on the result
+        - If extrinsics call is a success
+            - If balance transfer is success (we burn with balances pallet's reduce) 
+                - If smart contract path is valid: then execute the tools.
+    - We need to look into:
+        - Tokio process
