@@ -105,3 +105,15 @@ Participants: wigy, six, ra33it0
                 - If smart contract path is valid: then execute the tools.
     - We need to look into:
         - Tokio process
+
+2022.07.18. - Élő score security and implementation draft
+Participants: ra33it0, six
+
+We talked about possible exploitation methods.
+Most attack vectors are already remediated, but the multi-acc farming
+At this stage the CCTF pool solves this for us
+QRUCIAL ambassadors can also solve it as one source of auditor
+Further sources to be defined
+Example implementation by other team
+https://urcra.github.io/skill-rating/doc/skill_rating/elo/index.html
+https://github.com/ivpusic/rust-elo
