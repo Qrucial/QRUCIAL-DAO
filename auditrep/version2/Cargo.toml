@@ -1,0 +1,11 @@
+[package]
+name = "elo"
+description = "Rust crate for calculating player rating based on elo ranking system"
+version = "0.3.0"
+authors = ["Ivan Pusic <450140+ivpusic@users.noreply.github.com>"]
+edition = "2018"
+license = "MIT"
+homepage = "https://github.com/ivpusic/rust-elo"
+repository = "https://github.com/ivpusic/rust-elo.git"
+
+[dependencies]
