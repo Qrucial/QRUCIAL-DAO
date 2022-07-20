@@ -117,3 +117,13 @@ Participants: ra33it0, six
 - Example implementation by other team
   - https://urcra.github.io/skill-rating/doc/skill_rating/elo/index.html
   - https://github.com/ivpusic/rust-elo
+
+### 2022.07.20. - Storage, filesystem structure and drawing full topology
+Participants: six, knockoff
+
+- Docker images work by mounting a filesystem with audit files
+  - Core structure is created
+- Connection between Docker, ExoTool and ExoSys Daemon are clarified
+  - Scripts are being written for execution
+  - ExoSys daemon executes through three arguments
+- Topology of the QRUCIAL ecosystem was drawn
