@@ -1,12 +1,12 @@
-<mxfile host="app.diagrams.net" modified="2022-07-21T11:39:50.671Z" agent="anyad" etag="xNgqm54zl_hd19Xpv_wc" version="20.1.3" type="github">
+<mxfile host="app.diagrams.net" modified="2022-07-25T08:32:38.800Z" agent="5.0 (Windows NT 10.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/99.0.7113.93 Safari/537.36" etag="4FENNL6Yepxrmg3nmVee" version="20.1.3" type="github">
   <diagram id="C5RBs43oDa-KdzZeNtuy" name="Page-1">
-    <mxGraphModel dx="3769" dy="2278" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+    <mxGraphModel dx="4382" dy="3114" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
         <mxCell id="WIyWlLk6GJQsqaUBKTNV-0" />
         <mxCell id="WIyWlLk6GJQsqaUBKTNV-1" parent="WIyWlLk6GJQsqaUBKTNV-0" />
         <object label="" id="74LfeLr-c_rW4B0bFqaF-14">
           <mxCell style="rounded=0;whiteSpace=wrap;html=1;strokeWidth=3;strokeColor=#2B79FF;fontSize=12;" parent="WIyWlLk6GJQsqaUBKTNV-1" vertex="1">
-            <mxGeometry x="260" y="-170" width="1240" height="810" as="geometry" />
+            <mxGeometry x="240" y="-205" width="1240" height="810" as="geometry" />
           </mxCell>
         </object>
         <mxCell id="WIyWlLk6GJQsqaUBKTNV-3" value="&lt;div style=&quot;font-size: 12px;&quot;&gt;&lt;b style=&quot;font-size: 12px;&quot;&gt;Polkadot / Kusama&lt;/b&gt;&lt;/div&gt;&lt;div style=&quot;font-size: 12px;&quot;&gt;&lt;b style=&quot;font-size: 12px;&quot;&gt;Relay Chain&lt;br style=&quot;font-size: 12px;&quot;&gt;&lt;/b&gt;&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fontSize=12;glass=0;strokeWidth=1;shadow=0;" parent="WIyWlLk6GJQsqaUBKTNV-1" vertex="1">
@@ -31,9 +31,9 @@
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="74LfeLr-c_rW4B0bFqaF-4" value="&lt;div style=&quot;font-size: 12px;&quot;&gt;&lt;b style=&quot;font-size: 12px;&quot;&gt;CCTF Auditor Pool&lt;/b&gt;&lt;/div&gt;&lt;div style=&quot;font-size: 12px;&quot;&gt;&lt;b style=&quot;font-size: 12px;&quot;&gt;from&lt;/b&gt;&lt;/div&gt;&lt;div style=&quot;font-size: 12px;&quot;&gt;&lt;b style=&quot;font-size: 12px;&quot;&gt;EVM Smart Contract Storage&lt;br style=&quot;font-size: 12px;&quot;&gt;&lt;/b&gt;&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fontSize=12;glass=0;strokeWidth=1;shadow=0;" parent="WIyWlLk6GJQsqaUBKTNV-1" vertex="1">
-          <mxGeometry x="-140" y="70" width="190" height="60" as="geometry" />
+          <mxGeometry x="-140" y="71" width="190" height="60" as="geometry" />
         </mxCell>
-        <mxCell id="74LfeLr-c_rW4B0bFqaF-7" value="" style="endArrow=none;html=1;rounded=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;startArrow=classic;startFill=1;endFill=0;endSize=6;startSize=6;strokeWidth=2;fontSize=12;" parent="WIyWlLk6GJQsqaUBKTNV-1" edge="1">
+        <mxCell id="74LfeLr-c_rW4B0bFqaF-7" value="" style="endArrow=none;html=1;rounded=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;startArrow=classic;startFill=1;endFill=0;endSize=6;startSize=6;strokeWidth=2;fontSize=12;entryX=0.011;entryY=0.167;entryDx=0;entryDy=0;entryPerimeter=0;" parent="WIyWlLk6GJQsqaUBKTNV-1" edge="1" target="74LfeLr-c_rW4B0bFqaF-12">
           <mxGeometry relative="1" as="geometry">
             <mxPoint x="51" y="100" as="sourcePoint" />
             <mxPoint x="377.5" y="104.11727616645658" as="targetPoint" />
@@ -44,10 +44,10 @@
             <mxPoint x="-24" as="offset" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="74LfeLr-c_rW4B0bFqaF-9" value="&lt;b style=&quot;font-size: 12px;&quot;&gt;QRUCIAL Verified Auditor Pool&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;fontSize=12;glass=0;strokeWidth=1;shadow=0;" parent="WIyWlLk6GJQsqaUBKTNV-1" vertex="1">
+        <mxCell id="74LfeLr-c_rW4B0bFqaF-9" value="&lt;b style=&quot;font-size: 12px;&quot;&gt;QRUCIAL Verified Auditor Pool&lt;br&gt;Ambassador Program&lt;br&gt;&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;fontSize=12;glass=0;strokeWidth=1;shadow=0;" parent="WIyWlLk6GJQsqaUBKTNV-1" vertex="1">
           <mxGeometry x="-140" y="170" width="190" height="60" as="geometry" />
         </mxCell>
-        <mxCell id="74LfeLr-c_rW4B0bFqaF-10" value="" style="endArrow=none;html=1;rounded=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;startArrow=classic;startFill=1;endFill=0;endSize=6;startSize=6;strokeWidth=2;fontSize=12;" parent="WIyWlLk6GJQsqaUBKTNV-1" source="74LfeLr-c_rW4B0bFqaF-9" target="74LfeLr-c_rW4B0bFqaF-12" edge="1">
+        <mxCell id="74LfeLr-c_rW4B0bFqaF-10" value="" style="endArrow=none;html=1;rounded=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;startArrow=classic;startFill=1;endFill=0;endSize=6;startSize=6;strokeWidth=2;fontSize=12;entryX=0;entryY=0.25;entryDx=0;entryDy=0;" parent="WIyWlLk6GJQsqaUBKTNV-1" source="74LfeLr-c_rW4B0bFqaF-9" target="74LfeLr-c_rW4B0bFqaF-12" edge="1">
           <mxGeometry relative="1" as="geometry">
             <mxPoint x="145.0000000000001" y="250" as="sourcePoint" />
             <mxPoint x="310" y="150" as="targetPoint" />
@@ -69,13 +69,13 @@
         <mxCell id="74LfeLr-c_rW4B0bFqaF-69" value="&lt;div style=&quot;font-size: 12px;&quot;&gt;- Verify NFT&lt;/div&gt;&lt;div style=&quot;font-size: 12px;&quot;&gt;- Request NFT update&lt;br style=&quot;font-size: 12px;&quot;&gt;&lt;/div&gt;" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;fontSize=12;startArrow=classic;startFill=1;endArrow=classic;endFill=1;startSize=6;endSize=6;strokeWidth=2;" parent="WIyWlLk6GJQsqaUBKTNV-1" source="74LfeLr-c_rW4B0bFqaF-12" target="74LfeLr-c_rW4B0bFqaF-15" edge="1">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="74LfeLr-c_rW4B0bFqaF-12" value="&lt;div style=&quot;font-size: 12px;&quot;&gt;&lt;b style=&quot;font-size: 12px;&quot;&gt;AuditorRep&lt;/b&gt;&lt;/div&gt;&lt;div style=&quot;font-size: 12px;&quot;&gt;&lt;b style=&quot;font-size: 12px;&quot;&gt;Pallet&lt;br style=&quot;font-size: 12px;&quot;&gt;&lt;/b&gt;&lt;/div&gt;&lt;br style=&quot;font-size: 12px;&quot;&gt;&lt;div style=&quot;font-size: 12px;&quot;&gt;Storage for:&lt;/div&gt;&lt;div style=&quot;font-size: 12px;&quot;&gt;- List of verified auditors&lt;/div&gt;&lt;div style=&quot;font-size: 12px;&quot;&gt;- Reputation of auditors&lt;/div&gt;&lt;div style=&quot;font-size: 12px;&quot;&gt;- Challenges between auditors and results&lt;br style=&quot;font-size: 12px;&quot;&gt;&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fontSize=12;glass=0;strokeWidth=1;shadow=0;" parent="WIyWlLk6GJQsqaUBKTNV-1" vertex="1">
-          <mxGeometry x="340" y="20" width="176.5" height="150" as="geometry" />
-        </mxCell>
         <mxCell id="74LfeLr-c_rW4B0bFqaF-15" value="&lt;div style=&quot;font-size: 12px;&quot;&gt;&lt;b style=&quot;font-size: 12px;&quot;&gt;ExoSys Pallet&lt;br style=&quot;font-size: 12px;&quot;&gt;&lt;/b&gt;&lt;/div&gt;&lt;div style=&quot;font-size: 12px;&quot;&gt;&lt;br style=&quot;font-size: 12px;&quot;&gt;&lt;/div&gt;&lt;div style=&quot;font-size: 12px;&quot;&gt;- Check balance before list audit&lt;/div&gt;&lt;div style=&quot;font-size: 12px;&quot;&gt;- Handles audit request extrinsics&lt;br style=&quot;font-size: 12px;&quot;&gt;&lt;/div&gt;&lt;div style=&quot;font-size: 12px;&quot;&gt;- Mint Non-transferrable dynamic NFT after extrinsic is valid&lt;/div&gt;&lt;div style=&quot;font-size: 12px;&quot;&gt;- Takes extrinsics for audit updates&lt;/div&gt;&lt;div style=&quot;font-size: 12px;&quot;&gt;- Finalizes NFTs&lt;br style=&quot;font-size: 12px;&quot;&gt;&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fontSize=12;glass=0;strokeWidth=1;shadow=0;" parent="WIyWlLk6GJQsqaUBKTNV-1" vertex="1">
           <mxGeometry x="760" y="20" width="340" height="160" as="geometry" />
         </mxCell>
-        <mxCell id="74LfeLr-c_rW4B0bFqaF-89" style="edgeStyle=orthogonalEdgeStyle;rounded=0;jumpSize=6;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=1;entryY=0.75;entryDx=0;entryDy=0;fontSize=12;startArrow=classic;startFill=1;endArrow=classic;endFill=1;startSize=4;endSize=4;strokeWidth=2;" parent="WIyWlLk6GJQsqaUBKTNV-1" source="74LfeLr-c_rW4B0bFqaF-16" target="74LfeLr-c_rW4B0bFqaF-15" edge="1">
+        <mxCell id="74LfeLr-c_rW4B0bFqaF-12" value="&lt;div style=&quot;font-size: 12px;&quot;&gt;&lt;b style=&quot;font-size: 12px;&quot;&gt;AuditorRep&lt;/b&gt;&lt;/div&gt;&lt;div style=&quot;font-size: 12px;&quot;&gt;&lt;b style=&quot;font-size: 12px;&quot;&gt;Pallet&lt;br style=&quot;font-size: 12px;&quot;&gt;&lt;/b&gt;&lt;/div&gt;&lt;br style=&quot;font-size: 12px;&quot;&gt;&lt;div style=&quot;font-size: 12px;&quot;&gt;Storage for:&lt;/div&gt;&lt;div style=&quot;font-size: 12px;&quot;&gt;- List of verified auditors&lt;/div&gt;&lt;div style=&quot;font-size: 12px;&quot;&gt;- Reputation of auditors&lt;/div&gt;&lt;div style=&quot;font-size: 12px;&quot;&gt;- Challenges between auditors and results&lt;br style=&quot;font-size: 12px;&quot;&gt;&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fontSize=12;glass=0;strokeWidth=1;shadow=0;" parent="WIyWlLk6GJQsqaUBKTNV-1" vertex="1">
+          <mxGeometry x="340" y="20" width="176.5" height="150" as="geometry" />
+        </mxCell>
+        <mxCell id="74LfeLr-c_rW4B0bFqaF-89" value="&lt;div&gt;Event&lt;/div&gt;&lt;div&gt;Monitoring&lt;/div&gt;" style="edgeStyle=orthogonalEdgeStyle;rounded=0;jumpSize=6;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=1;entryY=0.75;entryDx=0;entryDy=0;fontSize=12;startArrow=classic;startFill=1;endArrow=classic;endFill=1;startSize=4;endSize=4;strokeWidth=2;" parent="WIyWlLk6GJQsqaUBKTNV-1" source="74LfeLr-c_rW4B0bFqaF-16" target="74LfeLr-c_rW4B0bFqaF-15" edge="1">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="74LfeLr-c_rW4B0bFqaF-16" value="&lt;div style=&quot;font-size: 12px;&quot;&gt;&lt;b style=&quot;font-size: 12px;&quot;&gt;ExoSys&lt;/b&gt;&lt;/div&gt;&lt;div style=&quot;font-size: 12px;&quot;&gt;&lt;b style=&quot;font-size: 12px;&quot;&gt;Daemon&lt;br style=&quot;font-size: 12px;&quot;&gt;&lt;/b&gt;&lt;/div&gt;&lt;div style=&quot;font-size: 12px;&quot;&gt;&lt;b style=&quot;font-size: 12px;&quot;&gt;&lt;br style=&quot;font-size: 12px;&quot;&gt;&lt;/b&gt;&lt;/div&gt;&lt;div style=&quot;font-size: 12px;&quot;&gt;1. Subscribes to audit request events&lt;br style=&quot;font-size: 12px;&quot;&gt;&lt;/div&gt;&lt;div style=&quot;font-size: 12px;&quot;&gt;2. Executes ExoTool the script with 3 params&lt;/div&gt;&lt;div style=&quot;font-size: 12px;&quot;&gt;3. Check for finished audits&lt;/div&gt;&lt;div style=&quot;font-size: 12px;&quot;&gt;4. Pass final info to the Pallet&lt;br style=&quot;font-size: 12px;&quot;&gt;&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fontSize=12;glass=0;strokeWidth=1;shadow=0;" parent="WIyWlLk6GJQsqaUBKTNV-1" vertex="1">
@@ -85,7 +85,7 @@
           <mxGeometry x="650" y="210" width="140" height="70" as="geometry" />
         </mxCell>
         <mxCell id="74LfeLr-c_rW4B0bFqaF-20" value="" style="rounded=0;whiteSpace=wrap;html=1;strokeColor=#3399FF;strokeWidth=2;fontSize=12;" parent="WIyWlLk6GJQsqaUBKTNV-1" vertex="1">
-          <mxGeometry x="503.5" y="340" width="573" height="240" as="geometry" />
+          <mxGeometry x="503.5" y="340" width="616.5" height="240" as="geometry" />
         </mxCell>
         <mxCell id="74LfeLr-c_rW4B0bFqaF-36" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.006;exitY=0.561;exitDx=0;exitDy=0;startArrow=classic;startFill=1;endArrow=classic;endFill=1;exitPerimeter=0;entryX=0.004;entryY=0.099;entryDx=0;entryDy=0;entryPerimeter=0;endSize=4;startSize=4;strokeWidth=2;fontSize=12;" parent="WIyWlLk6GJQsqaUBKTNV-1" source="74LfeLr-c_rW4B0bFqaF-17" target="74LfeLr-c_rW4B0bFqaF-22" edge="1">
           <mxGeometry relative="1" as="geometry">
@@ -100,27 +100,27 @@
           <mxGeometry x="516.5" y="390" width="90" height="80" as="geometry" />
         </mxCell>
         <mxCell id="74LfeLr-c_rW4B0bFqaF-22" value="Folder Structure" style="swimlane;fontStyle=1;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;fontSize=12;" parent="WIyWlLk6GJQsqaUBKTNV-1" vertex="1">
-          <mxGeometry x="616.5" y="350" width="440" height="210" as="geometry">
+          <mxGeometry x="616.5" y="350" width="493.5" height="210" as="geometry">
             <mxRectangle x="650" y="330" width="180" height="30" as="alternateBounds" />
           </mxGeometry>
         </mxCell>
         <mxCell id="74LfeLr-c_rW4B0bFqaF-23" value="&lt;block_height&gt;_&lt;AuditName&gt;" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;fontSize=12;" parent="74LfeLr-c_rW4B0bFqaF-22" vertex="1">
-          <mxGeometry y="30" width="440" height="30" as="geometry" />
+          <mxGeometry y="30" width="493.5" height="30" as="geometry" />
         </mxCell>
         <mxCell id="74LfeLr-c_rW4B0bFqaF-24" value="        SharedFS (for Docker to attach it)" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;fontSize=12;" parent="74LfeLr-c_rW4B0bFqaF-22" vertex="1">
-          <mxGeometry y="60" width="440" height="30" as="geometry" />
+          <mxGeometry y="60" width="493.5" height="30" as="geometry" />
         </mxCell>
         <mxCell id="74LfeLr-c_rW4B0bFqaF-34" value="                CargoAudit (files that will be run by cargo --audit)" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;fontSize=12;" parent="74LfeLr-c_rW4B0bFqaF-22" vertex="1">
-          <mxGeometry y="90" width="440" height="30" as="geometry" />
+          <mxGeometry y="90" width="493.5" height="30" as="geometry" />
         </mxCell>
         <mxCell id="74LfeLr-c_rW4B0bFqaF-35" value="                NewFolderExample (new folder for each newly added tool)" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;fontSize=12;" parent="74LfeLr-c_rW4B0bFqaF-22" vertex="1">
-          <mxGeometry y="120" width="440" height="30" as="geometry" />
+          <mxGeometry y="120" width="493.5" height="30" as="geometry" />
         </mxCell>
         <mxCell id="74LfeLr-c_rW4B0bFqaF-28" value="                AuditLogStore (for json output and to keep logs of all audits)" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;fontSize=12;" parent="74LfeLr-c_rW4B0bFqaF-22" vertex="1">
-          <mxGeometry y="150" width="440" height="30" as="geometry" />
+          <mxGeometry y="150" width="493.5" height="30" as="geometry" />
         </mxCell>
         <mxCell id="74LfeLr-c_rW4B0bFqaF-29" value="        Final AutoReport (final json outputs of all tools and the report generated + Enc)" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;fontSize=12;" parent="74LfeLr-c_rW4B0bFqaF-22" vertex="1">
-          <mxGeometry y="180" width="440" height="30" as="geometry" />
+          <mxGeometry y="180" width="493.5" height="30" as="geometry" />
         </mxCell>
         <mxCell id="74LfeLr-c_rW4B0bFqaF-32" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0;exitY=0.5;exitDx=0;exitDy=0;startArrow=classic;startFill=1;endArrow=none;endFill=0;endSize=6;startSize=6;strokeWidth=2;fontSize=12;" parent="WIyWlLk6GJQsqaUBKTNV-1" source="74LfeLr-c_rW4B0bFqaF-31" target="74LfeLr-c_rW4B0bFqaF-29" edge="1">
           <mxGeometry relative="1" as="geometry" />
@@ -159,10 +159,10 @@
         <mxCell id="74LfeLr-c_rW4B0bFqaF-51" value="&lt;div style=&quot;font-size: 12px;&quot;&gt;&lt;b style=&quot;font-size: 12px;&quot;&gt;Auditor extrinsics&lt;/b&gt;&lt;br style=&quot;font-size: 12px;&quot;&gt;&lt;/div&gt;&lt;div style=&quot;font-size: 12px;&quot;&gt;- Register&lt;br style=&quot;font-size: 12px;&quot;&gt;- Take audit&lt;br style=&quot;font-size: 12px;&quot;&gt;- Submit final report&lt;br style=&quot;font-size: 12px;&quot;&gt;- Challenge report&lt;br style=&quot;font-size: 12px;&quot;&gt;&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fontSize=12;" parent="WIyWlLk6GJQsqaUBKTNV-1" vertex="1">
           <mxGeometry x="1690" y="10" width="190" height="130" as="geometry" />
         </mxCell>
-        <mxCell id="74LfeLr-c_rW4B0bFqaF-53" value="" style="endArrow=none;html=1;rounded=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;startArrow=classic;startFill=1;endFill=0;entryX=0;entryY=0.75;entryDx=0;entryDy=0;endSize=6;startSize=6;strokeWidth=2;fontSize=12;" parent="WIyWlLk6GJQsqaUBKTNV-1" source="74LfeLr-c_rW4B0bFqaF-50" target="74LfeLr-c_rW4B0bFqaF-12" edge="1">
+        <mxCell id="74LfeLr-c_rW4B0bFqaF-53" value="" style="endArrow=none;html=1;rounded=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;startArrow=classic;startFill=1;endFill=0;endSize=6;startSize=6;strokeWidth=2;fontSize=12;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" parent="WIyWlLk6GJQsqaUBKTNV-1" source="74LfeLr-c_rW4B0bFqaF-50" target="74LfeLr-c_rW4B0bFqaF-12" edge="1">
           <mxGeometry relative="1" as="geometry">
             <mxPoint x="60" y="210" as="sourcePoint" />
-            <mxPoint x="386.5" y="131.7717528373264" as="targetPoint" />
+            <mxPoint x="350" y="90" as="targetPoint" />
           </mxGeometry>
         </mxCell>
         <mxCell id="74LfeLr-c_rW4B0bFqaF-54" value="API Read" style="edgeLabel;resizable=0;html=1;align=center;verticalAlign=middle;fontSize=12;" parent="74LfeLr-c_rW4B0bFqaF-53" connectable="0" vertex="1">
@@ -209,7 +209,7 @@
         <mxCell id="74LfeLr-c_rW4B0bFqaF-63" value="Executes" style="edgeLabel;resizable=0;html=1;align=center;verticalAlign=middle;strokeColor=#3399FF;strokeWidth=3;fontSize=12;" parent="74LfeLr-c_rW4B0bFqaF-62" connectable="0" vertex="1">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="74LfeLr-c_rW4B0bFqaF-67" value="" style="endArrow=classic;html=1;rounded=0;startSize=6;endSize=6;strokeWidth=2;exitX=1;exitY=0.5;exitDx=0;exitDy=0;fontSize=12;entryX=0.998;entryY=0.464;entryDx=0;entryDy=0;entryPerimeter=0;" parent="WIyWlLk6GJQsqaUBKTNV-1" source="74LfeLr-c_rW4B0bFqaF-31" edge="1" target="74LfeLr-c_rW4B0bFqaF-15">
+        <mxCell id="74LfeLr-c_rW4B0bFqaF-67" value="" style="endArrow=classic;html=1;rounded=0;startSize=6;endSize=6;strokeWidth=2;exitX=1;exitY=0.5;exitDx=0;exitDy=0;fontSize=12;entryX=0.998;entryY=0.464;entryDx=0;entryDy=0;entryPerimeter=0;" parent="WIyWlLk6GJQsqaUBKTNV-1" source="74LfeLr-c_rW4B0bFqaF-31" target="74LfeLr-c_rW4B0bFqaF-15" edge="1">
           <mxGeometry relative="1" as="geometry">
             <mxPoint x="730" y="220" as="sourcePoint" />
             <mxPoint x="1110" y="95" as="targetPoint" />
@@ -261,7 +261,7 @@
             <mxGeometry x="1670" y="-220" width="240" height="50" as="geometry" />
           </mxCell>
         </object>
-        <mxCell id="lAdf_42UW9s0L6ZOGzUR-2" value="&lt;div align=&quot;left&quot;&gt;&lt;b&gt;QDAO token is a: Dynamic Non-transferrable Non-fungible Utility Token&lt;br&gt;&lt;/b&gt;&lt;/div&gt;&lt;div align=&quot;left&quot;&gt;&lt;b&gt;&lt;br&gt;&lt;/b&gt;&lt;/div&gt;&lt;div align=&quot;left&quot;&gt;&lt;br&gt;&lt;/div&gt;&lt;div align=&quot;left&quot;&gt;&lt;b&gt;Filled at mint time:&lt;/b&gt;&lt;br&gt;&lt;/div&gt;&lt;div align=&quot;left&quot;&gt;&lt;span style=&quot;&quot;&gt;	&lt;/span&gt;&lt;span style=&quot;&quot;&gt;	&lt;/span&gt;1. Hash of the audited package&lt;/div&gt;&lt;div align=&quot;left&quot;&gt;&lt;span style=&quot;&quot;&gt;	&lt;/span&gt;&lt;span style=&quot;&quot;&gt;	&lt;/span&gt;2. Date of request&lt;/div&gt;&lt;div align=&quot;left&quot;&gt;&lt;span style=&quot;&quot;&gt;	&lt;/span&gt;&lt;span style=&quot;&quot;&gt;	&lt;/span&gt;3. Deadline&lt;/div&gt;&lt;div align=&quot;left&quot;&gt;&lt;span style=&quot;&quot;&gt;	&lt;/span&gt;&lt;span style=&quot;&quot;&gt;	&lt;/span&gt;4. List of files&lt;/div&gt;&lt;div align=&quot;left&quot;&gt;&lt;span style=&quot;&quot;&gt;	&lt;/span&gt;&lt;span style=&quot;&quot;&gt;	&lt;/span&gt;5. Encrypt it or not?&lt;br&gt;&lt;/div&gt;&lt;div align=&quot;left&quot;&gt;&lt;span style=&quot;&quot;&gt;	&lt;/span&gt;&lt;span style=&quot;&quot;&gt;	&lt;/span&gt;6. Finalization of audit: request + 2 months (idea is to increase this based on contract size)&lt;br&gt;&lt;/div&gt;&lt;div align=&quot;left&quot;&gt;&lt;span style=&quot;&quot;&gt;	&lt;/span&gt;&lt;span style=&quot;&quot;&gt;	&lt;/span&gt;7. Deployed address&lt;/div&gt;&lt;div align=&quot;left&quot;&gt;&lt;br&gt;&lt;/div&gt;&lt;div align=&quot;left&quot;&gt;&lt;b&gt;After automated audit:&lt;/b&gt;&lt;br&gt;&lt;/div&gt;&lt;div align=&quot;left&quot;&gt;&lt;span style=&quot;&quot;&gt;	&lt;/span&gt;8. Auto vulnerabilities found (list)&lt;br&gt;&lt;/div&gt;&lt;div align=&quot;left&quot;&gt;&lt;span style=&quot;&quot;&gt;	&lt;/span&gt;&lt;span style=&quot;&quot;&gt;	&lt;/span&gt;- Risk level (crit, high, mid, low, misc)&lt;br&gt;&lt;div&gt;&lt;span style=&quot;&quot;&gt;	&lt;/span&gt;&lt;span style=&quot;&quot;&gt;	&lt;/span&gt;&lt;span style=&quot;&quot;&gt;&lt;/span&gt;- Title&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;&quot;&gt;	&lt;/span&gt;&lt;span style=&quot;&quot;&gt;	&lt;/span&gt;&lt;span style=&quot;&quot;&gt;&lt;/span&gt;- Description&lt;/div&gt;&lt;div&gt;- Positive/Negative&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;b&gt;During manual audit:&lt;/b&gt;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;&quot;&gt;	&lt;/span&gt;9. Assignee (first manual auditor)&lt;br&gt;&lt;/div&gt;&lt;/div&gt;&lt;div align=&quot;left&quot;&gt;&lt;span style=&quot;&quot;&gt;	&lt;/span&gt;10. Manual audit vulns&lt;/div&gt;&lt;div align=&quot;left&quot;&gt;- Vuln ID&lt;br&gt;&lt;/div&gt;&lt;div align=&quot;left&quot;&gt;&lt;span style=&quot;&quot;&gt;	&lt;/span&gt;&lt;span style=&quot;&quot;&gt;	&lt;/span&gt;- Risk level (crit, high, mid, low, misc)&lt;br&gt;&lt;/div&gt;&lt;div align=&quot;left&quot;&gt;&lt;span style=&quot;&quot;&gt;	&lt;/span&gt;&lt;span style=&quot;&quot;&gt;	&lt;/span&gt;- Title&lt;/div&gt;&lt;div align=&quot;left&quot;&gt;&lt;span style=&quot;&quot;&gt;	&lt;/span&gt;&lt;span style=&quot;&quot;&gt;	&lt;/span&gt;&lt;span style=&quot;&quot;&gt;&lt;/span&gt;- Description&lt;/div&gt;&lt;div align=&quot;left&quot;&gt;&lt;span style=&quot;&quot;&gt;	&lt;/span&gt;&lt;span style=&quot;&quot;&gt;	&lt;/span&gt;&lt;span style=&quot;&quot;&gt;&lt;/span&gt;- Exploit &lt;b&gt;PoC&lt;/b&gt;&lt;br&gt;&lt;/div&gt;&lt;div align=&quot;left&quot;&gt;&lt;span style=&quot;&quot;&gt;	&lt;/span&gt;&lt;span style=&quot;&quot;&gt;	&lt;/span&gt;&lt;span style=&quot;&quot;&gt;&lt;/span&gt;- Reporter&lt;br&gt;&lt;/div&gt;&lt;div align=&quot;left&quot;&gt;&lt;span style=&quot;&quot;&gt;	&lt;/span&gt;&lt;span style=&quot;&quot;&gt;	&lt;/span&gt;&lt;span style=&quot;&quot;&gt;&lt;/span&gt;- Verified by&lt;br&gt;&lt;/div&gt;&lt;div align=&quot;left&quot;&gt;&lt;span style=&quot;&quot;&gt;	&lt;/span&gt;10. Challenges (list + what they found)&lt;/div&gt;&lt;div align=&quot;left&quot;&gt;&lt;div&gt;&lt;span style=&quot;&quot;&gt;	&lt;/span&gt;&lt;span style=&quot;&quot;&gt;	&lt;/span&gt;- Challenger&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;&quot;&gt;	&lt;/span&gt;&lt;span style=&quot;&quot;&gt;	&lt;/span&gt;- Challenged ID&lt;/div&gt;&lt;span style=&quot;&quot;&gt;	&lt;/span&gt;&lt;span style=&quot;&quot;&gt;	&lt;/span&gt;- Challenged info: text?&lt;/div&gt;&lt;div align=&quot;left&quot;&gt;&lt;b&gt;&lt;br&gt;&lt;/b&gt;&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=left;" parent="WIyWlLk6GJQsqaUBKTNV-1" vertex="1">
+        <mxCell id="lAdf_42UW9s0L6ZOGzUR-2" value="&lt;div align=&quot;left&quot;&gt;&lt;b&gt;QDAO token is a: Dynamic Non-transferrable Non-fungible Utility Token&lt;br&gt;&lt;/b&gt;&lt;/div&gt;&lt;div align=&quot;left&quot;&gt;&lt;b&gt;&lt;br&gt;&lt;/b&gt;&lt;/div&gt;&lt;div align=&quot;left&quot;&gt;&lt;br&gt;&lt;/div&gt;&lt;div align=&quot;left&quot;&gt;&lt;b&gt;Filled at mint time:&lt;/b&gt;&lt;br&gt;&lt;/div&gt;&lt;div align=&quot;left&quot;&gt;&lt;span style=&quot;&quot;&gt; &lt;/span&gt;&lt;span style=&quot;&quot;&gt; &lt;/span&gt;1. Hash of the audited package&lt;/div&gt;&lt;div align=&quot;left&quot;&gt;&lt;span style=&quot;&quot;&gt; &lt;/span&gt;&lt;span style=&quot;&quot;&gt; &lt;/span&gt;2. Date of request&lt;/div&gt;&lt;div align=&quot;left&quot;&gt;&lt;span style=&quot;&quot;&gt; &lt;/span&gt;&lt;span style=&quot;&quot;&gt; &lt;/span&gt;3. Deadline (tool exec)&lt;br&gt;&lt;/div&gt;&lt;div align=&quot;left&quot;&gt;&lt;span style=&quot;&quot;&gt; &lt;/span&gt;&lt;span style=&quot;&quot;&gt; &lt;/span&gt;4. List of files&lt;/div&gt;&lt;div align=&quot;left&quot;&gt;&lt;span style=&quot;&quot;&gt; &lt;/span&gt;&lt;span style=&quot;&quot;&gt; &lt;/span&gt;5. Report encrypt it or not? Hash of it if requested&lt;br&gt;&lt;/div&gt;&lt;div align=&quot;left&quot;&gt;&lt;span style=&quot;&quot;&gt; &lt;/span&gt;&lt;span style=&quot;&quot;&gt; &lt;/span&gt;6. Finalization of audit: request + 2 months (idea is to increase this based on contract size)&lt;br&gt;&lt;/div&gt;&lt;div align=&quot;left&quot;&gt;&lt;span style=&quot;&quot;&gt; &lt;/span&gt;&lt;span style=&quot;&quot;&gt; &lt;/span&gt;7. Deployed address (optional)&lt;br&gt;&lt;/div&gt;&lt;div align=&quot;left&quot;&gt;&lt;br&gt;&lt;/div&gt;&lt;div align=&quot;left&quot;&gt;&lt;b&gt;Audit:&lt;/b&gt;&lt;/div&gt;&lt;div align=&quot;left&quot;&gt;8. Assignee (first manual auditor, need to stake coins)&lt;/div&gt;&lt;div align=&quot;left&quot;&gt;&lt;span style=&quot;&quot;&gt; &lt;/span&gt;9. Vulnerabilities found (list)&lt;/div&gt;&lt;div align=&quot;left&quot;&gt;- Vuln ID&lt;br&gt;&lt;/div&gt;&lt;div align=&quot;left&quot;&gt;- Found automated or manually?&lt;br&gt;&lt;/div&gt;&lt;div align=&quot;left&quot;&gt;&lt;span style=&quot;&quot;&gt; &lt;/span&gt;- Risk level (crit, high, mid, low, misc)&lt;br&gt;&lt;div&gt;&lt;span style=&quot;&quot;&gt; &lt;/span&gt;&lt;span style=&quot;&quot;&gt; &lt;/span&gt;&lt;span style=&quot;&quot;&gt;&lt;/span&gt;- Title&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;&quot;&gt; &lt;/span&gt;&lt;span style=&quot;&quot;&gt; &lt;/span&gt;&lt;span style=&quot;&quot;&gt;&lt;/span&gt;- Description&lt;/div&gt;&lt;div&gt;- Exploit &lt;b&gt;PoC&lt;/b&gt;&lt;/div&gt;&lt;div&gt;- Exploitable: Unchecked / False Positive / Positive --&amp;gt; to be decided by manual auditor&lt;/div&gt;&lt;div&gt;- Fixed?&lt;/div&gt;&lt;div&gt;- First audit done? Yes/No&lt;/div&gt;&lt;div&gt;- Audit finish/quality verified by &quot;Ambassador&quot; -&amp;gt; Accepted/PleaseFix&lt;br&gt;&lt;/div&gt;&lt;/div&gt;&lt;div align=&quot;left&quot;&gt;&lt;span style=&quot;&quot;&gt; &lt;/span&gt;10. Challenges (list + what they found)&lt;/div&gt;&lt;div align=&quot;left&quot;&gt;&lt;div&gt;&lt;span style=&quot;&quot;&gt;&lt;/span&gt;&lt;span style=&quot;&quot;&gt;&lt;/span&gt;- Challenged ID&lt;/div&gt;&lt;span style=&quot;&quot;&gt; &lt;/span&gt;&lt;span style=&quot;&quot;&gt; &lt;/span&gt;- Challenged info / what to modify&lt;/div&gt;&lt;div align=&quot;left&quot;&gt;- Ambassador verifies, winner: ?&lt;br&gt;&lt;/div&gt;&lt;div align=&quot;left&quot;&gt;&lt;br&gt;&lt;/div&gt;&lt;div align=&quot;left&quot;&gt;Idea: clippy and other tools can have their ÉLŐ score.&lt;br&gt;&lt;/div&gt;&lt;div align=&quot;left&quot;&gt;&lt;b&gt;&lt;br&gt;&lt;/b&gt;&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=left;" parent="WIyWlLk6GJQsqaUBKTNV-1" vertex="1">
           <mxGeometry x="-120" y="910" width="690" height="580" as="geometry" />
         </mxCell>
         <mxCell id="lAdf_42UW9s0L6ZOGzUR-3" value="&lt;div align=&quot;center&quot;&gt;&lt;font style=&quot;font-size: 20px;&quot;&gt;&lt;b&gt;&lt;font style=&quot;font-size: 20px;&quot;&gt;NFT Structure&lt;/font&gt;&lt;/b&gt;&lt;/font&gt;&lt;br&gt;&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=center;" parent="WIyWlLk6GJQsqaUBKTNV-1" vertex="1">
@@ -272,6 +272,44 @@
         </mxCell>
         <mxCell id="lAdf_42UW9s0L6ZOGzUR-5" value="&lt;font style=&quot;font-size: 20px;&quot;&gt;&lt;b&gt;QDAO Élő Score System&lt;br&gt;&lt;/b&gt;&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=center;" parent="WIyWlLk6GJQsqaUBKTNV-1" vertex="1">
           <mxGeometry x="660" y="850" width="280" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="iH8ZqjIr7PR7LtSLy2nh-0" value="&lt;div&gt;Alexander&lt;/div&gt;&lt;div&gt;six&lt;br&gt;&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="WIyWlLk6GJQsqaUBKTNV-1">
+          <mxGeometry x="1010" y="-10" width="100" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="iH8ZqjIr7PR7LtSLy2nh-1" value="Alexander" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="WIyWlLk6GJQsqaUBKTNV-1">
+          <mxGeometry x="750" y="-160" width="100" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="iH8ZqjIr7PR7LtSLy2nh-3" value="ra33it0&lt;br&gt;six" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="WIyWlLk6GJQsqaUBKTNV-1">
+          <mxGeometry x="480" y="10" width="100" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="iH8ZqjIr7PR7LtSLy2nh-4" value="knockoff&lt;br&gt;six" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="WIyWlLk6GJQsqaUBKTNV-1">
+          <mxGeometry x="570" y="190" width="100" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="iH8ZqjIr7PR7LtSLy2nh-5" value="knockoff&lt;br&gt;six" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="WIyWlLk6GJQsqaUBKTNV-1">
+          <mxGeometry x="480" y="315" width="100" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="iH8ZqjIr7PR7LtSLy2nh-6" value="&lt;div&gt;six&lt;/div&gt;wigy" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="WIyWlLk6GJQsqaUBKTNV-1">
+          <mxGeometry x="1250" y="470" width="100" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="iH8ZqjIr7PR7LtSLy2nh-7" value="&lt;div&gt;Alexander&lt;/div&gt;&lt;div&gt;six&lt;br&gt;&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="WIyWlLk6GJQsqaUBKTNV-1">
+          <mxGeometry x="1340" y="155" width="100" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="iH8ZqjIr7PR7LtSLy2nh-8" value="&lt;div&gt;Figure out later&lt;/div&gt;&lt;div&gt;Now we can use PolkadotJS&lt;br&gt;&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="WIyWlLk6GJQsqaUBKTNV-1">
+          <mxGeometry x="1930" y="-210" width="160" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="iH8ZqjIr7PR7LtSLy2nh-9" value="&lt;div&gt;&lt;b&gt;Staking tokens or reputation&lt;/b&gt;&lt;/div&gt;&lt;div&gt;&lt;b&gt;for joining?&lt;br&gt;&lt;/b&gt;&lt;/div&gt;&lt;div&gt;&lt;b&gt;for inviting someone?&lt;/b&gt;&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fontSize=12;glass=0;strokeWidth=1;shadow=0;" vertex="1" parent="WIyWlLk6GJQsqaUBKTNV-1">
+          <mxGeometry x="-140" y="370" width="190" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="iH8ZqjIr7PR7LtSLy2nh-10" value="" style="endArrow=none;html=1;rounded=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;startArrow=classic;startFill=1;endFill=0;endSize=6;startSize=6;strokeWidth=2;fontSize=12;entryX=0;entryY=0.75;entryDx=0;entryDy=0;" edge="1" parent="WIyWlLk6GJQsqaUBKTNV-1" source="iH8ZqjIr7PR7LtSLy2nh-9" target="74LfeLr-c_rW4B0bFqaF-12">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="60" y="310" as="sourcePoint" />
+            <mxPoint x="350" y="142.5" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="iH8ZqjIr7PR7LtSLy2nh-11" value="API Read" style="edgeLabel;resizable=0;html=1;align=center;verticalAlign=middle;fontSize=12;" connectable="0" vertex="1" parent="iH8ZqjIr7PR7LtSLy2nh-10">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="-33" y="19" as="offset" />
+          </mxGeometry>
         </mxCell>
       </root>
     </mxGraphModel>
