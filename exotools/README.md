@@ -1,17 +1,20 @@
-## This folder is meant to be used for the docker parts of QDAO, eg. ExoTools
-
-## ExoTool 1. --> cargo audit --json
+## ExoTool for QDAO
+This folder includes:
+    - Script that is called by ExoSys daemon
+    - Docker images
+ 
+### ExoTool 1. --> cargo audit --json
 Requirements include the source file and Cargo.toml + dict structure
 
 If this is a smart contract, it should be pretty easy to be definable
 
-## ExoTool Docker image requestements
+### ExoTool Docker image requestements
 Use of "docker exec" || linked folder where we have the files of the audit requestor / shared FS
 
-## Documentation
+### Documentation
 https://github.com/Qrucial/QRUCIAL-DAO/wiki/ExoTool#exotool-docker-deployment
 
-## Archive research info for monitoring extrinsics
+### Archive research info for monitoring extrinsics
 
 ```WSS comments for debug/research
 curr_event = event.value_object['event'].value_object#['module_id']
