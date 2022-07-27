@@ -79,7 +79,7 @@ async fn dump_finalized_headers(rpc_client: &Client<Config>) -> () {
                 let events = subxt::events::at::<Config, sp_core::Bytes>(rpc_client, hash)
                     .await
                     .unwrap();
-                
+
                 for event in events.iter_raw() {
                     println!("{:?}", &event);
                 }
@@ -102,18 +102,17 @@ async fn main() -> Result<()> {
         .set_client(ws_client)
         .build()
         .await?;
-    
-        let types = rpc_client.metadata().runtime_metadata().types.types();
-        for r#type in types {
-            println!(
-                "{:02x}: {:?} ({})",
-                r#type.id(),
-                r#type.ty().type_def(), //.path(),
-                r#type.ty().docs().join(" ")
-            );
-        }
-        return Ok(());
-    
+
+    let types = rpc_client.metadata().runtime_metadata().types.types();
+    for r#type in types {
+        println!(
+            "{:02x}: {:?} ({})",
+            r#type.id(),
+            r#type.ty().type_def(), //.path(),
+            r#type.ty().docs().join(" ")
+        );
+    }
+    return Ok(());
 
     /*scope(|s| {
         s.spawn(dump_finalized_headers(&rpc_client));
