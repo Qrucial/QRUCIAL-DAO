@@ -65,38 +65,24 @@ pub mod pallet {
 		/// An example dispatchable that takes a singles value as a parameter, writes the value to
 		/// storage and emits an event. This function must be dispatched by a signed extrinsic.
 		#[pallet::weight(10_000 + T::DbWeight::get().writes(1))]
-		pub fn tool_exec_req(origin: OriginFor<T>, tool_id: u32) -> DispatchResult {
+		pub fn tool_exec_req(origin: OriginFor<T>, _url: &str, _hash: &str) -> DispatchResult {
 			// Check that the extrinsic was signed and get the signer.
 			// This function will return an error if the extrinsic is not signed.
 			// https://docs.substrate.io/v3/runtime/origins
 			let who = ensure_signed(origin)?;
 
+            // TBA Check if balance is > and deduced
+
 			// Update storage.
-			<ExecThis<T>>::put(tool_id);
+			<ExecThis<T>>::put(url);
+			<ExecThis<T>>::put(hash);
 
 			// Emit an event.
-			Self::deposit_event(Event::ExecutionRequest(tool_id, who));
+			Self::deposit_event(Event::ExecutionRequest(url, hash, who));
 			// Return a successful DispatchResultWithPostInfo
 			Ok(())
 		}
 
-		/// An example dispatchable that may throw a custom error.
-		#[pallet::weight(10_000 + T::DbWeight::get().reads_writes(1,1))]
-		pub fn cause_error(origin: OriginFor<T>) -> DispatchResult {
-			let _who = ensure_signed(origin)?;
-
-			// Read a value from storage.
-			match <ExecThis<T>>::get() {
-				// Return an error if the value has not been set.
-				None => return Err(Error::<T>::NoneValue.into()),
-				Some(old) => {
-					// Increment the value read from storage; will error in the event of overflow.
-					let new = old.checked_add(1).ok_or(Error::<T>::StorageOverflow)?;
-					// Update the value in storage with the incremented result.
-					<ExecThis<T>>::put(new);
-					Ok(())
-				},
-			}
 		}
 	}
 }
