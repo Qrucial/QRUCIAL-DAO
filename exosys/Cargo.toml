@@ -10,8 +10,10 @@ anyhow = "1.0.58"
 async-stream = "0.3.3"
 clap = { version = "3.2.5", features = ["env", "derive"] }
 desub = { git = "https://github.com/nathanwhit/desub.git", branch = "update-deps" }
+frame-metadata = "15.0.0"
 futures = "0.3.21"
 futures-util = { version = "0.3.21", features = [] }
+hex = "0.4.3"
 jsonrpsee = { version = "0.10.1", features = ["full"] }
 serde_json = { version = "1.0.81", features = ["preserve_order"] }
 subxt = "0.21.0"
