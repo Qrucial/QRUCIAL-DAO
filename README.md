@@ -127,3 +127,18 @@ Participants: six, knockoff
   - Scripts are being written for execution
   - ExoSys daemon executes through three arguments
 - Topology of the QRUCIAL ecosystem was drawn
+
+### 2022.07.27. - Error handling and Execution Logger with NFT updater
+Participants: alexander, six
+
+- Getting through the structure regarding NFT and Qdao's Exo pallet
+- The core event of the pallet is emitted only after successful NFT creation pub fn tool_exec_req()
+- Logic after NFT mint success which required the fee paid:
+   - Daemon side: validate/verify --> URL https://..../.../.\.tar
+   - Daemon side: Hash sha512sum
+      - If hash doesn't match: Log errors (return short message) and hash it. Close NFT.
+   - Daemon executes ExoTool
+      - If fail on GET: returns report with network error (majority of nodes need to fail for that), written into NFT. Log errors (return short message) and hash it. Close NFT.
+      - If compilation error: couldn't compile error, written into NFT. Log errors (return short message) and hash it. Close NFT.
+- We reviewed the ExoSys Daemon and continue with similar logic.
+- NFT update logic updated on the Topology. Extrinsic comes from Execution Logger.
