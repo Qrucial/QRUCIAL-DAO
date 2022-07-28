@@ -6,13 +6,19 @@ use clap::Parser;
 use frame_metadata::{RuntimeMetadata, RuntimeMetadataV14};
 use futures::stream::Stream;
 use futures_util::{pin_mut, stream::StreamExt};
+use lazy_static::lazy_static;
+use parity_scale_codec::{Decode, DecodeAll, Encode};
+use regex::Regex;
 use serde_json::value::Value;
+use sp_core::twox_128;
 use subxt::{
     rpc::{rpc_params, ClientT as _},
     sp_core, sp_runtime, Client, ClientBuilder, Config as SubConfig,
 };
 use tokio_scoped::scope;
 mod error;
+
+use parser::decode_blob_as_type;
 
 /// QDAO ExoSys deamon
 #[derive(Parser, Debug)]
@@ -23,6 +29,12 @@ pub struct Args {
     pub url: String,
 }
 
+lazy_static! {
+    /// Regex to add port to addresses that have no port specified.
+    ///
+    /// See tests for behavior examples.
+    static ref PORT: Regex = Regex::new(r"^(?P<body>wss://[^/]*?)(?P<port>:[0-9]+)?(?P<tail>/.*)?$").expect("known value");
+}
 
 pub struct Config;
 
@@ -38,7 +50,7 @@ impl SubConfig for Config {
     type Extrinsic = sp_runtime::OpaqueExtrinsic;
 }
 
-pub fn unhex(hex_input: &str, what: error::NotHex) -> Result<Vec<u8>, Error> {
+pub fn unhex(hex_input: &str, what: error::NotHex) -> Result<Vec<u8>, error::Error> {
     let hex_input_trimmed = {
         if hex_input.starts_with("0x") {
             &hex_input[2..]
@@ -46,7 +58,7 @@ pub fn unhex(hex_input: &str, what: error::NotHex) -> Result<Vec<u8>, Error> {
             &hex_input
         }
     };
-    hex::decode(hex_input_trimmed).map_err(|_| Error::NotHex(what))
+    hex::decode(hex_input_trimmed).map_err(|_| error::Error::NotHex(what))
 }
 
 fn finalized_blocks(
@@ -102,6 +114,34 @@ async fn dump_finalized_headers(rpc_client: &Client<Config>) -> () {
             }
             Err(err) => println!("Error: {}", err),
         }
+    }
+}
+
+/// Supply address with port if needed.
+///
+/// Transform address as it is displayed to user in <https://polkadot.js.org/>
+/// to address with port added if necessary that could be fed to `jsonrpsee`
+/// client.
+///
+/// The port is set here to default 443 if there is no port specified in
+/// address itself, since default port in `jsonrpsee` is unavailable for now.
+///
+/// See for details <https://github.com/paritytech/jsonrpsee/issues/554`>
+///
+/// Some addresses have port specified, and should be left as is.
+fn address_with_port(str_address: &str) -> String {
+    match PORT.captures(str_address) {
+        Some(caps) => {
+            if caps.name("port").is_some() {
+                str_address.to_string()
+            } else {
+                match caps.name("tail") {
+                    Some(tail) => format!("{}:443{}", &caps["body"], tail.as_str()),
+                    None => format!("{}:443", &caps["body"]),
+                }
+            }
+        }
+        None => str_address.to_string(),
     }
 }
 
@@ -175,9 +215,9 @@ pub async fn get_value_from_storage(
     Ok(value)
 }
 
-#[tokio::main(worker_threads = 8)]
-async fn main() -> Result<()> {
+fn main() -> Result<()> {
     let args = Args::parse();
+    /*
     let ws_client = jsonrpsee::ws_client::WsClientBuilder::default()
         .connection_timeout(std::time::Duration::from_secs(10)) //Not sure these things are needed
         //here since it's local
@@ -188,22 +228,29 @@ async fn main() -> Result<()> {
         .set_client(ws_client)
         .build()
         .await?;
+    */
 
-    let block_hash = block_hash(address, optional_block_number).unwrap();
-
-    let metadata_v14 = block_metadata_v14(address, Some(&block_hash)).unwrap();
-
-    let metadata: Value = match optional_block_hash {
-        Some(block_hash) => {
-            client
-                .request("state_getMetadata", rpc_params![&block_hash])
-                .await?
-        }
-        None => client.request("state_getMetadata", rpc_params![]).await?,
+    //Placeholder
+    let short_specs = definitions::network_specs::ShortSpecs {
+        base58prefix: 42,
+        decimals: 12,
+        genesis_hash: [
+            225, 67, 242, 56, 3, 172, 80, 232, 246, 248, 230, 38, 149, 209, 206, 158, 78, 29, 104,
+            170, 54, 193, 205, 44, 253, 21, 52, 2, 19, 243, 66, 62,
+        ]
+        .into(),
+        name: "westend".to_string(),
+        unit: "WND".to_string(),
     };
 
+    let mut uptime = 0;
+    while true {
+    let block_hash = block_hash(&args.url, None).unwrap();
+
+    let metadata_v14 = block_metadata_v14(&args.url, Some(&block_hash)).unwrap();
+
     let events = get_value_from_storage(
-        address,
+        &args.url,
         &format!(
             "0x{}{}",
             hex::encode(twox_128(b"System")),
@@ -213,34 +260,48 @@ async fn main() -> Result<()> {
     )
     .unwrap();
 
-    if let Value::String(hex_data) = example_value {
-        let mut data =
-            unhex(&hex_data, error::NotHex::Value).unwrap();
-        let ty_symbol = match entry.ty {
-            frame_metadata::v14::StorageEntryType::Plain(a) => a,
-            frame_metadata::v14::StorageEntryType::Map {
-                hashers: _,
-                key: _,
-                value,
-            } => value,
-        };
-        let ty = metadata_v14.types.resolve(ty_symbol.id()).unwrap();
-        match decode_blob_as_type(&mut data, &ty, &metadata_v14) {
-            Ok(data_parsed) => {
-                if !data.is_empty() {
-                    println!("Not empty data when done")
-                }
-                let mut method = String::new();
-                for (i, x) in data_parsed.iter().enumerate() {
-                    if i > 0 {
-                        method.push_str(",\n");
+    for pallet in metadata_v14.pallets.iter() {
+        if let Some(storage) = &pallet.storage {
+            if storage.prefix == "System" {
+            for entry in storage.entries.iter() {
+                if entry.name == "Events" {
+                    if let Value::String(ref hex_data) = events {
+                        let mut data =
+                            unhex(&hex_data, error::NotHex::Value).unwrap();
+                        let ty_symbol = match entry.ty {
+                            frame_metadata::v14::StorageEntryType::Plain(a) => a,
+                            frame_metadata::v14::StorageEntryType::Map {
+                                hashers: _,
+                                key: _,
+                                value,
+                            } => value,
+                        };
+                        let ty = metadata_v14.types.resolve(ty_symbol.id()).unwrap();
+                        match decode_blob_as_type(&mut data, &ty, &metadata_v14) {
+                            Ok(data_parsed) => {
+                                if !data.is_empty() {
+                                    println!("Not empty data when done")
+                                }
+                                let mut method = String::new();
+                                for (i, x) in data_parsed.iter().enumerate() {
+                                    if i > 0 {
+                                        method.push_str(",\n");
+                                    }
+                                    method.push_str(&x.card.show_no_docs(x.indent, &short_specs));
+                                }
+                                println!("{}", method);
+                            }
+                            Err(e) => println!("Error: {:?}", e),
+                        }
                     }
-                    method.push_str(&x.card.show_no_docs(x.indent, &short_specs));
                 }
-                println!("{}", method);
             }
-            Err(e) => println!("Error: {:?}", e),
+            }
         }
+    }
+    println!("======= uptime: {} =======", uptime);
+    uptime +=1;
+    std::thread::sleep(std::time::Duration::from_secs(1));
     }
 
     Ok(())
