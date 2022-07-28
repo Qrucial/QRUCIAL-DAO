@@ -50,13 +50,13 @@ frame-system-benchmarking = { version = "4.0.0-dev", default-features = false, g
 hex-literal = { version = "0.3.4", optional = true }
 
 # Local Dependencies
-qdao-pallet-dummy = { version = "0.0.1", default-features = false, path = "../pallet-dummy" }
+qdao-exo-pallet = { version = "0.0.1", default-features = false, path = "../exo-pallet" }
 
 [build-dependencies]
 substrate-wasm-builder = { version = "5.0.0-dev", git = "https://github.com/paritytech/substrate.git", rev = "81c3d9e594668a32935a5eb7ce546912251aced6" }
 
 [features]
 default = ["std"]
-std = ["codec/std", "scale-info/std", "frame-executive/std", "frame-support/std", "frame-system-rpc-runtime-api/std", "frame-system/std", "pallet-aura/std", "pallet-balances/std", "pallet-grandpa/std", "pallet-randomness-collective-flip/std", "pallet-sudo/std", "qdao-pallet-dummy/std", "pallet-timestamp/std", "pallet-transaction-payment-rpc-runtime-api/std", "pallet-transaction-payment/std", "sp-api/std", "sp-block-builder/std", "sp-consensus-aura/std", "sp-core/std", "sp-inherents/std", "sp-offchain/std", "sp-runtime/std", "sp-session/std", "sp-std/std", "sp-transaction-pool/std", "sp-version/std"]
-runtime-benchmarks = ["frame-benchmarking/runtime-benchmarks", "frame-support/runtime-benchmarks", "frame-system-benchmarking", "frame-system/runtime-benchmarks", "hex-literal", "pallet-balances/runtime-benchmarks", "pallet-grandpa/runtime-benchmarks", "qdao-pallet-dummy/runtime-benchmarks", "pallet-timestamp/runtime-benchmarks", "sp-runtime/runtime-benchmarks"]
-try-runtime = ["frame-executive/try-runtime", "frame-try-runtime", "frame-system/try-runtime", "pallet-aura/try-runtime", "pallet-balances/try-runtime", "pallet-grandpa/try-runtime", "pallet-randomness-collective-flip/try-runtime", "pallet-sudo/try-runtime", "qdao-pallet-dummy/try-runtime", "pallet-timestamp/try-runtime", "pallet-transaction-payment/try-runtime"]
+std = ["codec/std", "scale-info/std", "frame-executive/std", "frame-support/std", "frame-system-rpc-runtime-api/std", "frame-system/std", "pallet-aura/std", "pallet-balances/std", "pallet-grandpa/std", "pallet-randomness-collective-flip/std", "pallet-sudo/std", "qdao-exo-pallet/std", "pallet-timestamp/std", "pallet-transaction-payment-rpc-runtime-api/std", "pallet-transaction-payment/std", "sp-api/std", "sp-block-builder/std", "sp-consensus-aura/std", "sp-core/std", "sp-inherents/std", "sp-offchain/std", "sp-runtime/std", "sp-session/std", "sp-std/std", "sp-transaction-pool/std", "sp-version/std"]
+runtime-benchmarks = ["frame-benchmarking/runtime-benchmarks", "frame-support/runtime-benchmarks", "frame-system-benchmarking", "frame-system/runtime-benchmarks", "hex-literal", "pallet-balances/runtime-benchmarks", "pallet-grandpa/runtime-benchmarks", "qdao-exo-pallet/runtime-benchmarks", "pallet-timestamp/runtime-benchmarks", "sp-runtime/runtime-benchmarks"]
+try-runtime = ["frame-executive/try-runtime", "frame-try-runtime", "frame-system/try-runtime", "pallet-aura/try-runtime", "pallet-balances/try-runtime", "pallet-grandpa/try-runtime", "pallet-randomness-collective-flip/try-runtime", "pallet-sudo/try-runtime", "qdao-exo-pallet/try-runtime", "pallet-timestamp/try-runtime", "pallet-transaction-payment/try-runtime"]

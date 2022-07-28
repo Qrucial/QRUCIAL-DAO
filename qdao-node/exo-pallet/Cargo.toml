@@ -1,5 +1,5 @@
 [package]
-name = "qdao-pallet-dummy"
+name = "qdao-exo-pallet"
 version = "0.0.1"
 description = "Dummy FRAME pallet example used in the runtime."
 authors = ["QRUCIAL Team <https://github.com/Qrucial>"]
