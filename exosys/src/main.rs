@@ -1,13 +1,13 @@
 use anyhow::Result;
 
-use jsonrpsee::ws_client::WsClientBuilder;
 use async_stream::try_stream;
 use clap::Parser;
 use frame_metadata::{RuntimeMetadata, RuntimeMetadataV14};
 use futures::stream::Stream;
 use futures_util::{pin_mut, stream::StreamExt};
+use jsonrpsee::ws_client::{WsClient, WsClientBuilder};
 use lazy_static::lazy_static;
-use parity_scale_codec::{Decode, DecodeAll, Encode};
+use parity_scale_codec::Decode;
 use regex::Regex;
 use serde_json::value::Value;
 use sp_core::twox_128;
@@ -61,62 +61,6 @@ pub fn unhex(hex_input: &str, what: error::NotHex) -> Result<Vec<u8>, error::Err
     hex::decode(hex_input_trimmed).map_err(|_| error::Error::NotHex(what))
 }
 
-fn finalized_blocks(
-    rpc_client: &Client<Config>,
-) -> impl Stream<Item = Result<<Config as SubConfig>::Header>> + '_ {
-    try_stream! {
-        let subscription = rpc_client.rpc().subscribe_finalized_blocks().await?;
-        for await header_res in subscription {
-            let header = header_res?;
-            yield header;
-        }
-    }
-}
-
-async fn dump_finalized_headers(rpc_client: &Client<Config>) -> () {
-    let bytes: sp_core::Bytes = rpc_client
-        .rpc()
-        .client
-        .request("state_getMetadata", rpc_params![])
-        .await
-        .unwrap();
-    let mut decoder = desub::Decoder::new();
-    let version = 14;
-    decoder.register_version(version, &bytes).unwrap();
-
-    let header_stream = finalized_blocks(rpc_client).take(5);
-    pin_mut!(header_stream);
-    while let Some(res) = header_stream.next().await {
-        match res {
-            Ok(header) => {
-                let hash =
-                    <<Config as SubConfig>::Hashing as sp_runtime::traits::Hash>::hash_of(&header);
-                println!("Block #{} was finalized", hash);
-
-                let block = rpc_client.rpc().block(Some(hash)).await;
-                let extrinsics = block.unwrap().unwrap().block.extrinsics;
-                println!("  extrinsics: {:?}", extrinsics);
-                let extrinsics_bytes = subxt::codec::Encode::encode(&extrinsics);
-
-                let extrinsics_cursor = &mut &extrinsics_bytes[..];
-                let x = decoder
-                    .decode_extrinsics(version, extrinsics_cursor)
-                    .unwrap();
-                //println!("{}", serde_json::to_string_pretty(&x).unwrap());
-
-                let events = subxt::events::at::<Config, sp_core::Bytes>(rpc_client, hash)
-                    .await
-                    .unwrap();
-
-                for event in events.iter_raw() {
-                    println!("{:?}", &event);
-                }
-            }
-            Err(err) => println!("Error: {}", err),
-        }
-    }
-}
-
 /// Supply address with port if needed.
 ///
 /// Transform address as it is displayed to user in <https://polkadot.js.org/>
@@ -146,76 +90,7 @@ fn address_with_port(str_address: &str) -> String {
 }
 
 #[tokio::main]
-pub async fn block_hash(
-    str_address: &str,
-    optional_block_number: Option<u32>,
-) -> Result<String, Box<dyn std::error::Error>> {
-    let address = address_with_port(str_address);
-    let client = WsClientBuilder::default().build(&address).await?;
-    let params = match optional_block_number {
-        Some(a) => rpc_params![a],
-        None => rpc_params![],
-    };
-    let block_hash_data: Value = client.request("chain_getBlockHash", params).await?;
-    if let Value::String(a) = block_hash_data {
-        Ok(a)
-    } else {
-        Err(Box::from("Unexpected block hash format."))
-    }
-}
-
-#[tokio::main]
-pub async fn block_metadata_v14(
-    str_address: &str,
-    optional_block_hash: Option<&str>,
-) -> Result<RuntimeMetadataV14, Box<dyn std::error::Error>> {
-    let address = address_with_port(str_address);
-    let client = WsClientBuilder::default().build(&address).await?;
-    let metadata: Value = match optional_block_hash {
-        Some(block_hash) => {
-            client
-                .request("state_getMetadata", rpc_params![&block_hash])
-                .await?
-        }
-        None => client.request("state_getMetadata", rpc_params![]).await?,
-    };
-    if let Value::String(hex_meta) = metadata {
-        let hex_meta = {
-            if hex_meta.starts_with("0x") {
-                &hex_meta[2..]
-            } else {
-                &hex_meta
-            }
-        };
-        let meta = hex::decode(hex_meta)?;
-        if !meta.starts_with(&[109, 101, 116, 97]) {
-            return Err(Box::from("Wrong start"));
-        }
-        match RuntimeMetadata::decode(&mut &meta[4..]) {
-            Ok(RuntimeMetadata::V14(out)) => Ok(out),
-            Ok(_) => Err(Box::from("Version not v14")),
-            Err(_) => Err(Box::from("Unable to decode metadata")),
-        }
-    } else {
-        Err(Box::from("Unexpected metadata format"))
-    }
-}
-
-#[tokio::main]
-pub async fn get_value_from_storage(
-    str_address: &str,
-    whole_key: &str,
-    block_hash: &str,
-) -> Result<Value, Box<dyn std::error::Error>> {
-    let address = address_with_port(str_address);
-    let client = WsClientBuilder::default().build(&address).await?;
-    let value: Value = client
-        .request("state_getStorage", rpc_params![whole_key, block_hash])
-        .await?;
-    Ok(value)
-}
-
-fn main() -> Result<()> {
+async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let args = Args::parse();
     /*
     let ws_client = jsonrpsee::ws_client::WsClientBuilder::default()
@@ -229,6 +104,9 @@ fn main() -> Result<()> {
         .build()
         .await?;
     */
+
+    let address = address_with_port(&args.url);
+    let client = WsClientBuilder::default().build(&address).await?;
 
     //Placeholder
     let short_specs = definitions::network_specs::ShortSpecs {
@@ -244,64 +122,98 @@ fn main() -> Result<()> {
     };
 
     let mut uptime = 0;
-    while true {
-    let block_hash = block_hash(&args.url, None).unwrap();
+    loop {
+        let params = rpc_params![];
+        let block_hash_data: Value = client.request("chain_getBlockHash", params).await?;
+        let block_hash = if let Value::String(a) = block_hash_data {
+            a
+        } else {
+            println!("Unexpected block hash format.");
+            continue;
+            "".to_string();
+        };
 
-    let metadata_v14 = block_metadata_v14(&args.url, Some(&block_hash)).unwrap();
+        let metadata: Value = client
+                    .request("state_getMetadata", rpc_params![&block_hash])
+                    .await?;
 
-    let events = get_value_from_storage(
-        &args.url,
-        &format!(
-            "0x{}{}",
-            hex::encode(twox_128(b"System")),
-            hex::encode(twox_128(b"Events"))
-        ),
-        &block_hash,
-    )
-    .unwrap();
+        let metadata_v14 = if let Value::String(hex_meta) = metadata {
+            let hex_meta = {
+                if hex_meta.starts_with("0x") {
+                    &hex_meta[2..]
+                } else {
+                    &hex_meta
+                }
+            };
 
-    for pallet in metadata_v14.pallets.iter() {
-        if let Some(storage) = &pallet.storage {
-            if storage.prefix == "System" {
-            for entry in storage.entries.iter() {
-                if entry.name == "Events" {
-                    if let Value::String(ref hex_data) = events {
-                        let mut data =
-                            unhex(&hex_data, error::NotHex::Value).unwrap();
-                        let ty_symbol = match entry.ty {
-                            frame_metadata::v14::StorageEntryType::Plain(a) => a,
-                            frame_metadata::v14::StorageEntryType::Map {
-                                hashers: _,
-                                key: _,
-                                value,
-                            } => value,
-                        };
-                        let ty = metadata_v14.types.resolve(ty_symbol.id()).unwrap();
-                        match decode_blob_as_type(&mut data, &ty, &metadata_v14) {
-                            Ok(data_parsed) => {
-                                if !data.is_empty() {
-                                    println!("Not empty data when done")
-                                }
-                                let mut method = String::new();
-                                for (i, x) in data_parsed.iter().enumerate() {
-                                    if i > 0 {
-                                        method.push_str(",\n");
+            let meta = hex::decode(hex_meta)?;
+            if !meta.starts_with(&[109, 101, 116, 97]) {
+                return Err(Box::from("Wrong start"));
+            }
+            match RuntimeMetadata::decode(&mut &meta[4..]) {
+                Ok(RuntimeMetadata::V14(out)) => out,
+                Ok(_) => continue,
+                Err(_) => continue,
+            }
+        } else {
+            continue;
+        };
+
+
+        let events = client.request(
+            "state_getStorage",
+            rpc_params![
+                &format!(
+                    "0x{}{}",
+                    hex::encode(twox_128(b"System")),
+                    hex::encode(twox_128(b"Events"))
+                ),
+                &block_hash
+            ]).await?;
+
+        for pallet in metadata_v14.pallets.iter() {
+            if let Some(storage) = &pallet.storage {
+                if storage.prefix == "System" {
+                    for entry in storage.entries.iter() {
+                        if entry.name == "Events" {
+                            if let Value::String(ref hex_data) = events {
+                                let mut data = unhex(&hex_data, error::NotHex::Value).unwrap();
+                                let ty_symbol = match entry.ty {
+                                    frame_metadata::v14::StorageEntryType::Plain(a) => a,
+                                    frame_metadata::v14::StorageEntryType::Map {
+                                        hashers: _,
+                                        key: _,
+                                        value,
+                                    } => value,
+                                };
+                                let ty = metadata_v14.types.resolve(ty_symbol.id()).unwrap();
+                                match decode_blob_as_type(&mut data, &ty, &metadata_v14) {
+                                    Ok(data_parsed) => {
+                                        if !data.is_empty() {
+                                            println!("Not empty data when done")
+                                        }
+                                        let mut method = String::new();
+                                        for (i, x) in data_parsed.iter().enumerate() {
+                                            if i > 0 {
+                                                method.push_str(",\n");
+                                            }
+                                            method.push_str(
+                                                &x.card.show_no_docs(x.indent, &short_specs),
+                                            );
+                                        }
+                                        println!("{}", method);
                                     }
-                                    method.push_str(&x.card.show_no_docs(x.indent, &short_specs));
+                                    Err(e) => println!("Error: {:?}", e),
                                 }
-                                println!("{}", method);
                             }
-                            Err(e) => println!("Error: {:?}", e),
                         }
                     }
                 }
             }
-            }
         }
-    }
-    println!("======= uptime: {} =======", uptime);
-    uptime +=1;
-    std::thread::sleep(std::time::Duration::from_secs(1));
+        println!("======= uptime: {} =======", uptime);
+        uptime += 1;
+        std::thread::sleep(std::time::Duration::from_secs(1));
     }
 
     Ok(())
