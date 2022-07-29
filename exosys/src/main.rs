@@ -134,8 +134,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         };
 
         let metadata: Value = client
-                    .request("state_getMetadata", rpc_params![&block_hash])
-                    .await?;
+            .request("state_getMetadata", rpc_params![&block_hash])
+            .await?;
 
         let metadata_v14 = if let Value::String(hex_meta) = metadata {
             let hex_meta = {
@@ -159,17 +159,19 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             continue;
         };
 
-
-        let events = client.request(
-            "state_getStorage",
-            rpc_params![
-                &format!(
-                    "0x{}{}",
-                    hex::encode(twox_128(b"System")),
-                    hex::encode(twox_128(b"Events"))
-                ),
-                &block_hash
-            ]).await?;
+        let events = client
+            .request(
+                "state_getStorage",
+                rpc_params![
+                    &format!(
+                        "0x{}{}",
+                        hex::encode(twox_128(b"System")),
+                        hex::encode(twox_128(b"Events"))
+                    ),
+                    &block_hash
+                ],
+            )
+            .await?;
 
         for pallet in metadata_v14.pallets.iter() {
             if let Some(storage) = &pallet.storage {
