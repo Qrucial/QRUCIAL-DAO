@@ -1,0 +1,7 @@
+FROM rust:buster
+
+RUN cargo install cargo-audit # install cargo audit
+
+VOLUME /rustvol-testing
+
+ENTRYPOINT ["cargo", "audit", "-f", "/rustvol-testing/Cargo.lock", "--json"]
