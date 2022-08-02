@@ -32,20 +32,20 @@ HASH=$2
 
 
 ## Prepare the folder
-XTPATH=audit_files/$(echo $HASH)_$(date +%s)
+XTPATH=audit_files/"$HASH""_$(date +%s)" ## !!
 function prep_folder {
-    mkdir $XTPATH
+    mkdir "$XTPATH"
 }
 
 ## Take URL (tar) and HASH
 
 function get_audit_files {
-    XTFILE=$XTPATH/$(echo "auditpack.tar") # TBA dont echo
-    curl -s $URL --output $XTFILE
+    XTFILE=$XTPATH/"auditpack.tar" # TBA dont echo
+    curl -s "$URL" --output "$XTFILE"
 
     # Check if it is the right file, by hash
-    CUR_SUM=$(sha512sum $XTFILE | cut -d' ' -f1)
-    sha512sum $XTFILE
+    CUR_SUM=$(sha512sum "$XTFILE" | cut -d' ' -f1)
+    sha512sum "$XTFILE"
 
     if [ "$HASH" = "$CUR_SUM" ]; then
         echo "Checkum correct!"
@@ -55,8 +55,8 @@ function get_audit_files {
     fi    
 
     # Check if it is a tar file
-    FTYPE=$(file $XTFILE | grep -o 'POSIX tar archive')
-    FTYPEreq=$(echo "POSIX tar archive")
+    FTYPE=$(file "$XTFILE" | grep -o 'POSIX tar archive')
+    FTYPEreq="POSIX tar archive"
     if [ "$FTYPE" = "$FTYPEreq" ]; then
         echo "ok, lets move to execution..."
     else
