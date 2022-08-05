@@ -4,6 +4,7 @@
 /// Learn more about FRAME and the core library of Substrate FRAME pallets:
 /// <https://docs.substrate.io/v3/runtime/frame>
 pub use pallet::*;
+use sp_std::prelude::*;
 
 #[cfg(test)]
 mod mock;
@@ -16,6 +17,7 @@ mod benchmarking;
 
 #[frame_support::pallet]
 pub mod pallet {
+    use super::*;
     use frame_support::pallet_prelude::*;
     use frame_system::pallet_prelude::*;
 
@@ -45,7 +47,11 @@ pub mod pallet {
     pub enum Event<T: Config> {
         /// Event documentation should end with an array that provides descriptive names for event
         /// parameters. [something, who]
-        ExecutionRequest(u32, T::AccountId),
+        ExecutionRequest {
+            who: T::AccountId,
+            url: Vec<u8>,
+            hash: T::Hash,
+        },
     }
 
     // Errors inform users that something went wrong.
@@ -65,20 +71,25 @@ pub mod pallet {
         /// An example dispatchable that takes a singles value as a parameter, writes the value to
         /// storage and emits an event. This function must be dispatched by a signed extrinsic.
         #[pallet::weight(10_000 + T::DbWeight::get().writes(1))]
-        pub fn tool_exec_req(origin: OriginFor<T>, _url: &str, _hash: &str) -> DispatchResult {
+        pub fn tool_exec_req(origin: OriginFor<T>, url: Vec<u8>, hash: T::Hash) -> DispatchResult {
             // Check that the extrinsic was signed and get the signer.
             // This function will return an error if the extrinsic is not signed.
             // https://docs.substrate.io/v3/runtime/origins
-            let who = ensure_signed(origin)?;
+            let sender = ensure_signed(origin)?;
 
             // TBA Check if balance is > and deduced
 
+            //Instead of low-level storage we should be using assets engine to mint proper NFT
             // Update storage.
-            <ExecThis<T>>::put(url);
-            <ExecThis<T>>::put(hash);
+            //<ExecThis<T>>::put(url);
+            //<ExecThis<T>>::put(hash);
 
             // Emit an event.
-            Self::deposit_event(Event::ExecutionRequest(url, hash, who));
+            Self::deposit_event(Event::ExecutionRequest {
+                who: sender,
+                url: url,
+                hash: hash,
+            });
             // Return a successful DispatchResultWithPostInfo
             Ok(())
         }
