@@ -7,8 +7,7 @@
 # License: GNU AFFERO GENERAL PUBLIC LICENSE - Version 3, 19 November 2007
 
 # Check if we have the arguments
-if [ -z "$1" ]
-  then
+if [ -z "$1" ]; then
     echo "No argument provided. Exit."
     exit 1
 fi
@@ -40,7 +39,7 @@ function prep_folder {
 ## Take URL (tar) and HASH
 
 function get_audit_files {
-    XTFILE=$XTPATH/"auditpack.tar" # TBA dont echo
+    XTFILE="$XTPATH/auditpack.tar" # TBA dont echo
     curl -s "$URL" --output "$XTFILE"
 
     # Check if it is the right file, by hash
@@ -68,11 +67,26 @@ function get_audit_files {
         # https://unix.stackexchange.com/questions/457117/how-to-unshare-network-for-current-process
 }
 
+## Docker prep
+# > Sets up the dir structure.
+# > Builds an image called exotools from the dockerfile located at ./dockerfiles/
+# > Creates a docker container called auditor, mounted at dir, from the image exottols
+# > starts container
+function docker_prep {
+   mkdir -p auditdir/programs -p auditdir/reports
+   docker build -t exotools ./dockerfiles/         ## !! This should not be run every time. only when there is no image. also should not use ./
+   docker create --name=auditor -v $(pwd)/auditdir:/auditdir exotools ## !! This is a 'dangerous' line pwd is goint to print the dir the user is in.
+   docker start -a auditor # > ./auditdir/reports/abc.json ## Very basic functionality
+   ## To-Do: Hash based logs, Generate logs in docker container.
+}
+
+
+
 #get_audit_files
 prep_folder
 get_audit_files
 
-
+#docker_prep # !! untested in this context
 
 ## check if the hash is same
 
