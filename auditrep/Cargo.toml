@@ -1,0 +1,11 @@
+[package]
+name = "elo"
+description = ["Ranking auditors and tools based on the
+elo ranking system"]
+version = "0.3.0"
+authors = [Qrucial]
+edition = "2018"
+license = "MIT"
+
+
+[dependencies]
