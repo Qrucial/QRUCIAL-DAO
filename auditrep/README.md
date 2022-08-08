@@ -1,10 +1,9 @@
 # rust-elo
 
-[![Build Status](https://travis-ci.org/ivpusic/rust-elo.svg?branch=master)](https://travis-ci.org/ivpusic/rust-elo)
+QRUCIAL DAOs Auditrep pallet.
+Ranking auditors and tools based on the elo ranking system
 
-Rust crate for calculating player rating based on elo ranking system
-
-## Installation
+Installation
 
 Add to your `Cargo.toml`
 
