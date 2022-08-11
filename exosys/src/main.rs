@@ -14,7 +14,7 @@ use subxt::{
 };
 mod error;
 
-use parser::decode_blob_as_type;
+use parser_reworked::decode_blob_as_type;
 
 /// QDAO ExoSys deamon
 #[derive(Parser, Debug)]
@@ -92,19 +92,6 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let address = address_with_port(&args.url);
     let client = WsClientBuilder::default().build(&address).await?;
 
-    //Placeholder
-    let short_specs = definitions::network_specs::ShortSpecs {
-        base58prefix: 42,
-        decimals: 12,
-        genesis_hash: [
-            225, 67, 242, 56, 3, 172, 80, 232, 246, 248, 230, 38, 149, 209, 206, 158, 78, 29, 104,
-            170, 54, 193, 205, 44, 253, 21, 52, 2, 19, 243, 66, 62,
-        ]
-        .into(),
-        name: "westend".to_string(),
-        unit: "WND".to_string(),
-    };
-
     let mut uptime = 0;
     loop {
         let params = rpc_params![];
@@ -171,22 +158,12 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                                         value,
                                     } => value,
                                 };
-                                let ty = metadata_v14.types.resolve(ty_symbol.id()).unwrap();
-                                match decode_blob_as_type(&mut data, &ty, &metadata_v14) {
+                                match decode_blob_as_type(&ty_symbol, &mut data, &metadata_v14) {
                                     Ok(data_parsed) => {
                                         if !data.is_empty() {
                                             println!("Not empty data when done")
                                         }
-                                        let mut method = String::new();
-                                        for (i, x) in data_parsed.iter().enumerate() {
-                                            if i > 0 {
-                                                method.push_str(",\n");
-                                            }
-                                            method.push_str(
-                                                &x.card.show_no_docs(x.indent, &short_specs),
-                                            );
-                                        }
-                                        println!("{}", method);
+                                        println!("{:?}", data_parsed.data);
                                     }
                                     Err(e) => println!("Error: {:?}", e),
                                 }
@@ -198,9 +175,11 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         }
         println!("======= uptime: {} =======", uptime);
         uptime += 1;
+        /*
         if uptime > 2 {
             println!("{:?}", std::process::Command::new("../exotools/exotool.sh").args(["https://v-space.hu/s/exotest.tar", "2"]).spawn());
         }
+        */
         std::thread::sleep(std::time::Duration::from_secs(1));
     }
 }

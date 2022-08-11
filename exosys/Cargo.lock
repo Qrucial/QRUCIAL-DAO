@@ -609,14 +609,21 @@ dependencies = [
 ]
 
 [[package]]
-name = "defaults"
+name = "definitions"
 version = "0.1.0"
-source = "git+https://github.com/varovainen/parity-signer.git?branch=va-2022-07-28-parser#feabecd6c07fae917cdf7dddaf7d94fbf01869c0"
+source = "git+https://github.com/Alzymologist/parity-signer?branch=main#8759e084a9c97e687069fd8e6f760c0500fd7275"
 dependencies = [
- "definitions",
- "lazy_static",
- "regex",
+ "anyhow",
+ "blake2-rfc",
+ "frame-metadata 15.0.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "hex",
+ "parity-scale-codec",
+ "plot_icon",
+ "sled",
  "sp-core 6.0.0 (git+https://github.com/paritytech/substrate)",
+ "sp-runtime 6.0.0 (git+https://github.com/paritytech/substrate)",
+ "sp-version",
+ "time",
 ]
 
 [[package]]
@@ -2013,20 +2020,17 @@ dependencies = [
 ]
 
 [[package]]
-name = "parser"
+name = "parser_reworked"
 version = "0.1.0"
-source = "git+https://github.com/varovainen/parity-signer.git?branch=va-2022-07-28-parser#feabecd6c07fae917cdf7dddaf7d94fbf01869c0"
+source = "git+https://github.com/Alzymologist/substrate-parser.git#3e59be03e80671c91aa8d5561776d7853c418dd2"
 dependencies = [
  "bitvec",
- "defaults",
- "definitions",
+ "definitions 0.1.0 (git+https://github.com/Alzymologist/parity-signer?branch=main)",
  "frame-metadata 15.0.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "hex",
- "lazy_static",
  "num-bigint 0.4.3",
  "parity-scale-codec",
  "printing_balance",
- "regex",
  "scale-info",
  "sp-arithmetic 5.0.0 (git+https://github.com/paritytech/substrate)",
  "sp-core 6.0.0 (git+https://github.com/paritytech/substrate)",
@@ -2147,7 +2151,7 @@ dependencies = [
 [[package]]
 name = "printing_balance"
 version = "0.1.0"
-source = "git+https://github.com/varovainen/parity-signer.git?branch=va-2022-07-28-parser#feabecd6c07fae917cdf7dddaf7d94fbf01869c0"
+source = "git+https://github.com/Alzymologist/parity-signer?branch=main#8759e084a9c97e687069fd8e6f760c0500fd7275"
 
 [[package]]
 name = "proc-macro-crate"
@@ -2199,7 +2203,7 @@ dependencies = [
  "anyhow",
  "async-stream",
  "clap 3.2.14",
- "definitions",
+ "definitions 0.1.0 (git+https://github.com/varovainen/parity-signer.git?branch=va-2022-07-28-parser)",
  "desub",
  "frame-metadata 15.0.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "futures",
@@ -2208,7 +2212,7 @@ dependencies = [
  "jsonrpsee",
  "lazy_static",
  "parity-scale-codec",
- "parser",
+ "parser_reworked",
  "regex",
  "serde_json",
  "sp-core 6.0.0 (registry+https://github.com/rust-lang/crates.io-index)",
