@@ -1,20 +1,25 @@
+#![deny(unused_crate_dependencies)]
+
 use anyhow::Result;
 
 use clap::Parser;
 use frame_metadata::RuntimeMetadata;
-use jsonrpsee::ws_client::WsClientBuilder;
+use jsonrpsee::{rpc_params, ws_client::WsClientBuilder};
+use jsonrpsee::core::client::ClientT;
 use lazy_static::lazy_static;
 use parity_scale_codec::Decode;
 use regex::Regex;
 use serde_json::value::Value;
-use sp_core::twox_128;
-use subxt::{
-    rpc::{rpc_params, ClientT as _},
-    sp_core, sp_runtime, Config as SubConfig,
-};
+use sp_core::{H256, twox_128};
 mod error;
 
-use parser_reworked::decode_blob_as_type;
+use parser_reworked::{cards::{ParsedData, ParsedData::{Composite, SequenceRaw, Variant}}, decode_blob_as_type};
+
+const MODULE_NAME: &str = "TemplateModule";
+const EXECUTION_REQUEST_NAME: &str = "ExecutionRequest";
+const WHO: &str = "who";
+const HASH: &str = "hash";
+const URL: &str = "url";
 
 /// QDAO ExoSys deamon
 #[derive(Parser, Debug)]
@@ -30,20 +35,6 @@ lazy_static! {
     ///
     /// See tests for behavior examples.
     static ref PORT: Regex = Regex::new(r"^(?P<body>wss://[^/]*?)(?P<port>:[0-9]+)?(?P<tail>/.*)?$").expect("known value");
-}
-
-pub struct Config;
-
-impl SubConfig for Config {
-    type Index = u32;
-    type BlockNumber = u32;
-    type Hash = sp_core::H256;
-    type Hashing = sp_runtime::traits::BlakeTwo256;
-    type AccountId = sp_runtime::AccountId32;
-    type Address = sp_runtime::MultiAddress<Self::AccountId, u32>;
-    type Header = sp_runtime::generic::Header<Self::BlockNumber, sp_runtime::traits::BlakeTwo256>;
-    type Signature = sp_runtime::MultiSignature;
-    type Extrinsic = sp_runtime::OpaqueExtrinsic;
 }
 
 pub fn unhex(hex_input: &str, what: error::NotHex) -> Result<Vec<u8>, error::Error> {
@@ -93,6 +84,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let client = WsClientBuilder::default().build(&address).await?;
 
     let mut uptime = 0;
+    let mut last_block = String::new();
     loop {
         let params = rpc_params![];
         let block_hash_data: Value = client.request("chain_getBlockHash", params).await?;
@@ -102,6 +94,13 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             println!("Unexpected block hash format.");
             continue;
         };
+
+        if last_block == block_hash {
+            continue;
+        } else {
+            last_block = block_hash.clone();
+        }
+
 
         let metadata: Value = client
             .request("state_getMetadata", rpc_params![&block_hash])
@@ -143,6 +142,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             )
             .await?;
 
+        //TODO: turn this into separate crate, this is so reusable!
         for pallet in metadata_v14.pallets.iter() {
             if let Some(storage) = &pallet.storage {
                 if storage.prefix == "System" {
@@ -163,7 +163,66 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                                         if !data.is_empty() {
                                             println!("Not empty data when done")
                                         }
-                                        println!("{:?}", data_parsed.data);
+                                        if let SequenceRaw(a) = data_parsed.data {
+                                            for i in a.data {
+                                                if let Composite(b) = i {
+                                                    for j in b {
+                                                        if j.field_name == Some("event".to_string()) {
+                                                            if let Variant(c) = j.data.data {
+                                                                if c.variant_name == MODULE_NAME {
+                                                                    for k in c.fields {
+                                                                        if let Variant(d) = k.data.data {
+                                                                            if d.variant_name == EXECUTION_REQUEST_NAME {
+                                                                                let mut who: Option<sp_core::crypto::AccountId32> = None;
+                                                                                let mut hash: Option<H256> = None;
+                                                                                let mut url: Option<String> = None;
+                                                                                for l in d.fields {
+                                                                                    if let Some(e) = l.field_name {
+                                                                                        match e.as_str() {
+                                                                                            WHO => if let ParsedData::Id(f) = l.data.data {
+                                                                                                who = Some(f);
+                                                                                            },
+                                                                                            HASH => if let ParsedData::H256(f) = l.data.data {
+                                                                                                hash = Some(f)
+                                                                                            },
+                                                                                            URL => if let ParsedData::SequenceRaw(f) = l.data.data {
+                                                                                                let mut url_collector = Vec::new();
+                                                                                                for m in f.data {
+                                                                                                    if let ParsedData::PrimitiveU8{value: g, specialty: _} = m {
+                                                                                                        url_collector.push(g);
+                                                                                                    }
+                                                                                                }
+                                                                                                if let Ok(url_string) = String::from_utf8(url_collector) {
+                                                                                                    url = Some(url_string);
+                                                                                                } else {
+                                                                                                    println!("Error! url is not UTF-8");
+                                                                                                }
+                                                                                            },
+                                                                                            _ => println!("warning: unknown field in execution request event"),
+                                                                                        }
+                                                                                    }
+                                                                                }
+                                                                                if let Some(arg_who) = who {
+                                                                                    if let Some(arg_hash) = hash {
+                                                                                        if let Some(arg_url) = url {
+                                                                                            println!("who: {:?}", arg_who);
+                                                                                            println!("hash: {:?}", arg_hash);
+                                                                                            println!("url: {:?}", arg_url);
+
+                                                                                            println!("Author with ID {:?} requested to run exotool: {:?}", arg_who, std::process::Command::new("../exotools/exotool.sh").args([arg_url, arg_hash.to_string()]).spawn());
+                                                                                        }
+                                                                                    }
+                                                                                }
+                                                                            }
+                                                                        }
+                                                                    }
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
                                     }
                                     Err(e) => println!("Error: {:?}", e),
                                 }
@@ -173,11 +232,11 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                 }
             }
         }
+        println!("block: {}", block_hash);
         println!("======= uptime: {} =======", uptime);
         uptime += 1;
         /*
         if uptime > 2 {
-            println!("{:?}", std::process::Command::new("../exotools/exotool.sh").args(["https://v-space.hu/s/exotest.tar", "2"]).spawn());
         }
         */
         std::thread::sleep(std::time::Duration::from_secs(1));
