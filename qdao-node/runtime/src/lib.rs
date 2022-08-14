@@ -44,7 +44,7 @@ pub use sp_runtime::BuildStorage;
 pub use sp_runtime::{Perbill, Permill};
 
 /// Import the template pallet.
-pub use qdao_pallet_dummy;
+pub use qdao_exo_pallet;
 
 /// An index to a block.
 pub type BlockNumber = u32;
@@ -237,6 +237,9 @@ impl pallet_timestamp::Config for Runtime {
     type WeightInfo = ();
 }
 
+///Existential deposit
+pub const EXISTENTIAL_DEPOSIT: u128 = 500;
+
 impl pallet_balances::Config for Runtime {
     type MaxLocks = ConstU32<50>;
     type MaxReserves = ();
@@ -246,7 +249,7 @@ impl pallet_balances::Config for Runtime {
     /// The ubiquitous event type.
     type Event = Event;
     type DustRemoval = ();
-    type ExistentialDeposit = ConstU128<500>;
+    type ExistentialDeposit = ConstU128<EXISTENTIAL_DEPOSIT>;
     type AccountStore = System;
     type WeightInfo = pallet_balances::weights::SubstrateWeight<Runtime>;
 }
@@ -257,6 +260,7 @@ impl pallet_transaction_payment::Config for Runtime {
     type WeightToFee = IdentityFee<Balance>;
     type LengthToFee = IdentityFee<Balance>;
     type FeeMultiplierUpdate = ();
+    type Event = Event;
 }
 
 impl pallet_sudo::Config for Runtime {
@@ -264,8 +268,8 @@ impl pallet_sudo::Config for Runtime {
     type Call = Call;
 }
 
-/// Configure the qdao-pallet-dummy.
-impl qdao_pallet_dummy::Config for Runtime {
+/// Configure the qdao-exo-pallet.
+impl qdao_exo_pallet::Config for Runtime {
     type Event = Event;
 }
 
@@ -285,7 +289,7 @@ construct_runtime!(
         TransactionPayment: pallet_transaction_payment,
         Sudo: pallet_sudo,
         // Include the custom logic from the pallet-template in the runtime.
-        TemplateModule: qdao_pallet_dummy,
+        TemplateModule: qdao_exo_pallet,
     }
 );
 
@@ -330,7 +334,7 @@ mod benches {
         [frame_system, SystemBench::<Runtime>]
         [pallet_balances, Balances]
         [pallet_timestamp, Timestamp]
-        [qdao_pallet_dummy, TemplateModule]
+        [qdao_exo_pallet, TemplateModule]
     );
 }
 
