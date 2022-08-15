@@ -5,6 +5,7 @@
 /// <https://docs.substrate.io/v3/runtime/frame>
 pub use pallet::*;
 use sp_std::prelude::*;
+use codec::{Encode, Decode, HasCompact};
 
 #[cfg(test)]
 mod mock;
@@ -26,19 +27,24 @@ pub mod pallet {
     pub trait Config: frame_system::Config {
         /// Because this pallet emits events, it depends on the runtime's definition of an event.
         type Event: From<Event<Self>> + IsType<<Self as frame_system::Config>::Event>;
+
+        /// Identifier for "audit" "NFT"
+        type RecordId: Member + Parameter + Default + Copy + HasCompact + MaxEncodedLen;
     }
 
     #[pallet::pallet]
     #[pallet::generate_store(pub(super) trait Store)]
     pub struct Pallet<T>(_);
 
-    // The pallet's runtime storage items.
-    // https://docs.substrate.io/v3/runtime/storage
     #[pallet::storage]
     #[pallet::getter(fn something)]
-    // Learn more about declaring storage items:
-    // https://docs.substrate.io/v3/runtime/storage#declaring-storage-items
-    pub type ExecThis<T> = StorageValue<_, u32>;
+    ///
+    pub type ReviewRecord<T: Config> = StorageMap<
+        _, 
+        Blake2_128Concat,
+        T::RecordId,
+        u32,
+    >;
 
     // Pallets use events to inform users when important changes are made.
     // https://docs.substrate.io/v3/runtime/events-and-errors
