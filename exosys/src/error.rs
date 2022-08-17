@@ -1,10 +1,10 @@
 #[derive(Debug)]
 pub enum Error {
-    Fetch{address: String, error: String},
+    Fetch { address: String, error: String },
     NotHex(NotHex),
-    NotParachain{address: String},
-    NotRelay{address: String},
-    ParachainNotOnList{address: String},
+    NotParachain { address: String },
+    NotRelay { address: String },
+    ParachainNotOnList { address: String },
     Scale(Decoding),
     UnexpectedJsonValue(UnexpectedJsonValue),
 }
@@ -27,4 +27,3 @@ pub enum UnexpectedJsonValue {
     ParaId,
     RelayParaSet,
 }
-

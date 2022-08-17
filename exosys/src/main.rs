@@ -4,16 +4,23 @@ use anyhow::Result;
 
 use clap::Parser;
 use frame_metadata::RuntimeMetadata;
-use jsonrpsee::{rpc_params, ws_client::WsClientBuilder};
 use jsonrpsee::core::client::ClientT;
+use jsonrpsee::{rpc_params, ws_client::WsClientBuilder};
 use lazy_static::lazy_static;
 use parity_scale_codec::Decode;
 use regex::Regex;
 use serde_json::value::Value;
-use sp_core::{H256, twox_128};
+use sp_core::{twox_128, H256};
 mod error;
 
-use parser_reworked::{cards::{ParsedData, ParsedData::{Composite, SequenceRaw, Variant}, Sequence}, decode_blob_as_type};
+use parser_reworked::{
+    cards::{
+        ParsedData,
+        ParsedData::{Composite, SequenceRaw, Variant},
+        Sequence,
+    },
+    decode_blob_as_type,
+};
 
 const MODULE_NAME: &str = "TemplateModule";
 const EXECUTION_REQUEST_NAME: &str = "ExecutionRequest";
@@ -101,7 +108,6 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             last_block = block_hash.clone();
         }
 
-
         let metadata: Value = client
             .request("state_getMetadata", rpc_params![&block_hash])
             .await?;
@@ -167,11 +173,14 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                                             for i in a.data {
                                                 if let Composite(b) = i {
                                                     for j in b {
-                                                        if j.field_name == Some("event".to_string()) {
+                                                        if j.field_name == Some("event".to_string())
+                                                        {
                                                             if let Variant(c) = j.data.data {
                                                                 if c.variant_name == MODULE_NAME {
                                                                     for k in c.fields {
-                                                                        if let Variant(d) = k.data.data {
+                                                                        if let Variant(d) =
+                                                                            k.data.data
+                                                                        {
                                                                             if d.variant_name == EXECUTION_REQUEST_NAME {
                                                                                 let mut who: Option<sp_core::crypto::AccountId32> = None;
                                                                                 let mut hash: Option<H256> = None;
@@ -205,7 +214,12 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                                                                                             println!("hash: {:?}", arg_hash);
                                                                                             println!("url: {:?}", arg_url);
 
-                                                                                            println!("Author with ID {:?} requested to run exotool: {:?}", arg_who, std::process::Command::new("../exotools/exotool.sh").args([arg_url, arg_hash.to_string()]).spawn());
+                                                                                            println!(
+                                                                                                "Author with ID {:?} requested to run exotool: {:?}",
+                                                                                                arg_who,
+                                                                                                std::process::Command::new("../exotools/exotool.sh")
+                                                                                                    .args([arg_url, arg_hash.to_string()])
+                                                                                                    .spawn());
                                                                                         }
                                                                                     }
                                                                                 }
