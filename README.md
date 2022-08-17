@@ -3,7 +3,6 @@
 <p align="center">
   <img src="/docs/media/sub.gif">
 </p>
-
 QRUCIAL-DAO is a next generation security toolsuite for blockchain security.
 
 ## 💡 High Level Summary::
@@ -23,19 +22,3 @@ Simply go to [qrucial.io/litepaper](https://qrucial.io/litepaper) and follow the
 We have a W3F grant approved and are working on the 1st milestone: [Proposal Repository](https://github.com/smilingSix/Grants-Program)
 
 QDAO wiki [can be found here](https://github.com/Qrucial/QRUCIAL-DAO/wiki).
-
-
- 
-
-## Contributions & Code of Conduct
-
-Please follow the contributions guidelines as outlined in [`docs/CONTRIBUTING.adoc`](docs/CONTRIBUTING.adoc). In all communications and contributions, this project follows the [Contributor Covenant Code of Conduct](docs/CODE_OF_CONDUCT.md).
-
-
-
-
-
-
-
-
-
