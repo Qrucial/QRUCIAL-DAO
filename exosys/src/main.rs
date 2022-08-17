@@ -13,7 +13,7 @@ use serde_json::value::Value;
 use sp_core::{H256, twox_128};
 mod error;
 
-use parser_reworked::{cards::{ParsedData, ParsedData::{Composite, SequenceRaw, Variant}}, decode_blob_as_type};
+use parser_reworked::{cards::{ParsedData, ParsedData::{Composite, SequenceRaw, Variant}, Sequence}, decode_blob_as_type};
 
 const MODULE_NAME: &str = "TemplateModule";
 const EXECUTION_REQUEST_NAME: &str = "ExecutionRequest";
@@ -185,17 +185,13 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                                                                                             HASH => if let ParsedData::H256(f) = l.data.data {
                                                                                                 hash = Some(f)
                                                                                             },
-                                                                                            URL => if let ParsedData::SequenceRaw(f) = l.data.data {
-                                                                                                let mut url_collector = Vec::new();
-                                                                                                for m in f.data {
-                                                                                                    if let ParsedData::PrimitiveU8{value: g, specialty: _} = m {
-                                                                                                        url_collector.push(g);
+                                                                                            URL => if let ParsedData::Sequence(f) = l.data.data {
+                                                                                                if let Sequence::U8(g) = f.data {
+                                                                                                    if let Ok(url_string) = String::from_utf8(g) {
+                                                                                                        url = Some(url_string);
+                                                                                                    } else {
+                                                                                                        println!("Error! url is not UTF-8");
                                                                                                     }
-                                                                                                }
-                                                                                                if let Ok(url_string) = String::from_utf8(url_collector) {
-                                                                                                    url = Some(url_string);
-                                                                                                } else {
-                                                                                                    println!("Error! url is not UTF-8");
                                                                                                 }
                                                                                             },
                                                                                             _ => println!("warning: unknown field in execution request event"),

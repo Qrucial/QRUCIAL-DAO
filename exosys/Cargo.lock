@@ -1301,7 +1301,7 @@ dependencies = [
 [[package]]
 name = "parser_reworked"
 version = "0.1.0"
-source = "git+https://github.com/Alzymologist/substrate-parser.git#4d9ff6b544c7265bba0f526804c9e33494cc2f8a"
+source = "git+https://github.com/Alzymologist/substrate-parser.git#9b7af1e37f6f14dec1b96dca1fd3454531ecd4e8"
 dependencies = [
  "bitvec",
  "frame-metadata",
