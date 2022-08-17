@@ -46,10 +46,10 @@ lazy_static! {
 
 pub fn unhex(hex_input: &str, what: error::NotHex) -> Result<Vec<u8>, error::Error> {
     let hex_input_trimmed = {
-        if hex_input.starts_with("0x") {
-            &hex_input[2..]
+        if let Some(hex_input_stripped) = hex_input.strip_prefix("0x") {
+            hex_input_stripped
         } else {
-            &hex_input
+            hex_input
         }
     };
     hex::decode(hex_input_trimmed).map_err(|_| error::Error::NotHex(what))
@@ -113,15 +113,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             .await?;
 
         let metadata_v14 = if let Value::String(hex_meta) = metadata {
-            let hex_meta = {
-                if hex_meta.starts_with("0x") {
-                    &hex_meta[2..]
-                } else {
-                    &hex_meta
-                }
-            };
-
-            let meta = hex::decode(hex_meta)?;
+            let meta = unhex(&hex_meta, error::NotHex::Value).unwrap();
             if !meta.starts_with(&[109, 101, 116, 97]) {
                 return Err(Box::from("Wrong start"));
             }
@@ -155,7 +147,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                     for entry in storage.entries.iter() {
                         if entry.name == "Events" {
                             if let Value::String(ref hex_data) = events {
-                                let mut data = unhex(&hex_data, error::NotHex::Value).unwrap();
+                                let mut data = unhex(hex_data, error::NotHex::Value).unwrap();
                                 let ty_symbol = match entry.ty {
                                     frame_metadata::v14::StorageEntryType::Plain(a) => a,
                                     frame_metadata::v14::StorageEntryType::Map {
