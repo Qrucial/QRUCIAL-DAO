@@ -1,6 +1,6 @@
 #![cfg_attr(not(feature = "std"), no_std)]
 
-use codec::{Decode, Encode, HasCompact, MaxEncodedLen};
+use codec::{Decode, Encode, MaxEncodedLen};
 use frame_support::{
     parameter_types,
     sp_runtime::{traits::AtLeast32BitUnsigned, RuntimeDebug},
@@ -94,6 +94,8 @@ pub mod pallet {
         StorageOverflow,
         /// url address entered by user is longer than storage quota
         UrlTooLong,
+        /// Request hash collision
+        DuplicateEntry,
     }
 
     // Dispatchable functions allows users to interact with the pallet and invoke state changes.
@@ -114,9 +116,14 @@ pub mod pallet {
             // This function will return an error if the extrinsic is not signed.
             // https://docs.substrate.io/v3/runtime/origins
             let sender = ensure_signed(origin)?;
+
+            ensure!(!ReviewRecord::<T>::contains_key(hash), Error::<T>::DuplicateEntry);
+
             let author = sender.clone();
 
             // TBA Check if balance is > and deduced
+
+            T::Currency::reserve(&sender, stake)?;
 
             let url_bounded = url.clone().try_into().map_err(|_| Error::<T>::UrlTooLong)?;
 
