@@ -5,7 +5,10 @@
 /// <https://docs.substrate.io/v3/runtime/frame>
 pub use pallet::*;
 use sp_std::prelude::*;
-use codec::{Encode, Decode, HasCompact};
+use frame_support::{BoundedVec, parameter_types, sp_runtime::{RuntimeDebug, traits::{AtLeast32BitUnsigned}}, traits::{Currency, ReservableCurrency}};
+use frame_system::Config as SystemConfig;
+use codec::{Encode, Decode, HasCompact, MaxEncodedLen};
+use scale_info::TypeInfo;
 
 #[cfg(test)]
 mod mock;
@@ -15,6 +18,24 @@ mod tests;
 
 #[cfg(feature = "runtime-benchmarks")]
 mod benchmarking;
+
+type DepositBalanceOf<T> = <<T as Config>::Currency as Currency<<T as SystemConfig>::AccountId>>::Balance;
+
+parameter_types! {
+    pub MaxUrlLength: u32 = 256;
+}
+
+#[derive(Clone, Encode, Decode, Eq, PartialEq, RuntimeDebug, TypeInfo, MaxEncodedLen, Default)]
+#[scale_info(skip_type_params(T))]
+///All information related to requested review
+pub struct ReviewData<T: Config> {
+    ///Remaining balance stored in "NFT"
+    deposit: DepositBalanceOf<T>,
+    author: T::AccountId,
+    hash: T::Hash,
+    url: BoundedVec<u8, MaxUrlLength>,
+    result: u32,
+}
 
 #[frame_support::pallet]
 pub mod pallet {
@@ -28,8 +49,11 @@ pub mod pallet {
         /// Because this pallet emits events, it depends on the runtime's definition of an event.
         type Event: From<Event<Self>> + IsType<<Self as frame_system::Config>::Event>;
 
-        /// Identifier for "audit" "NFT"
-        type RecordId: Member + Parameter + Default + Copy + HasCompact + MaxEncodedLen;
+        /// Units for balance
+        type Balance: Member + Parameter + AtLeast32BitUnsigned + Default + Copy;
+
+        ///Currency mechanism
+        type Currency: ReservableCurrency<Self::AccountId>;
     }
 
     #[pallet::pallet]
@@ -42,8 +66,8 @@ pub mod pallet {
     pub type ReviewRecord<T: Config> = StorageMap<
         _, 
         Blake2_128Concat,
-        T::RecordId,
-        u32,
+        T::Hash,
+        ReviewData<T>,
     >;
 
     // Pallets use events to inform users when important changes are made.
@@ -67,6 +91,8 @@ pub mod pallet {
         NoneValue,
         /// Errors should have helpful documentation associated with them.
         StorageOverflow,
+        /// url address entered by user is longer than storage quota
+        UrlTooLong,
     }
 
     // Dispatchable functions allows users to interact with the pallet and invoke state changes.
@@ -77,18 +103,25 @@ pub mod pallet {
         /// An example dispatchable that takes a singles value as a parameter, writes the value to
         /// storage and emits an event. This function must be dispatched by a signed extrinsic.
         #[pallet::weight(10_000 + T::DbWeight::get().writes(1))]
-        pub fn tool_exec_req(origin: OriginFor<T>, url: Vec<u8>, hash: T::Hash) -> DispatchResult {
+        pub fn tool_exec_req(origin: OriginFor<T>, url: Vec<u8>, hash: T::Hash, stake: DepositBalanceOf<T>) -> DispatchResult {
             // Check that the extrinsic was signed and get the signer.
             // This function will return an error if the extrinsic is not signed.
             // https://docs.substrate.io/v3/runtime/origins
             let sender = ensure_signed(origin)?;
+            let author = sender.clone();
 
             // TBA Check if balance is > and deduced
 
-            //Instead of low-level storage we should be using assets engine to mint proper NFT
-            // Update storage.
-            //<ExecThis<T>>::put(url);
-            //<ExecThis<T>>::put(hash);
+            let url_bounded = url.clone().try_into().map_err(|_| Error::<T>::UrlTooLong)?;
+
+            //create "NFT" without any data
+            ReviewRecord::<T>::insert(hash, ReviewData{
+                deposit: stake,
+                author: author,
+                hash: hash,
+                url: url_bounded,
+                result: 0,
+            });
 
             // Emit an event.
             Self::deposit_event(Event::ExecutionRequest {
