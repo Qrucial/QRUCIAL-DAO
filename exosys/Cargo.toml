@@ -16,6 +16,6 @@ parity-scale-codec = "3.1.5"
 parser_reworked = { git = "https://github.com/Alzymologist/substrate-parser.git" }
 regex = "1.5.4"
 serde_json = { version = "1.0.81", features = ["preserve_order"] }
-sp-core = {git = "https://github.com/paritytech/substrate", default-features = false}
+sp-core = { version = "6.0.0", default-features = false }
 tokio = { version = "1.19.2", features = ["full"] }
 
