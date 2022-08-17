@@ -1,14 +1,19 @@
 #![cfg_attr(not(feature = "std"), no_std)]
 
+use codec::{Decode, Encode, HasCompact, MaxEncodedLen};
+use frame_support::{
+    parameter_types,
+    sp_runtime::{traits::AtLeast32BitUnsigned, RuntimeDebug},
+    traits::{Currency, ReservableCurrency},
+    BoundedVec,
+};
+use frame_system::Config as SystemConfig;
 /// Edit this file to define custom logic or remove it if it is not needed.
 /// Learn more about FRAME and the core library of Substrate FRAME pallets:
 /// <https://docs.substrate.io/v3/runtime/frame>
 pub use pallet::*;
-use sp_std::prelude::*;
-use frame_support::{BoundedVec, parameter_types, sp_runtime::{RuntimeDebug, traits::{AtLeast32BitUnsigned}}, traits::{Currency, ReservableCurrency}};
-use frame_system::Config as SystemConfig;
-use codec::{Encode, Decode, HasCompact, MaxEncodedLen};
 use scale_info::TypeInfo;
+use sp_std::prelude::*;
 
 #[cfg(test)]
 mod mock;
@@ -19,7 +24,8 @@ mod tests;
 #[cfg(feature = "runtime-benchmarks")]
 mod benchmarking;
 
-type DepositBalanceOf<T> = <<T as Config>::Currency as Currency<<T as SystemConfig>::AccountId>>::Balance;
+type DepositBalanceOf<T> =
+    <<T as Config>::Currency as Currency<<T as SystemConfig>::AccountId>>::Balance;
 
 parameter_types! {
     pub MaxUrlLength: u32 = 256;
@@ -63,12 +69,7 @@ pub mod pallet {
     #[pallet::storage]
     #[pallet::getter(fn something)]
     ///
-    pub type ReviewRecord<T: Config> = StorageMap<
-        _, 
-        Blake2_128Concat,
-        T::Hash,
-        ReviewData<T>,
-    >;
+    pub type ReviewRecord<T: Config> = StorageMap<_, Blake2_128Concat, T::Hash, ReviewData<T>>;
 
     // Pallets use events to inform users when important changes are made.
     // https://docs.substrate.io/v3/runtime/events-and-errors
@@ -103,7 +104,12 @@ pub mod pallet {
         /// An example dispatchable that takes a singles value as a parameter, writes the value to
         /// storage and emits an event. This function must be dispatched by a signed extrinsic.
         #[pallet::weight(10_000 + T::DbWeight::get().writes(1))]
-        pub fn tool_exec_req(origin: OriginFor<T>, url: Vec<u8>, hash: T::Hash, stake: DepositBalanceOf<T>) -> DispatchResult {
+        pub fn tool_exec_req(
+            origin: OriginFor<T>,
+            url: Vec<u8>,
+            hash: T::Hash,
+            stake: DepositBalanceOf<T>,
+        ) -> DispatchResult {
             // Check that the extrinsic was signed and get the signer.
             // This function will return an error if the extrinsic is not signed.
             // https://docs.substrate.io/v3/runtime/origins
@@ -115,13 +121,16 @@ pub mod pallet {
             let url_bounded = url.clone().try_into().map_err(|_| Error::<T>::UrlTooLong)?;
 
             //create "NFT" without any data
-            ReviewRecord::<T>::insert(hash, ReviewData{
-                deposit: stake,
-                author: author,
-                hash: hash,
-                url: url_bounded,
-                result: 0,
-            });
+            ReviewRecord::<T>::insert(
+                hash,
+                ReviewData {
+                    deposit: stake,
+                    author: author,
+                    hash: hash,
+                    url: url_bounded,
+                    result: 0,
+                },
+            );
 
             // Emit an event.
             Self::deposit_event(Event::ExecutionRequest {
