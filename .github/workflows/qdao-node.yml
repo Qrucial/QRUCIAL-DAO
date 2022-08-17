@@ -89,6 +89,6 @@ jobs:
         with:
           toolchain: stable
           command: nextest
-          args: run --all-features --profile ci --manifest-path ./qdao-node/Cargo.toml
+          args: run --all-features --manifest-path ./qdao-node/Cargo.toml
           
    
