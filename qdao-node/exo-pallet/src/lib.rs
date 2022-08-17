@@ -34,13 +34,24 @@ parameter_types! {
 #[derive(Clone, Encode, Decode, Eq, PartialEq, RuntimeDebug, TypeInfo, MaxEncodedLen, Default)]
 #[scale_info(skip_type_params(T))]
 ///All information related to requested review
-pub struct ReviewData<T: Config> {
-    ///Remaining balance stored in "NFT"
-    deposit: DepositBalanceOf<T>,
-    author: T::AccountId,
-    hash: T::Hash,
-    url: BoundedVec<u8, MaxUrlLength>,
+pub struct ReviewResult {
     result: u32,
+}
+
+#[derive(Clone, Encode, Decode, Eq, PartialEq, RuntimeDebug, TypeInfo, MaxEncodedLen, Default)]
+#[scale_info(skip_type_params(T))]
+///All information related to requested review
+pub struct ReviewData<T: Config> {
+    /// Remaining balance stored in "NFT"
+    deposit: DepositBalanceOf<T>,
+    /// Owner of request
+    author: T::AccountId,
+    /// Request ID
+    hash: T::Hash,
+    /// Original link to reviewed package
+    url: BoundedVec<u8, MaxUrlLength>,
+    /// Struct to store result of review
+    result: ReviewResult,
 }
 
 #[frame_support::pallet]
@@ -103,8 +114,7 @@ pub mod pallet {
     // Dispatchable functions must be annotated with a weight and must return a DispatchResult.
     #[pallet::call]
     impl<T: Config> Pallet<T> {
-        /// An example dispatchable that takes a singles value as a parameter, writes the value to
-        /// storage and emits an event. This function must be dispatched by a signed extrinsic.
+        ///Request an audit - declare release location, its hash and proposed stake amount
         #[pallet::weight(10_000 + T::DbWeight::get().writes(1))]
         pub fn tool_exec_req(
             origin: OriginFor<T>,
@@ -112,22 +122,16 @@ pub mod pallet {
             hash: T::Hash,
             stake: DepositBalanceOf<T>,
         ) -> DispatchResult {
-            // Check that the extrinsic was signed and get the signer.
-            // This function will return an error if the extrinsic is not signed.
-            // https://docs.substrate.io/v3/runtime/origins
             let sender = ensure_signed(origin)?;
 
             ensure!(!ReviewRecord::<T>::contains_key(hash), Error::<T>::DuplicateEntry);
 
             let author = sender.clone();
 
-            // TBA Check if balance is > and deduced
-
             T::Currency::reserve(&sender, stake)?;
 
             let url_bounded = url.clone().try_into().map_err(|_| Error::<T>::UrlTooLong)?;
 
-            //create "NFT" without any data
             ReviewRecord::<T>::insert(
                 hash,
                 ReviewData {
@@ -135,17 +139,37 @@ pub mod pallet {
                     author: author,
                     hash: hash,
                     url: url_bounded,
-                    result: 0,
+                    result: ReviewResult{result: 0},
                 },
             );
 
-            // Emit an event.
             Self::deposit_event(Event::ExecutionRequest {
                 who: sender,
                 url: url,
                 hash: hash,
             });
             // Return a successful DispatchResultWithPostInfo
+            Ok(())
+        }
+
+        /// Cancel request due to invalid parameters
+        #[pallet::weight(100 + T::DbWeight::get().writes(1))]
+        pub fn tool_exec_cancel_invalid(
+            origin: OriginFor<T>,
+            hash: T::Hash,
+        ) -> DispatchResult {
+            
+            Ok(())
+        }
+
+        /// Record automated request processing results
+        #[pallet::weight(1000 + T::DbWeight::get().writes(1))]
+        pub fn tool_exec_auto_report(
+            origin: OriginFor<T>,
+            hash: T::Hash,
+            result: Vec<u8>,
+        ) -> DispatchResult {
+
             Ok(())
         }
     }
