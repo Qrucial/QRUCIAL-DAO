@@ -1,23 +1,29 @@
-use crate::{mock::*, Error};
+use crate::{mock::*, Error, AuditorScore};
 use frame_support::{assert_noop, assert_ok};
+use frame_system::ensure_signed;
 
 #[test]
-fn it_works_for_default_value() {
+fn sign_up_works() {
     new_test_ext().execute_with(|| {
-        // Dispatch a signed extrinsic.
-        // assert_ok!(TemplateModule::do_something(Origin::signed(1), 42));
-        // Read pallet storage and assert an expected result.
-        // assert_eq!(TemplateModule::something(), Some(42));
+        // Sign up a new auditor, should work
+        assert_ok!(AuditRepModule::sign_up(Origin::signed(1)));
+        // Check that new Auditor exists with score None
+        let sender = ensure_signed(Origin::signed(1)).unwrap();
+        assert_eq!(AuditorScore::<Test>::try_get(sender), Ok(None));
     });
 }
 
 #[test]
-fn correct_error_for_none_value() {
+fn correct_error_for_double_sign_up() {
     new_test_ext().execute_with(|| {
-        // Ensure the expected error is thrown when no value is present.
-        // assert_noop!(
-        //     TemplateModule::cause_error(Origin::signed(1)),
-        //     Error::<Test>::NoneValue
-        // );
+        // Sign up Auditor, should work
+        assert_ok!(AuditRepModule::sign_up(Origin::signed(1)));
+        //Sign up second (different) auditor, should also work
+        assert_ok!(AuditRepModule::sign_up(Origin::signed(2)));
+       // Sign up an already signed up auditor, should throw error
+        assert_noop!(
+            AuditRepModule::sign_up(Origin::signed(1)),
+            Error::<Test>::AlreadySignedUp
+        );
     });
 }
