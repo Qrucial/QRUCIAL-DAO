@@ -271,6 +271,8 @@ impl pallet_sudo::Config for Runtime {
 /// Configure the qdao-exo-pallet.
 impl qdao_exo_pallet::Config for Runtime {
     type Event = Event;
+    type Balance = Balance;
+    type Currency = Balances;
 }
 
 /// Configure the qdao-audit-pallet.
