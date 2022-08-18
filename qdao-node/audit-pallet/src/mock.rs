@@ -18,7 +18,7 @@ frame_support::construct_runtime!(
         UncheckedExtrinsic = UncheckedExtrinsic,
     {
         System: frame_system::{Pallet, Call, Config, Storage, Event<T>},
-        TemplateModule: qdao_pallet_dummy::{Pallet, Call, Storage, Event<T>},
+        AuditRepModule: qdao_pallet_dummy::{Pallet, Call, Storage, Event<T>},
     }
 );
 
