@@ -5,7 +5,7 @@
 </p>
 QRUCIAL-DAO is a next generation security toolsuite for blockchain security.
 
-## 💡 High Level Summary::
+## 💡 High Level Summary:
 Built on top of Substrate, Qrucial DAO is a system for transparent audits and certifications, issuing non-transferable NFTs to the audited systems themselves.
 
 ## ⚙️  Tool execution flow: 

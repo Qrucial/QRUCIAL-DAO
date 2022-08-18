@@ -1,3 +1,21 @@
+# EXOTOOLS-PALLET &middot; [![GitHub license](https://img.shields.io/badge/license-GPL3%2FApache2-blue)](#LICENSE) [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](docs/CONTRIBUTING.adoc)
+
+<p align="center">
+  <img src="/docs/media/qrucial.gif">
+</p>
+
+
+## High level summary
+
+## Tool execution Flow
+
+## Overview
+
+# 📚 Wiki:
+EXOTOOLS-PALLET wiki [can be found here](https://github.com/Qrucial/QRUCIAL-DAO/wiki/ExoTool).   
+
+
+
 # Refactoring 17/8/2022
 ## Whats being done:
 - [ ] Moving the Docker things into their respective folders
