@@ -87,11 +87,24 @@ function get_audit_files {
 # > Creates a docker container called auditor, mounted at dir, from the image exotools
 # > starts container
 function docker_prep {
-  mkdir -p auditdir/programs -p auditdir/reports
-  docker build -t exotools ./dockerfiles/         ## !! This should not be run every time. only when there is no image. also should not use ./
-  docker create --name=auditor -v $(pwd)/auditdir:/auditdir exotools ## !! This is a 'dangerous' line pwd is goint to print the dir the user is in.
-  docker start -a auditor # > ./auditdir/reports/abc.json ## Very basic functionality
-  ## To-Do: Hash based logs, Generate logs in docker container.
+  TIMESTAMP_DIR="$SCRIPT_PATH"/audits/"$HASH"/"$DATE_READABLE"/
+  PROGRAM_DIR="$SCRIPT_PATH"/audits/"$HASH"/audit_files/program/
+  REPORT_DIR="$SCRIPT_PATH"/audits/"$HASH"/reports/
+
+  mkdir -p "$TIMESTAMP_DIR" "$PROGRAM_DIR"
+  
+  ## Run Once \/
+  docker build -t exotools "$SCRIPT_PATH"/docker/docker_files/
+  docker save --output "$SCRIPT_PATH"/docker_images/file.tar exotools
+  ## Run Once /\
+
+  docker create --name="$HASH" -v "$PROGRAM_DIR":/auditdir exotools
+  
+  # Start an automated audit, save output.
+  docker start -a "$HASH" > "$REPORT_DIR"/report.json # Should come up with a better save method. 
+  cp "$REPORT_DIR"/report.json "$TIMESTAMP_DIR"/
+  # [TODO]  > Save Container to image to tar located in timestamp
+  # [TODO]  > Hash based logs, Generate logs in docker container.
 
   # Create Timestamp dir, add json, etc.
   # Report dir should also get a link or the json.
