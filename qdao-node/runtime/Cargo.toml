@@ -51,6 +51,7 @@ hex-literal = { version = "0.3.4", optional = true }
 
 # Local Dependencies
 qdao-exo-pallet = { version = "0.0.1", default-features = false, path = "../exo-pallet" }
+qdao-audit-pallet = { version = "0.0.1", default-features = false, path = "../audit-pallet" }
 
 [build-dependencies]
 substrate-wasm-builder = { version = "5.0.0-dev", git = "https://github.com/paritytech/substrate.git" }
