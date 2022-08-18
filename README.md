@@ -1,7 +1,7 @@
 # QRUCIAL-DAO &middot; [![GitHub license](https://img.shields.io/badge/license-GPL3%2FApache2-blue)](#LICENSE) [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](docs/CONTRIBUTING.adoc)
 
 <p align="center">
-  <img src="/docs/media/sub.gif">
+  <img src="/docs/media/qrucial.gif">
 </p>
 QRUCIAL-DAO is a next generation security toolsuite for blockchain security.
 
@@ -15,10 +15,9 @@ Signed extrinsic incoming &#9658; Verification &#9658; Listing in QDAO State &#9
 
 We believe that audits should be transparent and trustless.
 
-
 ## 📄 Litepaper:
-Simply go to [qrucial.io/litepaper](https://qrucial.io/litepaper) and follow the                                                                                              
+Simply go to [qrucial.io/qrucial-dao](https://qrucial.io/wp-content/uploads/2022/06/QRUCIAL-DAO-Litepaper-2022.pdf)                                                                                              
 # 📚 Wiki:
-We have a W3F grant approved and are working on the 1st milestone: [Proposal Repository](https://github.com/smilingSix/Grants-Program)
+QDAO wiki [can be found here](https://github.com/Qrucial/QRUCIAL-DAO/wiki).       
 
-QDAO wiki [can be found here](https://github.com/Qrucial/QRUCIAL-DAO/wiki).
+We have a W3F grant approved and are working on the 1st milestone: [Proposal Repository](https://github.com/smilingSix/Grants-Program)
