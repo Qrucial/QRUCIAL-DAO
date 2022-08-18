@@ -1,9 +1,18 @@
 #![cfg_attr(not(feature = "std"), no_std)]
 
+use codec::{Decode, Encode, MaxEncodedLen};
+use frame_support::{
+    parameter_types,
+    sp_runtime::{traits::AtLeast32BitUnsigned, RuntimeDebug},
+    traits::{Currency, ReservableCurrency},
+    BoundedVec,
+};
+use frame_system::Config as SystemConfig;
 /// Edit this file to define custom logic or remove it if it is not needed.
 /// Learn more about FRAME and the core library of Substrate FRAME pallets:
 /// <https://docs.substrate.io/v3/runtime/frame>
 pub use pallet::*;
+use scale_info::TypeInfo;
 use sp_std::prelude::*;
 
 #[cfg(test)]
@@ -14,6 +23,36 @@ mod tests;
 
 #[cfg(feature = "runtime-benchmarks")]
 mod benchmarking;
+
+type DepositBalanceOf<T> =
+    <<T as Config>::Currency as Currency<<T as SystemConfig>::AccountId>>::Balance;
+
+parameter_types! {
+    pub MaxUrlLength: u32 = 256;
+}
+
+#[derive(Clone, Encode, Decode, Eq, PartialEq, RuntimeDebug, TypeInfo, MaxEncodedLen, Default)]
+#[scale_info(skip_type_params(T))]
+///All information related to requested review
+pub struct ReviewResult {
+    result: u32,
+}
+
+#[derive(Clone, Encode, Decode, Eq, PartialEq, RuntimeDebug, TypeInfo, MaxEncodedLen, Default)]
+#[scale_info(skip_type_params(T))]
+///All information related to requested review
+pub struct ReviewData<T: Config> {
+    /// Remaining balance stored in "NFT"
+    deposit: DepositBalanceOf<T>,
+    /// Owner of request
+    author: T::AccountId,
+    /// Request ID
+    hash: T::Hash,
+    /// Original link to reviewed package
+    url: BoundedVec<u8, MaxUrlLength>,
+    /// Struct to store result of review
+    result: ReviewResult,
+}
 
 #[frame_support::pallet]
 pub mod pallet {
@@ -26,19 +65,22 @@ pub mod pallet {
     pub trait Config: frame_system::Config {
         /// Because this pallet emits events, it depends on the runtime's definition of an event.
         type Event: From<Event<Self>> + IsType<<Self as frame_system::Config>::Event>;
+
+        /// Units for balance
+        type Balance: Member + Parameter + AtLeast32BitUnsigned + Default + Copy;
+
+        ///Currency mechanism
+        type Currency: ReservableCurrency<Self::AccountId>;
     }
 
     #[pallet::pallet]
     #[pallet::generate_store(pub(super) trait Store)]
     pub struct Pallet<T>(_);
 
-    // The pallet's runtime storage items.
-    // https://docs.substrate.io/v3/runtime/storage
     #[pallet::storage]
     #[pallet::getter(fn something)]
-    // Learn more about declaring storage items:
-    // https://docs.substrate.io/v3/runtime/storage#declaring-storage-items
-    pub type ExecThis<T> = StorageValue<_, u32>;
+    ///
+    pub type ReviewRecord<T: Config> = StorageMap<_, Blake2_128Concat, T::Hash, ReviewData<T>>;
 
     // Pallets use events to inform users when important changes are made.
     // https://docs.substrate.io/v3/runtime/events-and-errors
@@ -61,6 +103,10 @@ pub mod pallet {
         NoneValue,
         /// Errors should have helpful documentation associated with them.
         StorageOverflow,
+        /// url address entered by user is longer than storage quota
+        UrlTooLong,
+        /// Request hash collision
+        DuplicateEntry,
     }
 
     // Dispatchable functions allows users to interact with the pallet and invoke state changes.
@@ -68,29 +114,62 @@ pub mod pallet {
     // Dispatchable functions must be annotated with a weight and must return a DispatchResult.
     #[pallet::call]
     impl<T: Config> Pallet<T> {
-        /// An example dispatchable that takes a singles value as a parameter, writes the value to
-        /// storage and emits an event. This function must be dispatched by a signed extrinsic.
+        ///Request an audit - declare release location, its hash and proposed stake amount
         #[pallet::weight(10_000 + T::DbWeight::get().writes(1))]
-        pub fn tool_exec_req(origin: OriginFor<T>, url: Vec<u8>, hash: T::Hash) -> DispatchResult {
-            // Check that the extrinsic was signed and get the signer.
-            // This function will return an error if the extrinsic is not signed.
-            // https://docs.substrate.io/v3/runtime/origins
+        pub fn tool_exec_req(
+            origin: OriginFor<T>,
+            url: Vec<u8>,
+            hash: T::Hash,
+            stake: DepositBalanceOf<T>,
+        ) -> DispatchResult {
             let sender = ensure_signed(origin)?;
 
-            // TBA Check if balance is > and deduced
+            ensure!(!ReviewRecord::<T>::contains_key(hash), Error::<T>::DuplicateEntry);
 
-            //Instead of low-level storage we should be using assets engine to mint proper NFT
-            // Update storage.
-            //<ExecThis<T>>::put(url);
-            //<ExecThis<T>>::put(hash);
+            let author = sender.clone();
 
-            // Emit an event.
+            T::Currency::reserve(&sender, stake)?;
+
+            let url_bounded = url.clone().try_into().map_err(|_| Error::<T>::UrlTooLong)?;
+
+            ReviewRecord::<T>::insert(
+                hash,
+                ReviewData {
+                    deposit: stake,
+                    author: author,
+                    hash: hash,
+                    url: url_bounded,
+                    result: ReviewResult{result: 0},
+                },
+            );
+
             Self::deposit_event(Event::ExecutionRequest {
                 who: sender,
                 url: url,
                 hash: hash,
             });
             // Return a successful DispatchResultWithPostInfo
+            Ok(())
+        }
+
+        /// Cancel request due to invalid parameters
+        #[pallet::weight(100 + T::DbWeight::get().writes(1))]
+        pub fn tool_exec_cancel_invalid(
+            origin: OriginFor<T>,
+            hash: T::Hash,
+        ) -> DispatchResult {
+            
+            Ok(())
+        }
+
+        /// Record automated request processing results
+        #[pallet::weight(1000 + T::DbWeight::get().writes(1))]
+        pub fn tool_exec_auto_report(
+            origin: OriginFor<T>,
+            hash: T::Hash,
+            result: Vec<u8>,
+        ) -> DispatchResult {
+
             Ok(())
         }
     }

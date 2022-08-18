@@ -1,3 +1,18 @@
+# Refactoring 17/8/2022
+## Whats being done:
+- [ ] Moving the Docker things into their respective folders
+- [ ] some basic versioning for the docker files as well as the audit output.
+- [ ] renaming audit_files to audits
+  - [ ] audits contains folders based on hashes of each program audited.
+    - [ ] inside of this is a folder 'audit_files' that contains the program (cargo.lock)
+    - [ ] Every time its run it will save output in a timestamped file. (human readable ?)
+
+![image](https://user-images.githubusercontent.com/36494048/185178910-d6076b7d-891e-4dca-bb31-437de747a1b1.png)
+
+
+
+
+
 ## ExoTool for QDAO
 This folder includes:
     - Script that is called by ExoSys daemon
