@@ -5,11 +5,11 @@
 </p>
 
 
-## High level summary
+# 💡 High level summary
 
-## Tool execution Flow
+# ⚙️  Tool execution Flow
 
-## Overview
+# 🔭 Overview
 
 # 📚 Wiki:
 EXOTOOLS-PALLET wiki [can be found here](https://github.com/Qrucial/QRUCIAL-DAO/wiki/ExoTool).   
