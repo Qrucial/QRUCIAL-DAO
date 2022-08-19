@@ -6,14 +6,17 @@ This set of tools, that runs in a docker container, is used to automaticaly dete
 - exotool.sh Script that is called by ExoSys daemon
 
 # ⚙️  Tool execution Flow
-Run `exotool.sh \<URL\> \<HASH\>`
+Run 
+```bash
+exotool.sh "<URL>" "<HASH>"
+```
   > Creates folder based on hash of program downloaded from url
-    > contains: audit_files, reports, timestamps.
+  >  └> contains: audit_files, reports, timestamps.
   > check for new dockerfile(?)
   > Build an image based on the dockerfile
   > Create docker container based on image that was built.
   > run docker container that will run cargo audit.
-    > save output into the report/report.json
+  > └> save output into the report/report.json
   > convert the docker container back into image, store that in timestamp.
   > prune the image saving up space, reduce clutter.
 
@@ -23,12 +26,9 @@ Run `exotool.sh \<URL\> \<HASH\>`
 |------------------- |----------------------------------------------------------------------------- |
 | audits             | This folder is used to store the audits.                                     |
 | docker             | This folder is where the various dockerfile and docker images will be stored |
-| exotool.sh        | This script will orchistrate the audit vesrions, timestamps and docker setup |
+| exotool.sh         | This script will orchistrate the audit vesrions, timestamps and docker setup |
 
 
 # 📚 Wiki:
 
 EXOTOOLS-PALLET wiki [can be found here](https://github.com/Qrucial/QRUCIAL-DAO/wiki/ExoTool).   
-
-
-
