@@ -27,7 +27,7 @@ jobs:
         with:
           toolchain: nightly
           command: fmt
-          args: --all --manifest-path ./qdao-node/Cargo.toml -- --check
+          args: --all --locked --manifest-path ./qdao-node/Cargo.toml -- --check
 
   clippy:
     runs-on: 'ubuntu-latest'
@@ -46,7 +46,7 @@ jobs:
         with:
           toolchain: nightly
           command: clippy
-          args: --manifest-path ./qdao-node/Cargo.toml
+          args: --locked --manifest-path ./qdao-node/Cargo.toml
   
           
   build:
@@ -68,7 +68,7 @@ jobs:
         with:
           toolchain: stable
           command: build
-          args: --release --manifest-path ./qdao-node/Cargo.toml
+          args: --release --locked --manifest-path ./qdao-node/Cargo.toml
           
   test:
    runs-on: 'ubuntu-latest'
@@ -89,6 +89,6 @@ jobs:
         with:
           toolchain: stable
           command: nextest
-          args: run --all-features --manifest-path ./qdao-node/Cargo.toml
+          args: run --all-features --locked --manifest-path ./qdao-node/Cargo.toml
           
    
