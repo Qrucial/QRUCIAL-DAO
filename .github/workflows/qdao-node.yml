@@ -1,0 +1,94 @@
+name: Rust
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  rustfmt:
+    runs-on: 'ubuntu-latest'
+    steps:
+      - name: Install Rust toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: nightly
+          components: rustfmt
+
+      - uses: actions/checkout@v3
+
+      - name: Cargo fmt
+        uses: actions-rs/cargo@v1
+        with:
+          toolchain: nightly
+          command: fmt
+          args: --all --manifest-path ./qdao-node/Cargo.toml -- --check
+
+  clippy:
+    runs-on: 'ubuntu-latest'
+    steps:
+      - name: Install Rust toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: nightly
+          target: wasm32-unknown-unknown 
+          components: clippy
+
+      - uses: actions/checkout@v3
+
+      - name: Cargo clippy
+        uses: actions-rs/cargo@v1
+        with:
+          toolchain: nightly
+          command: clippy
+          args: --manifest-path ./qdao-node/Cargo.toml
+  
+          
+  build:
+   runs-on: 'ubuntu-latest'
+   steps:
+      - name: Install Rust toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: nightly
+          target: wasm32-unknown-unknown 
+          
+      - uses: actions/checkout@v3
+      
+      - name: Remove Cargo.lock
+        run: rm ./qdao-node/Cargo.lock
+      
+      - name: Cargo build
+        uses: actions-rs/cargo@v1
+        with:
+          toolchain: stable
+          command: build
+          args: --release --manifest-path ./qdao-node/Cargo.toml
+          
+  test:
+   runs-on: 'ubuntu-latest'
+   steps:
+      - name: Install Rust toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: nightly
+          target: wasm32-unknown-unknown 
+          
+      - uses: actions/checkout@v3
+      
+      - name: Install latest nextest release
+        uses: taiki-e/install-action@nextest
+      
+      - name: Cargo build
+        uses: actions-rs/cargo@v1
+        with:
+          toolchain: stable
+          command: nextest
+          args: run --all-features --manifest-path ./qdao-node/Cargo.toml
+          
+   
