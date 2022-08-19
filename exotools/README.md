@@ -10,15 +10,15 @@ Run
 ```bash
 exotool.sh "<URL>" "<HASH>"
 ```
-  > Creates folder based on hash of program downloaded from url
-  >  └> contains: audit_files, reports, timestamps.
-  > check for new dockerfile(?)
-  > Build an image based on the dockerfile
-  > Create docker container based on image that was built.
-  > run docker container that will run cargo audit.
-  > └> save output into the report/report.json
-  > convert the docker container back into image, store that in timestamp.
-  > prune the image saving up space, reduce clutter.
+- Creates folder based on hash of program downloaded from url
+  -└> contains: audit_files, reports, timestamps.
+- check for new dockerfile(?)
+- Build an image based on the dockerfile
+- Create docker container based on image that was built.
+- run docker container that will run cargo audit.
+  - └> save output into the report/report.json
+- convert the docker container back into image, store that in timestamp.
+- prune the image saving up space, reduce clutter.
 
 
 # 🔭 Overview
