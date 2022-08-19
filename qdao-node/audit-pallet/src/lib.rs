@@ -31,12 +31,13 @@ pub mod pallet {
     #[pallet::pallet]
     #[pallet::generate_store(pub(super) trait Store)]
     pub struct Pallet<T>(_);
- 
+
     // Storage for auditor scores
     // If a new Auditor signed up whose approval is pending, the Auditor scrore will be None
     #[pallet::storage]
     #[pallet::getter(fn auditor_score)]
-    pub(super) type AuditorScore<T: Config> = StorageMap<_, Blake2_128Concat, T::AccountId, Option<u32>>;
+    pub(super) type AuditorScore<T: Config> =
+        StorageMap<_, Blake2_128Concat, T::AccountId, Option<u32>>;
 
     // New Auditor signed up
     #[pallet::event]
@@ -44,9 +45,7 @@ pub mod pallet {
     pub enum Event<T: Config> {
         /// Event documentation should end with an array that provides descriptive names for event
         /// parameters. [something, who]
-        SignedUp {
-            who: T::AccountId,
-        },
+        SignedUp { who: T::AccountId },
     }
 
     // Errors inform users that something went wrong.
@@ -74,17 +73,17 @@ pub mod pallet {
             // https://docs.substrate.io/v3/runtime/origins
             let sender = ensure_signed(origin)?;
 
-           
             // Ensure that auditor is not already signed up
-            ensure!(!AuditorScore::<T>::contains_key(&sender), Error::<T>::AlreadySignedUp);
+            ensure!(
+                !AuditorScore::<T>::contains_key(&sender),
+                Error::<T>::AlreadySignedUp
+            );
 
             // Register new Auditor
             <AuditorScore<T>>::insert(sender.clone(), None::<u32>);
 
             // Emit an event.
-            Self::deposit_event(Event::SignedUp {
-                who: sender,
-            });
+            Self::deposit_event(Event::SignedUp { who: sender });
             // Return a successful DispatchResultWithPostInfo
             Ok(())
         }

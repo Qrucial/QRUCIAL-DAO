@@ -1,5 +1,8 @@
 use crate as qdao_exo_pallet;
-use frame_support::{construct_runtime, parameter_types, traits::{ConstU16, ConstU64}};
+use frame_support::{
+    construct_runtime, parameter_types,
+    traits::{ConstU16, ConstU64},
+};
 use frame_system as system;
 use sp_core::H256;
 use sp_runtime::{
@@ -24,7 +27,7 @@ frame_support::construct_runtime!(
 );
 
 parameter_types! {
-	pub const ExistentialDeposit: u64 = 1;
+    pub const ExistentialDeposit: u64 = 1;
 }
 
 impl system::Config for Test {
@@ -78,14 +81,9 @@ pub fn new_test_ext() -> sp_io::TestExternalities {
         .build_storage::<Test>()
         .unwrap();
     pallet_balances::GenesisConfig::<Test> {
-		balances: vec![
-			(1, 10),
-			(2, 10),
-			(3, 10),
-			(10, 100),
-			(20, 100),
-			(30, 100),
-		],
-	}.assimilate_storage(&mut t).unwrap();
+        balances: vec![(1, 10), (2, 10), (3, 10), (10, 100), (20, 100), (30, 100)],
+    }
+    .assimilate_storage(&mut t)
+    .unwrap();
     t.into()
 }

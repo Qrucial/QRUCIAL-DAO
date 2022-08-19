@@ -1,4 +1,4 @@
-use crate::{mock::*, Error, AuditorScore};
+use crate::{mock::*, AuditorScore, Error};
 use frame_support::{assert_noop, assert_ok};
 use frame_system::ensure_signed;
 
@@ -20,7 +20,7 @@ fn correct_error_for_double_sign_up() {
         assert_ok!(AuditRepModule::sign_up(Origin::signed(1)));
         //Sign up second (different) auditor, should also work
         assert_ok!(AuditRepModule::sign_up(Origin::signed(2)));
-       // Sign up an already signed up auditor, should throw error
+        // Sign up an already signed up auditor, should throw error
         assert_noop!(
             AuditRepModule::sign_up(Origin::signed(1)),
             Error::<Test>::AlreadySignedUp

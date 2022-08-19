@@ -121,7 +121,10 @@ pub mod pallet {
         ) -> DispatchResult {
             let sender = ensure_signed(origin)?;
 
-            ensure!(!ReviewRecord::<T>::contains_key(hash), Error::<T>::DuplicateEntry);
+            ensure!(
+                !ReviewRecord::<T>::contains_key(hash),
+                Error::<T>::DuplicateEntry
+            );
 
             let author = sender.clone();
 
@@ -136,7 +139,7 @@ pub mod pallet {
                     author: author,
                     hash: hash,
                     url: url_bounded,
-                    result: ReviewResult{result: 0},
+                    result: ReviewResult { result: 0 },
                 },
             );
 
@@ -151,11 +154,7 @@ pub mod pallet {
 
         /// Cancel request due to invalid parameters
         #[pallet::weight(100 + T::DbWeight::get().writes(1))]
-        pub fn tool_exec_cancel_invalid(
-            origin: OriginFor<T>,
-            hash: T::Hash,
-        ) -> DispatchResult {
-            
+        pub fn tool_exec_cancel_invalid(origin: OriginFor<T>, hash: T::Hash) -> DispatchResult {
             Ok(())
         }
 
@@ -166,7 +165,6 @@ pub mod pallet {
             hash: T::Hash,
             result: Vec<u8>,
         ) -> DispatchResult {
-
             Ok(())
         }
     }
