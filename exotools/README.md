@@ -11,7 +11,7 @@ Run
 exotool.sh "<URL>" "<HASH>"
 ```
 - Creates folder based on hash of program downloaded from url
-  -└> contains: audit_files, reports, timestamps.
+  - └> contains: audit_files, reports, timestamps.
 - check for new dockerfile(?)
 - Build an image based on the dockerfile
 - Create docker container based on image that was built.
