@@ -8,9 +8,6 @@ use frame_support::{
     BoundedVec,
 };
 use frame_system::Config as SystemConfig;
-/// Edit this file to define custom logic or remove it if it is not needed.
-/// Learn more about FRAME and the core library of Substrate FRAME pallets:
-/// <https://docs.substrate.io/v3/runtime/frame>
 pub use pallet::*;
 use scale_info::TypeInfo;
 use sp_std::prelude::*;
@@ -124,7 +121,10 @@ pub mod pallet {
         ) -> DispatchResult {
             let sender = ensure_signed(origin)?;
 
-            ensure!(!ReviewRecord::<T>::contains_key(hash), Error::<T>::DuplicateEntry);
+            ensure!(
+                !ReviewRecord::<T>::contains_key(hash),
+                Error::<T>::DuplicateEntry
+            );
 
             let author = sender.clone();
 
@@ -139,7 +139,7 @@ pub mod pallet {
                     author: author,
                     hash: hash,
                     url: url_bounded,
-                    result: ReviewResult{result: 0},
+                    result: ReviewResult { result: 0 },
                 },
             );
 
@@ -154,11 +154,7 @@ pub mod pallet {
 
         /// Cancel request due to invalid parameters
         #[pallet::weight(100 + T::DbWeight::get().writes(1))]
-        pub fn tool_exec_cancel_invalid(
-            origin: OriginFor<T>,
-            hash: T::Hash,
-        ) -> DispatchResult {
-            
+        pub fn tool_exec_cancel_invalid(origin: OriginFor<T>, hash: T::Hash) -> DispatchResult {
             Ok(())
         }
 
@@ -169,7 +165,6 @@ pub mod pallet {
             hash: T::Hash,
             result: Vec<u8>,
         ) -> DispatchResult {
-
             Ok(())
         }
     }
