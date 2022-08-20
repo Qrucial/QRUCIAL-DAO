@@ -17,15 +17,11 @@ if [ $# -ne 2 ]; then
   exit 1
 fi
 
-# TBA Check if arguments are PATH and sha512sum
 
 # Dependency checks
 type curl >/dev/null || { echo >&2 "curl is missing. please install it." ; exit 1;}
 type docker >/dev/null || { echo >&2 "docker is missing. please install it." ; exit 1;}
 type sha512sum >/dev/null || { echo >&2 "sha512sum is missing. please install it." ; exit 1;}
-
-# Check $URL and $HASH for validity
-# TBA
 
 
 ## Prepare the folder
@@ -40,8 +36,25 @@ SCRIPT_PATH=$(dirname $(realpath "${BASH_SOURCE:-$0}"))
 DATE="$(date +%s)"
 DATE_READABLE=$(date +'%d-%m-%Y_%H-%M-%S')
 
-URL=$1
+
+# Check if URL is valid
+regex='(https?)://[-[:alnum:]\+&@#/%?=~_|!:,.;]*[-[:alnum:]\+&@#/%=~_|]'
+if [[ $1 =~ $regex ]]
+then 
+    URL=$1
+else
+    exit 1
+fi
+
+# Check if HASH is valid
 HASH=$2
+HASH_LENGTH=${#HASH}
+if [ $HASH_LENGTH -eq 128 ]
+then
+    :
+else
+    exit 1
+fi
 
 # XTPATH=audit_files/"$HASH""_$(date +%s)"
 #   > the path where the audit is saved in should not have time, it would just take up extra space,
@@ -112,11 +125,15 @@ function docker_prep {
 
 }
 
-
+function call_logger {
+    # Target HTTP service of --> ../logger_and_reporter/python/lar.py
+    curl -X POST "http://127.0.0.1:9999/notify_logger?key=x7roVhBsiZ18Dg3DX3iCm9pXhXdbZWx2"  # TODO Add correct arguments! What do we pass here? succ/fail/info
+}
 
 #get_audit_files
 prep_folder
 get_audit_files
+call_logger
 
 #docker_prep # !! untested in this context
 # docker_prep should build an image if needed
