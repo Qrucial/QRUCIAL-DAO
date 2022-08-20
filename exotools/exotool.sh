@@ -6,16 +6,15 @@
 # Author: QDAO Team
 # License: GNU AFFERO GENERAL PUBLIC LICENSE - Version 3, 19 November 2007
 
-# Check if we have the arguments
-if [ -z "$1" ]; then
-  echo "Requires 2 arguments: <URL> <HASH>"
-  exit 1
-fi
 
-if [ $# -ne 2 ]; then
-  echo "Wrong number of arguments entered. Exit."
-  exit 1
-fi
+
+
+# Process Args
+
+# URL or Path to file?
+
+
+
 
 
 # Dependency checks
@@ -24,7 +23,6 @@ type docker >/dev/null || { echo >&2 "docker is missing. please install it." ; e
 type sha512sum >/dev/null || { echo >&2 "sha512sum is missing. please install it." ; exit 1;}
 
 
-## Prepare the folder
 
 # > establish a few global variables
 #   > SCRIPT_PATH  = directory of where the script is at starting at root
@@ -38,59 +36,35 @@ DATE_READABLE=$(date +'%d-%m-%Y_%H-%M-%S')
 
 
 # Check if URL is valid
+# what is a valid url, is it a specific file type?
 regex='(https?)://[-[:alnum:]\+&@#/%?=~_|!:,.;]*[-[:alnum:]\+&@#/%=~_|]'
 if [[ $1 =~ $regex ]]
 then 
-    URL=$1
+   URL=$1
 else
-    exit 1
+   echo "Invalid URL"
+   exit 1
 fi
 
-# Check if HASH is valid
-HASH=$2
-HASH_LENGTH=${#HASH}
-if [ $HASH_LENGTH -eq 128 ]
-then
-    :
-else
-    exit 1
-fi
 
-# XTPATH=audit_files/"$HASH""_$(date +%s)"
-#   > the path where the audit is saved in should not have time, it would just take up extra space,
-
-
-function prep_folder {
-  mkdir -p "$SCRIPT_PATH"/audits/"$HASH"/audit_files/ \
-    "$SCRIPT_PATH"/audits/"$HASH"/reports/
-}
-
-
-## Take URL (tar) and HASH
+# Downloads the files from the URL
 function get_audit_files {
   DOWNLOAD_PATH="$SCRIPT_PATH"/audits/"$HASH"/audit_files/program.tar
   curl -s "$URL" --output "$DOWNLOAD_PATH"
 
-  # Check if it is the right file, by hash
-  CUR_SUM=$(sha512sum "$DOWNLOAD_PATH" | cut -d' ' -f1)
-  sha512sum "$DOWNLOAD_PATH"
-
-  if [ "$HASH" = "$CUR_SUM" ]; then
-     echo "Checkum correct!"
-  else
-      echo "Wrong checksum!"
-      exit 1
-  fi    
-
   # Check if it is a tar file
-  FTYPE=$(file "$DOWNLOAD_PATH" | grep -o 'POSIX tar archive')
-  FTYPEreq="POSIX tar archive"
-  if [ "$FTYPE" = "$FTYPEreq" ]; then
-    echo "ok, lets move to execution..."
-  else
-    echo "Error, not a tar file!"
-    exit 1
-  fi
+  # Why are we checking if its a tar?
+  # what we are downloading will likely just be a rust file .rs
+  #if ! { tar ztf "$DOWNLOAD_PATH" || tar tf "$DOWNLOAD_PATH"; } >/dev/null 2>&1; then
+  #  echo "$DOWNLOAD_PATH is not a tar file"
+  #  exit 1
+  #fi
+
+  echo "ok, lets move to execution..."
+
+  # Get hash of file.
+  HASH=$(sha512sum "$DOWNLOAD_PATH" | cut -d' ' -f1)
+
   # https://unix.stackexchange.com/questions/457117/how-to-unshare-network-for-current-process
 }
 
@@ -104,20 +78,15 @@ function docker_prep {
   PROGRAM_DIR="$SCRIPT_PATH"/audits/"$HASH"/audit_files/program/
   REPORT_DIR="$SCRIPT_PATH"/audits/"$HASH"/reports/
 
-  mkdir -p "$TIMESTAMP_DIR" "$PROGRAM_DIR"
+  mkdir -p "$TIMESTAMP_DIR" "$PROGRAM_DIR" "$REPORT_DIR"
   
-  ## Run Once \/
   docker build -t exotools "$SCRIPT_PATH"/docker/docker_files/
-  docker save --output "$SCRIPT_PATH"/docker_images/file.tar exotools
-  ## Run Once /\
+  
+  # This Could be useful, but 99% of the time its wasteful
+  #docker save --output "$SCRIPT_PATH"/docker_images/file.tar exotools
 
   docker create --name="$HASH" -v "$PROGRAM_DIR":/auditdir exotools
   
-  # Start an automated audit, save output.
-  docker start -a "$HASH" > "$REPORT_DIR"/report.json # Should come up with a better save method. 
-  cp "$REPORT_DIR"/report.json "$TIMESTAMP_DIR"/
-  # [TODO]  > Save Container to image to tar located in timestamp
-  # [TODO]  > Hash based logs, Generate logs in docker container.
 
   # Create Timestamp dir, add json, etc.
   # Report dir should also get a link or the json.
@@ -130,15 +99,54 @@ function call_logger {
     curl -X POST "http://127.0.0.1:9999/notify_logger?key=x7roVhBsiZ18Dg3DX3iCm9pXhXdbZWx2"  # TODO Add correct arguments! What do we pass here? succ/fail/info
 }
 
-#get_audit_files
-prep_folder
-get_audit_files
-call_logger
+# Run the proper comands to generate a report
+function exec_audit {
+   # docker exec... :
+      # > Cargo build
+      # > cargo audit
+      # > place in correct folders
+   
 
-#docker_prep # !! untested in this context
-# docker_prep should build an image if needed
-#   > edit the dockerfile mount dir to be: exotool/audits/hash/
-#     > the docker can then fair
+   #Build
+   
+
+
+   # Start an automated audit, save output.
+   docker start -a "$HASH" > "$REPORT_DIR"/report.json # Should come up with a better save method. 
+   cp "$REPORT_DIR"/report.json "$TIMESTAMP_DIR"/
+   # [TODO]  > Save Container to image to tar located in timestamp
+   # [TODO]  > Hash based logs, Generate logs in docker container.
+}
+
+function check_hash {
+   # [TODO] Decide if this is necessary in the current state
+   # if it is necessary could we implament it together so i get a better idea of whats going on
+}
+
+
+
+## Check hash? - why is it necessary to check the hash?
+# > i think in its current state it doesent make sense, i might be wrong but:
+# > the process of cunducting an audit (with the hash) is:
+#   > Find a file you want to audit
+#   > download the file
+#   > sha256 it to get a hash
+#   > use the output to execute this script
+#   > this script then does the exact same command and then returns true (or false which woulden happen?)
+#   > is there a better way to implement this?
+
+
+## Sets up folder structure
+#prep_folder
+## Download, files from url
+get_audit_files
+## [TODO] Document
+#call_logger
+## Setup docker, build image, etc
+docker_prep 
+## Run Auditor
+exec_audit
+
 
 
 ## check if the hash is same

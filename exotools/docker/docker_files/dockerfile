@@ -1,7 +1,9 @@
 FROM rust:buster
 
 RUN cargo install cargo-audit # install cargo audit
+RUN cargo audit -db || : # update Databases can append -q for quiet
+RUN echo "Ignore Error above. just used to sync repo"
 
 VOLUME /rustvol-testing
 
-ENTRYPOINT ["cargo", "audit", "-f", "/rustvol-testing/Cargo.lock", "--json"]
+ENTRYPOINT [""]
