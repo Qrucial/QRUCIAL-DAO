@@ -6,4 +6,5 @@ RUN echo "Ignore Error above. just used to sync repo"
 
 VOLUME /rustvol-testing
 
-ENTRYPOINT [""]
+ENTRYPOINT ["tail", "-f", "/dev/null"]
+#ENTRYPOINT ["cargo"]
