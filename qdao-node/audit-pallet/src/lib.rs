@@ -21,6 +21,13 @@ pub mod pallet {
     use frame_support::pallet_prelude::*;
     use frame_system::pallet_prelude::*;
 
+    #[derive(Encode, Decode, Default, Clone, PartialEq, TypeInfo, MaxEncodedLen)]
+    pub struct AuditorData<Hash, AccountId> {
+        score: Option<u32>,
+        profile_description: Hash,
+        approvals: [AccountId; 3],
+    }
+
     /// Configure the pallet by specifying the parameters and types on which it depends.
     #[pallet::config]
     pub trait Config: frame_system::Config {
@@ -37,7 +44,7 @@ pub mod pallet {
     #[pallet::storage]
     #[pallet::getter(fn auditor_score)]
     pub(super) type AuditorScore<T: Config> =
-        StorageMap<_, Blake2_128Concat, T::AccountId, Option<u32>>;
+        StorageMap<_, Blake2_128Concat, T::AccountId, AuditorData<sp_core::H256, T::AccountId>>;
 
     // New Auditor signed up
     #[pallet::event]
@@ -80,12 +87,19 @@ pub mod pallet {
             );
 
             // Register new Auditor
-            <AuditorScore<T>>::insert(sender.clone(), None::<u32>);
+            // <AuditorScore<T>>::insert(sender.clone(), None::<u32>);
 
             // Emit an event.
             Self::deposit_event(Event::SignedUp { who: sender });
             // Return a successful DispatchResultWithPostInfo
             Ok(())
         }
+        
+        #[pallet::weight(10_000 + T::DbWeight::get().writes(1))]
+        pub fn approve_auditor(origin: OriginFor<T>, to_approve: T::AccountId) -> DispatchResult {
+           unimplemented!();  
+        }
     }
+
+    
 }
