@@ -6,7 +6,12 @@ This pallet handles the sign up as well as the reputation of auditors.
 
 
 # ⚙️  Auditrep execution Flow
-TBA
+## New auditor signup
+1. New user requests auditor status, the auditor provides as part of the request some profile information about him in markdown format(extrinsic receives a hash of it). As long as the auditor is not approved, his/her reputation score is `None`. The user must stake and amount of `$AUDITOR_STAKE` tokens in order to request and mantain the auditor status. 
+2. 3 Author's with auditor status and a reputation score above `$APPROVAL_THRESHOLD` approve the auditor request.
+3. The 3.rd approval assigns the auditor an initial reputation score `$INIT_SCORE`.
+4. The user can always cancel the approval process and claim back his `$AUDITOR_STAKE` amount of tokens then.
+
 
 # 🔭 Overview
 | Current Directory  | Description                                                                  |
