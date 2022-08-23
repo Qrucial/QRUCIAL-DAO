@@ -1,10 +1,13 @@
 FROM rust:buster
 
 RUN cargo install cargo-audit # install cargo audit
-RUN cargo audit -db || : # update Databases can append -q for quiet
+
+# This will always return success, it normally fails after update (we just need update)
+RUN cargo audit -db || : 
 RUN echo "Ignore Error above. just used to sync repo"
 
+# This is the internal directory. the shared mountpoint
 VOLUME /rustvol-testing
 
 ENTRYPOINT ["tail", "-f", "/dev/null"]
-#ENTRYPOINT ["cargo"]
+# This is a not great solution but it works
