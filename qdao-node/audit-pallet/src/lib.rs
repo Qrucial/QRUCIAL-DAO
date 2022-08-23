@@ -18,15 +18,15 @@ mod benchmarking;
 #[frame_support::pallet]
 pub mod pallet {
     use super::*;
-    use frame_support::{pallet_prelude::*, storage::bounded_vec};
+    use frame_support::{pallet_prelude::*};
     use frame_system::pallet_prelude::*;
     use sp_core::H256;
 
     #[derive(Encode, Decode, Default, Clone, PartialEq, TypeInfo, MaxEncodedLen)]
     pub struct AuditorData<Hash, AccountId> {
-        score: Option<u32>,
-        profile_hash: Hash,
-        approved_by: BoundedVec<AccountId, ConstU32<3>>,
+        pub score: Option<u32>,
+        pub profile_hash: Hash,
+        pub approved_by: BoundedVec<AccountId, ConstU32<3>>,
     }
 
     /// Configure the pallet by specifying the parameters and types on which it depends.
