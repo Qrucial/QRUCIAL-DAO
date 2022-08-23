@@ -47,8 +47,12 @@ pub mod pallet {
         /// Units for balance
         type Balance: Member + Parameter + AtLeast32BitUnsigned + Default + Copy;
 
-        ///Currency mechanism
+        /// Currency mechanism
         type Currency: ReservableCurrency<Self::AccountId>;
+
+        #[pallet::constant] // put the constant in metadata
+	    /// Minimum amount which is required for an Auditor to be able to sign up.
+	    type MinAuditorStake: Get<DepositBalanceOf<Self>>;
     }
 
     #[pallet::pallet]
@@ -80,6 +84,8 @@ pub mod pallet {
         StorageOverflow,
         // Auditor is already signed up
         AlreadySignedUp,
+        // Auditor doesn't provide enough stake for sign up
+        InsufficientStake,
     }
 
     // Dispatchable functions allows users to interact with the pallet and invoke state changes.
@@ -90,7 +96,7 @@ pub mod pallet {
         #[pallet::weight(10_000 + T::DbWeight::get().writes(1))]
         // Signs up a new Auditor
         // ToDo: Auditor needs to stake tokens, needs to provide hash of porfile markdown
-        pub fn sign_up(origin: OriginFor<T>, profile_hash: H256, _stake: DepositBalanceOf<T>) -> DispatchResult {
+        pub fn sign_up(origin: OriginFor<T>, profile_hash: H256, stake: DepositBalanceOf<T>) -> DispatchResult {
             // Check that the extrinsic was signed and get the signer.
             // This function will return an error if the extrinsic is not signed.
             // https://docs.substrate.io/v3/runtime/origins
@@ -101,6 +107,13 @@ pub mod pallet {
                 !AuditorScore::<T>::contains_key(&sender),
                 Error::<T>::AlreadySignedUp
             );
+
+            ensure!(
+                stake >= T::MinAuditorStake::get(),
+                Error::<T>::AlreadySignedUp
+            );
+
+            T::Currency::reserve(&sender, stake)?;
 
             // Register new Auditor
             let auditor_data = AuditorData::<H256, T::AccountId> {
