@@ -13,7 +13,7 @@ fn sign_up_works() {
 
         // When
         // Sign up a new auditor, should work
-        assert_ok!(AuditRepModule::sign_up(Origin::signed(1), hash));
+        assert_ok!(AuditRepModule::sign_up(Origin::signed(1), hash, 100));
 
         // Then
         let auditor_score = AuditorScore::<Test>::try_get(sender);
@@ -33,11 +33,11 @@ fn correct_error_for_double_sign_up() {
 
         // When
         // Sign up Auditor, should work
-        assert_ok!(AuditRepModule::sign_up(auditor1.clone(), H256::repeat_byte(1)));
+        assert_ok!(AuditRepModule::sign_up(auditor1.clone(), H256::repeat_byte(1), 100));
         //Sign up second (different) auditor, should also work
-        assert_ok!(AuditRepModule::sign_up(auditor2, H256::repeat_byte(1)));
+        assert_ok!(AuditRepModule::sign_up(auditor2, H256::repeat_byte(1), 100));
         // Sign up an already signed up auditor, should return an error
-        let result = AuditRepModule::sign_up(auditor1, H256::repeat_byte(1));
+        let result = AuditRepModule::sign_up(auditor1, H256::repeat_byte(1), 100);
 
         // Then
         assert_noop!(

@@ -107,7 +107,8 @@ pub mod pallet {
                 !AuditorScore::<T>::contains_key(&sender),
                 Error::<T>::AlreadySignedUp
             );
-
+            
+            // Ensure that the Auditor provided enough stake
             ensure!(
                 stake >= T::MinAuditorStake::get(),
                 Error::<T>::AlreadySignedUp
