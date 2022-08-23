@@ -278,6 +278,8 @@ impl qdao_exo_pallet::Config for Runtime {
 /// Configure the qdao-audit-pallet.
 impl qdao_audit_pallet::Config for Runtime {
     type Event = Event;
+    type Balance = Balance;
+    type Currency = Balances;
 }
 
 // Create the runtime by composing the FRAME pallets that were previously configured.

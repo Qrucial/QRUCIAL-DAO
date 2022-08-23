@@ -5,6 +5,12 @@
 /// <https://docs.substrate.io/v3/runtime/frame>
 pub use pallet::*;
 use sp_std::prelude::*;
+use frame_support::{
+    sp_runtime::{traits::AtLeast32BitUnsigned},
+    traits::{Currency, ReservableCurrency},
+    BoundedVec,
+};
+use frame_system::Config as SystemConfig;
 
 #[cfg(test)]
 mod mock;
@@ -14,6 +20,9 @@ mod tests;
 
 #[cfg(feature = "runtime-benchmarks")]
 mod benchmarking;
+
+type DepositBalanceOf<T> =
+    <<T as Config>::Currency as Currency<<T as SystemConfig>::AccountId>>::Balance;
 
 #[frame_support::pallet]
 pub mod pallet {
@@ -34,6 +43,12 @@ pub mod pallet {
     pub trait Config: frame_system::Config {
         /// Because this pallet emits events, it depends on the runtime's definition of an event.
         type Event: From<Event<Self>> + IsType<<Self as frame_system::Config>::Event>;
+
+        /// Units for balance
+        type Balance: Member + Parameter + AtLeast32BitUnsigned + Default + Copy;
+
+        ///Currency mechanism
+        type Currency: ReservableCurrency<Self::AccountId>;
     }
 
     #[pallet::pallet]
@@ -75,7 +90,7 @@ pub mod pallet {
         #[pallet::weight(10_000 + T::DbWeight::get().writes(1))]
         // Signs up a new Auditor
         // ToDo: Auditor needs to stake tokens, needs to provide hash of porfile markdown
-        pub fn sign_up(origin: OriginFor<T>, profile_hash: H256) -> DispatchResult {
+        pub fn sign_up(origin: OriginFor<T>, profile_hash: H256, _stake: DepositBalanceOf<T>) -> DispatchResult {
             // Check that the extrinsic was signed and get the signer.
             // This function will return an error if the extrinsic is not signed.
             // https://docs.substrate.io/v3/runtime/origins
@@ -102,17 +117,17 @@ pub mod pallet {
         }
 
         #[pallet::weight(10_000 + T::DbWeight::get().writes(1))]
-        pub fn update_profile(origin: OriginFor<T>, profile_hash: H256) -> DispatchResult {
+        pub fn update_profile(_origin: OriginFor<T>, _profile_hash: H256) -> DispatchResult {
            unimplemented!();  
         }
 
         #[pallet::weight(10_000 + T::DbWeight::get().writes(1))]
-        pub fn cancel_account(origin: OriginFor<T>) -> DispatchResult {
+        pub fn cancel_account(_origin: OriginFor<T>) -> DispatchResult {
            unimplemented!();  
         }
         
         #[pallet::weight(10_000 + T::DbWeight::get().writes(1))]
-        pub fn approve_auditor(origin: OriginFor<T>, to_approve: T::AccountId) -> DispatchResult {
+        pub fn approve_auditor(_origin: OriginFor<T>, _to_approve: T::AccountId) -> DispatchResult {
            unimplemented!();  
         }
     }
