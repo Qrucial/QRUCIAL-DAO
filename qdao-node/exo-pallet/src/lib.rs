@@ -9,9 +9,9 @@ use frame_support::{
 };
 use frame_system::Config as SystemConfig;
 pub use pallet::*;
+use qdao_audit_pallet::Game;
 use scale_info::TypeInfo;
 use sp_std::prelude::*;
-use qdao_audit_pallet::{Game};
 
 #[cfg(test)]
 mod mock;

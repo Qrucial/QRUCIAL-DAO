@@ -6,7 +6,6 @@ use sp_core::H256;
 #[test]
 fn sign_up_works() {
     new_test_ext().execute_with(|| {
-
         // Given
         let sender = ensure_signed(Origin::signed(1)).unwrap();
         let hash = H256::repeat_byte(1);
@@ -26,7 +25,6 @@ fn sign_up_works() {
 #[test]
 fn sign_up_fails_when_stake_too_low() {
     new_test_ext().execute_with(|| {
-
         // Given
         let auditor = Origin::signed(1);
         let hash = H256::repeat_byte(1);
@@ -36,17 +34,13 @@ fn sign_up_fails_when_stake_too_low() {
         let result = AuditRepModule::sign_up(auditor, hash, stake);
 
         // Then
-        assert_noop!(
-            result,
-            Error::<Test>::InsufficientStake
-        );
+        assert_noop!(result, Error::<Test>::InsufficientStake);
     });
 }
 
 #[test]
 fn correct_error_for_double_sign_up() {
     new_test_ext().execute_with(|| {
-
         // Given
         let auditor1 = Origin::signed(1);
         let auditor2 = Origin::signed(2);
@@ -54,16 +48,21 @@ fn correct_error_for_double_sign_up() {
 
         // When
         // Sign up Auditor, should work
-        assert_ok!(AuditRepModule::sign_up(auditor1.clone(), H256::repeat_byte(1), stake));
+        assert_ok!(AuditRepModule::sign_up(
+            auditor1.clone(),
+            H256::repeat_byte(1),
+            stake
+        ));
         //Sign up second (different) auditor, should also work
-        assert_ok!(AuditRepModule::sign_up(auditor2, H256::repeat_byte(1), stake));
+        assert_ok!(AuditRepModule::sign_up(
+            auditor2,
+            H256::repeat_byte(1),
+            stake
+        ));
         // Sign up an already signed up auditor, should return an error
         let result = AuditRepModule::sign_up(auditor1, H256::repeat_byte(1), stake);
 
         // Then
-        assert_noop!(
-            result,
-            Error::<Test>::AlreadySignedUp
-        );
+        assert_noop!(result, Error::<Test>::AlreadySignedUp);
     });
 }
