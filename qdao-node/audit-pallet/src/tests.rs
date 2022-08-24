@@ -1,28 +1,47 @@
 use crate::{mock::*, AuditorScore, Error};
 use frame_support::{assert_noop, assert_ok};
 use frame_system::ensure_signed;
+use sp_core::H256;
 
 #[test]
 fn sign_up_works() {
     new_test_ext().execute_with(|| {
-        // Sign up a new auditor, should work
-        assert_ok!(AuditRepModule::sign_up(Origin::signed(1)));
-        // Check that new Auditor exists with score None
+
+        // Given
         let sender = ensure_signed(Origin::signed(1)).unwrap();
-        assert_eq!(AuditorScore::<Test>::try_get(sender), Ok(None));
+        let hash = H256::repeat_byte(1);
+
+        // When
+        // Sign up a new auditor, should work
+        assert_ok!(AuditRepModule::sign_up(Origin::signed(1), hash, 50));
+
+        // Then
+        let auditor_score = AuditorScore::<Test>::try_get(sender);
+        // Check that new Auditor exists with score None and correct Profile
+        assert_eq!(auditor_score.as_ref().unwrap().score, None);
+        assert_eq!(auditor_score.as_ref().unwrap().profile_hash, hash);
     });
 }
 
 #[test]
 fn correct_error_for_double_sign_up() {
     new_test_ext().execute_with(|| {
+
+        // Given
+        let auditor1 = Origin::signed(1);
+        let auditor2 = Origin::signed(2);
+
+        // When
         // Sign up Auditor, should work
-        assert_ok!(AuditRepModule::sign_up(Origin::signed(1)));
+        assert_ok!(AuditRepModule::sign_up(auditor1.clone(), H256::repeat_byte(1), 100));
         //Sign up second (different) auditor, should also work
-        assert_ok!(AuditRepModule::sign_up(Origin::signed(2)));
-        // Sign up an already signed up auditor, should throw error
+        assert_ok!(AuditRepModule::sign_up(auditor2, H256::repeat_byte(1), 100));
+        // Sign up an already signed up auditor, should return an error
+        let result = AuditRepModule::sign_up(auditor1, H256::repeat_byte(1), 100);
+
+        // Then
         assert_noop!(
-            AuditRepModule::sign_up(Origin::signed(1)),
+            result,
             Error::<Test>::AlreadySignedUp
         );
     });
