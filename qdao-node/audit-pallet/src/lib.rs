@@ -111,7 +111,7 @@ pub mod pallet {
             // Ensure that the Auditor provided enough stake
             ensure!(
                 stake >= T::MinAuditorStake::get(),
-                Error::<T>::AlreadySignedUp
+                Error::<T>::InsufficientStake
             );
 
             T::Currency::reserve(&sender, stake)?;

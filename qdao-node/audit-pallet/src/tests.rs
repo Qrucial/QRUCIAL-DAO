@@ -13,7 +13,7 @@ fn sign_up_works() {
 
         // When
         // Sign up a new auditor, should work
-        assert_ok!(AuditRepModule::sign_up(Origin::signed(1), hash, 100));
+        assert_ok!(AuditRepModule::sign_up(Origin::signed(1), hash, 50));
 
         // Then
         let auditor_score = AuditorScore::<Test>::try_get(sender);
