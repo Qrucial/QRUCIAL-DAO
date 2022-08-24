@@ -27,7 +27,7 @@ jobs:
         with:
           toolchain: nightly
           command: fmt
-          args: --all --locked --manifest-path ./qdao-node/Cargo.toml -- --check
+          args: --all --manifest-path ./qdao-node/Cargo.toml -- --check
 
   clippy:
     runs-on: 'ubuntu-latest'
