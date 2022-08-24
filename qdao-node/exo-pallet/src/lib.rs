@@ -11,6 +11,7 @@ use frame_system::Config as SystemConfig;
 pub use pallet::*;
 use scale_info::TypeInfo;
 use sp_std::prelude::*;
+use qdao_audit_pallet::{Game};
 
 #[cfg(test)]
 mod mock;
@@ -178,7 +179,7 @@ pub mod pallet {
             result: Vec<u8>,
         ) -> DispatchResult {
             let sender = ensure_signed(origin)?;
-            let review = ReviewRecord::<T>::get(challenged_hash).ok_or(Err(NoneValue))?;
+            let review = ReviewRecord::<T>::get(challenged_hash).ok_or(Error::<T>::NoneValue)?;
             // TODO Not all challenges should win, right? :smile:
             T::Game::apply_result(sender, review.author, qdao_audit_pallet::Winner::Player0)?;
             Ok(())
