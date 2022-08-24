@@ -27,7 +27,7 @@ jobs:
         with:
           toolchain: nightly
           command: fmt
-          args: --all --locked --manifest-path ./qdao-node/Cargo.toml -- --check
+          args: --all --manifest-path ./qdao-node/Cargo.toml -- --check
 
   clippy:
     runs-on: 'ubuntu-latest'
@@ -59,9 +59,6 @@ jobs:
           target: wasm32-unknown-unknown 
           
       - uses: actions/checkout@v3
-      
-      - name: Remove Cargo.lock
-        run: rm ./qdao-node/Cargo.lock
       
       - name: Cargo build
         uses: actions-rs/cargo@v1

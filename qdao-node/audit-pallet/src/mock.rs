@@ -1,5 +1,8 @@
 use crate as qdao_pallet_dummy;
-use frame_support::{traits::{ConstU16, ConstU64}, parameter_types};
+use frame_support::{
+    parameter_types,
+    traits::{ConstU16, ConstU64},
+};
 use frame_system as system;
 use sp_core::H256;
 use sp_runtime::{
@@ -70,7 +73,7 @@ impl qdao_pallet_dummy::Config for Test {
     type Event = Event;
     type Balance = u64;
     type Currency = Balances;
-    type MinAuditorStake =frame_support::traits::ConstU64<100>;
+    type MinAuditorStake = frame_support::traits::ConstU64<100>;
 }
 
 // // Build genesis storage according to the mock runtime.
