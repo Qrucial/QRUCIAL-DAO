@@ -68,6 +68,8 @@ pub mod pallet {
 
         ///Currency mechanism
         type Currency: ReservableCurrency<Self::AccountId>;
+
+        type Game: qdao_audit_pallet::pallet::Game<Self>;
     }
 
     #[pallet::pallet]
@@ -165,6 +167,20 @@ pub mod pallet {
             hash: T::Hash,
             result: Vec<u8>,
         ) -> DispatchResult {
+            Ok(())
+        }
+
+        /// Record automated request processing results
+        #[pallet::weight(1000 + T::DbWeight::get().writes(1))]
+        pub fn challenge_report(
+            origin: OriginFor<T>,
+            challenged_hash: T::Hash,
+            result: Vec<u8>,
+        ) -> DispatchResult {
+            let sender = ensure_signed(origin)?;
+            let review = ReviewRecord::<T>::get(challenged_hash).ok_or(Err(NoneValue))?;
+            // TODO Not all challenges should win, right? :smile:
+            T::Game::apply_result(sender, review.author, qdao_audit_pallet::Winner::Player0)?;
             Ok(())
         }
     }

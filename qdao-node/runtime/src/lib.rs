@@ -269,19 +269,20 @@ impl pallet_sudo::Config for Runtime {
     type Call = Call;
 }
 
-/// Configure the qdao-exo-pallet.
-impl qdao_exo_pallet::Config for Runtime {
-    type Event = Event;
-    type Balance = Balance;
-    type Currency = Balances;
-}
-
 /// Configure the qdao-audit-pallet.
 impl qdao_audit_pallet::Config for Runtime {
     type Event = Event;
     type Balance = Balance;
     type Currency = Balances;
     type MinAuditorStake = MinAuditorStake;
+}
+
+/// Configure the qdao-exo-pallet.
+impl qdao_exo_pallet::Config for Runtime {
+    type Event = Event;
+    type Balance = Balance;
+    type Currency = Balances;
+    type Game = qdao_audit_pallet::Pallet<Runtime>;
 }
 
 // Create the runtime by composing the FRAME pallets that were previously configured.

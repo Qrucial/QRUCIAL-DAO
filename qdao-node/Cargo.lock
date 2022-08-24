@@ -4603,6 +4603,7 @@ dependencies = [
  "frame-system",
  "pallet-balances",
  "parity-scale-codec",
+ "qdao-audit-pallet",
  "scale-info",
  "sp-core",
  "sp-io",

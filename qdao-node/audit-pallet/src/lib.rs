@@ -1,16 +1,16 @@
 #![cfg_attr(not(feature = "std"), no_std)]
 
+use frame_support::{
+    sp_runtime::traits::AtLeast32BitUnsigned,
+    traits::{Currency, ReservableCurrency},
+    BoundedVec,
+};
+use frame_system::Config as SystemConfig;
 /// Edit this file to define custom logic or remove it if it is not needed.
 /// Learn more about FRAME and the core library of Substrate FRAME pallets:
 /// <https://docs.substrate.io/v3/runtime/frame>
 pub use pallet::*;
 use sp_std::prelude::*;
-use frame_support::{
-    sp_runtime::{traits::AtLeast32BitUnsigned},
-    traits::{Currency, ReservableCurrency},
-    BoundedVec,
-};
-use frame_system::Config as SystemConfig;
 
 #[cfg(test)]
 mod mock;
@@ -27,7 +27,7 @@ type DepositBalanceOf<T> =
 #[frame_support::pallet]
 pub mod pallet {
     use super::*;
-    use frame_support::{pallet_prelude::*};
+    use frame_support::pallet_prelude::*;
     use frame_system::pallet_prelude::*;
     use sp_core::H256;
 
@@ -36,6 +36,13 @@ pub mod pallet {
         pub score: Option<u32>,
         pub profile_hash: Hash,
         pub approved_by: BoundedVec<AccountId, ConstU32<3>>,
+    }
+
+    #[derive(Encode, Decode, Debug, Clone, PartialEq, TypeInfo, MaxEncodedLen)]
+    pub enum Winner {
+        Player0,
+        Player1,
+        Draw,
     }
 
     /// Configure the pallet by specifying the parameters and types on which it depends.
@@ -51,8 +58,8 @@ pub mod pallet {
         type Currency: ReservableCurrency<Self::AccountId>;
 
         #[pallet::constant] // put the constant in metadata
-	    /// Minimum amount which is required for an Auditor to be able to sign up.
-	    type MinAuditorStake: Get<DepositBalanceOf<Self>>;
+        /// Minimum amount which is required for an Auditor to be able to sign up.
+        type MinAuditorStake: Get<DepositBalanceOf<Self>>;
     }
 
     #[pallet::pallet]
@@ -73,6 +80,11 @@ pub mod pallet {
         /// Event documentation should end with an array that provides descriptive names for event
         /// parameters. [something, who]
         SignedUp { who: T::AccountId },
+        GameResult {
+            player0: T::AccountId,
+            player1: T::AccountId,
+            winner: Winner,
+        },
     }
 
     // Errors inform users that something went wrong.
@@ -96,7 +108,11 @@ pub mod pallet {
         #[pallet::weight(10_000 + T::DbWeight::get().writes(1))]
         // Signs up a new Auditor
         // ToDo: Auditor needs to stake tokens, needs to provide hash of porfile markdown
-        pub fn sign_up(origin: OriginFor<T>, profile_hash: H256, stake: DepositBalanceOf<T>) -> DispatchResult {
+        pub fn sign_up(
+            origin: OriginFor<T>,
+            profile_hash: H256,
+            stake: DepositBalanceOf<T>,
+        ) -> DispatchResult {
             // Check that the extrinsic was signed and get the signer.
             // This function will return an error if the extrinsic is not signed.
             // https://docs.substrate.io/v3/runtime/origins
@@ -107,7 +123,7 @@ pub mod pallet {
                 !AuditorScore::<T>::contains_key(&sender),
                 Error::<T>::AlreadySignedUp
             );
-            
+
             // Ensure that the Auditor provided enough stake
             ensure!(
                 stake >= T::MinAuditorStake::get(),
@@ -120,7 +136,7 @@ pub mod pallet {
             let auditor_data = AuditorData::<H256, T::AccountId> {
                 score: None,
                 profile_hash,
-                approved_by: BoundedVec::with_bounded_capacity(3)
+                approved_by: BoundedVec::with_bounded_capacity(3),
             };
             <AuditorScore<T>>::insert(sender.clone(), auditor_data);
 
@@ -132,19 +148,57 @@ pub mod pallet {
 
         #[pallet::weight(10_000 + T::DbWeight::get().writes(1))]
         pub fn update_profile(_origin: OriginFor<T>, _profile_hash: H256) -> DispatchResult {
-           unimplemented!();  
+            unimplemented!();
         }
 
         #[pallet::weight(10_000 + T::DbWeight::get().writes(1))]
         pub fn cancel_account(_origin: OriginFor<T>) -> DispatchResult {
-           unimplemented!();  
+            unimplemented!();
         }
-        
+
         #[pallet::weight(10_000 + T::DbWeight::get().writes(1))]
         pub fn approve_auditor(_origin: OriginFor<T>, _to_approve: T::AccountId) -> DispatchResult {
-           unimplemented!();  
+            unimplemented!();
+        }
+
+        #[pallet::weight(10_000 + T::DbWeight::get().writes(1))]
+        pub fn game_result(
+            origin: OriginFor<T>,
+            player0: T::AccountId,
+            player1: T::AccountId,
+            winner: Winner,
+        ) -> DispatchResult {
+            ensure_root(origin)?;
+
+            <Self as Game<_>>::apply_result(player0, player1, winner)?;
+
+            Ok(())
         }
     }
 
-    
+    pub trait Game<T: frame_system::Config> {
+        fn apply_result(
+            player0: T::AccountId,
+            player1: T::AccountId,
+            winner: Winner,
+        ) -> DispatchResult;
+    }
+
+    impl<T: Config> Game<T> for Pallet<T> {
+        fn apply_result(
+            player0: T::AccountId,
+            player1: T::AccountId,
+            winner: Winner,
+        ) -> DispatchResult {
+            unimplemented!(); // Here be dragons, with the actual Élő-score algorithm
+
+            Self::deposit_event(Event::GameResult {
+                player0,
+                player1,
+                winner,
+            });
+
+            Ok(())
+        }
+    }
 }
