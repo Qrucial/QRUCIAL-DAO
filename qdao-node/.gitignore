@@ -2,7 +2,7 @@
 **/*.rs.bk
 *.swp
 .wasm-binaries
-**/*/Cargo.lock
+**/Cargo.lock
 **/._*
 **/.criterion/
 .vscode

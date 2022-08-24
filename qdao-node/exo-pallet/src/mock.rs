@@ -1,8 +1,5 @@
-use crate as qdao_exo_pallet;
-use frame_support::{
-    construct_runtime, parameter_types,
-    traits::{ConstU16, ConstU64},
-};
+use crate as qdao_pallet_dummy;
+use frame_support::traits::{ConstU16, ConstU64};
 use frame_system as system;
 use sp_core::H256;
 use sp_runtime::{
@@ -21,14 +18,9 @@ frame_support::construct_runtime!(
         UncheckedExtrinsic = UncheckedExtrinsic,
     {
         System: frame_system::{Pallet, Call, Config, Storage, Event<T>},
-        Balances: pallet_balances::{Pallet, Call, Storage, Config<T>, Event<T>},
-        Exosys: qdao_exo_pallet::{Pallet, Call, Storage, Event<T>},
+        TemplateModule: qdao_pallet_dummy::{Pallet, Call, Storage, Event<T>},
     }
 );
-
-parameter_types! {
-    pub const ExistentialDeposit: u64 = 1;
-}
 
 impl system::Config for Test {
     type BaseCallFilter = frame_support::traits::Everything;
@@ -48,7 +40,7 @@ impl system::Config for Test {
     type BlockHashCount = ConstU64<250>;
     type Version = ();
     type PalletInfo = PalletInfo;
-    type AccountData = pallet_balances::AccountData<u64>;
+    type AccountData = ();
     type OnNewAccount = ();
     type OnKilledAccount = ();
     type SystemWeightInfo = ();
@@ -57,33 +49,14 @@ impl system::Config for Test {
     type MaxConsumers = frame_support::traits::ConstU32<16>;
 }
 
-impl pallet_balances::Config for Test {
-    type Balance = u64;
-    type DustRemoval = ();
+impl qdao_pallet_dummy::Config for Test {
     type Event = Event;
-    type ExistentialDeposit = ExistentialDeposit;
-    type AccountStore = System;
-    type WeightInfo = ();
-    type MaxLocks = ();
-    type MaxReserves = ();
-    type ReserveIdentifier = ();
-}
-
-impl qdao_exo_pallet::Config for Test {
-    type Event = Event;
-    type Balance = u32;
-    type Currency = Balances;
 }
 
 // Build genesis storage according to the mock runtime.
 pub fn new_test_ext() -> sp_io::TestExternalities {
-    let mut t = system::GenesisConfig::default()
+    system::GenesisConfig::default()
         .build_storage::<Test>()
-        .unwrap();
-    pallet_balances::GenesisConfig::<Test> {
-        balances: vec![(1, 10), (2, 10), (3, 10), (10, 100), (20, 100), (30, 100)],
-    }
-    .assimilate_storage(&mut t)
-    .unwrap();
-    t.into()
+        .unwrap()
+        .into()
 }
