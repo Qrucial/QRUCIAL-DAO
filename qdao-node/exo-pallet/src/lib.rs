@@ -1,9 +1,16 @@
 #![cfg_attr(not(feature = "std"), no_std)]
 
-/// Edit this file to define custom logic or remove it if it is not needed.
-/// Learn more about FRAME and the core library of Substrate FRAME pallets:
-/// <https://docs.substrate.io/v3/runtime/frame>
+use codec::{Decode, Encode, MaxEncodedLen};
+use frame_support::{
+    parameter_types,
+    sp_runtime::{traits::AtLeast32BitUnsigned, RuntimeDebug},
+    traits::{Currency, ReservableCurrency},
+    BoundedVec,
+};
+use frame_system::Config as SystemConfig;
 pub use pallet::*;
+use scale_info::TypeInfo;
+use sp_std::prelude::*;
 
 #[cfg(test)]
 mod mock;
@@ -14,75 +21,151 @@ mod tests;
 #[cfg(feature = "runtime-benchmarks")]
 mod benchmarking;
 
+type DepositBalanceOf<T> =
+    <<T as Config>::Currency as Currency<<T as SystemConfig>::AccountId>>::Balance;
+
+parameter_types! {
+    pub MaxUrlLength: u32 = 256;
+}
+
+#[derive(Clone, Encode, Decode, Eq, PartialEq, RuntimeDebug, TypeInfo, MaxEncodedLen, Default)]
+#[scale_info(skip_type_params(T))]
+///All information related to requested review
+pub struct ReviewResult {
+    result: u32,
+}
+
+#[derive(Clone, Encode, Decode, Eq, PartialEq, RuntimeDebug, TypeInfo, MaxEncodedLen, Default)]
+#[scale_info(skip_type_params(T))]
+///All information related to requested review
+pub struct ReviewData<T: Config> {
+    /// Remaining balance stored in "NFT"
+    deposit: DepositBalanceOf<T>,
+    /// Owner of request
+    author: T::AccountId,
+    /// Request ID
+    hash: T::Hash,
+    /// Original link to reviewed package
+    url: BoundedVec<u8, MaxUrlLength>,
+    /// Struct to store result of review
+    result: ReviewResult,
+}
+
 #[frame_support::pallet]
 pub mod pallet {
-	use frame_support::pallet_prelude::*;
-	use frame_system::pallet_prelude::*;
+    use super::*;
+    use frame_support::pallet_prelude::*;
+    use frame_system::pallet_prelude::*;
 
-	/// Configure the pallet by specifying the parameters and types on which it depends.
-	#[pallet::config]
-	pub trait Config: frame_system::Config {
-		/// Because this pallet emits events, it depends on the runtime's definition of an event.
-		type Event: From<Event<Self>> + IsType<<Self as frame_system::Config>::Event>;
-	}
+    /// Configure the pallet by specifying the parameters and types on which it depends.
+    #[pallet::config]
+    pub trait Config: frame_system::Config {
+        /// Because this pallet emits events, it depends on the runtime's definition of an event.
+        type Event: From<Event<Self>> + IsType<<Self as frame_system::Config>::Event>;
 
-	#[pallet::pallet]
-	#[pallet::generate_store(pub(super) trait Store)]
-	pub struct Pallet<T>(_);
+        /// Units for balance
+        type Balance: Member + Parameter + AtLeast32BitUnsigned + Default + Copy;
 
-	// The pallet's runtime storage items.
-	// https://docs.substrate.io/v3/runtime/storage
-	#[pallet::storage]
-	#[pallet::getter(fn something)]
-	// Learn more about declaring storage items:
-	// https://docs.substrate.io/v3/runtime/storage#declaring-storage-items
-	pub type ExecThis<T> = StorageValue<_, u32>;
+        ///Currency mechanism
+        type Currency: ReservableCurrency<Self::AccountId>;
+    }
 
-	// Pallets use events to inform users when important changes are made.
-	// https://docs.substrate.io/v3/runtime/events-and-errors
-	#[pallet::event]
-	#[pallet::generate_deposit(pub(super) fn deposit_event)]
-	pub enum Event<T: Config> {
-		/// Event documentation should end with an array that provides descriptive names for event
-		/// parameters. [something, who]
-		ExecutionRequest(u32, T::AccountId),
-	}
+    #[pallet::pallet]
+    #[pallet::generate_store(pub(super) trait Store)]
+    pub struct Pallet<T>(_);
 
-	// Errors inform users that something went wrong.
-	#[pallet::error]
-	pub enum Error<T> {
-		/// Error names should be descriptive.
-		NoneValue,
-		/// Errors should have helpful documentation associated with them.
-		StorageOverflow,
-	}
+    #[pallet::storage]
+    #[pallet::getter(fn something)]
+    ///
+    pub type ReviewRecord<T: Config> = StorageMap<_, Blake2_128Concat, T::Hash, ReviewData<T>>;
 
-	// Dispatchable functions allows users to interact with the pallet and invoke state changes.
-	// These functions materialize as "extrinsics", which are often compared to transactions.
-	// Dispatchable functions must be annotated with a weight and must return a DispatchResult.
-	#[pallet::call]
-	impl<T: Config> Pallet<T> {
-		/// An example dispatchable that takes a singles value as a parameter, writes the value to
-		/// storage and emits an event. This function must be dispatched by a signed extrinsic.
-		#[pallet::weight(10_000 + T::DbWeight::get().writes(1))]
-		pub fn tool_exec_req(origin: OriginFor<T>, _url: &str, _hash: &str) -> DispatchResult {
-			// Check that the extrinsic was signed and get the signer.
-			// This function will return an error if the extrinsic is not signed.
-			// https://docs.substrate.io/v3/runtime/origins
-			let who = ensure_signed(origin)?;
+    // Pallets use events to inform users when important changes are made.
+    // https://docs.substrate.io/v3/runtime/events-and-errors
+    #[pallet::event]
+    #[pallet::generate_deposit(pub(super) fn deposit_event)]
+    pub enum Event<T: Config> {
+        /// Event documentation should end with an array that provides descriptive names for event
+        /// parameters. [something, who]
+        ExecutionRequest {
+            who: T::AccountId,
+            url: Vec<u8>,
+            hash: T::Hash,
+        },
+    }
 
-            // TBA Check if balance is > and deduced
+    // Errors inform users that something went wrong.
+    #[pallet::error]
+    pub enum Error<T> {
+        /// Error names should be descriptive.
+        NoneValue,
+        /// Errors should have helpful documentation associated with them.
+        StorageOverflow,
+        /// url address entered by user is longer than storage quota
+        UrlTooLong,
+        /// Request hash collision
+        DuplicateEntry,
+    }
 
-			// Update storage.
-			<ExecThis<T>>::put(url);
-			<ExecThis<T>>::put(hash);
+    // Dispatchable functions allows users to interact with the pallet and invoke state changes.
+    // These functions materialize as "extrinsics", which are often compared to transactions.
+    // Dispatchable functions must be annotated with a weight and must return a DispatchResult.
+    #[pallet::call]
+    impl<T: Config> Pallet<T> {
+        ///Request an audit - declare release location, its hash and proposed stake amount
+        #[pallet::weight(10_000 + T::DbWeight::get().writes(1))]
+        pub fn tool_exec_req(
+            origin: OriginFor<T>,
+            url: Vec<u8>,
+            hash: T::Hash,
+            stake: DepositBalanceOf<T>,
+        ) -> DispatchResult {
+            let sender = ensure_signed(origin)?;
 
-			// Emit an event.
-			Self::deposit_event(Event::ExecutionRequest(url, hash, who));
-			// Return a successful DispatchResultWithPostInfo
-			Ok(())
-		}
+            ensure!(
+                !ReviewRecord::<T>::contains_key(hash),
+                Error::<T>::DuplicateEntry
+            );
 
-		}
-	}
+            let author = sender.clone();
+
+            T::Currency::reserve(&sender, stake)?;
+
+            let url_bounded = url.clone().try_into().map_err(|_| Error::<T>::UrlTooLong)?;
+
+            ReviewRecord::<T>::insert(
+                hash,
+                ReviewData {
+                    deposit: stake,
+                    author: author,
+                    hash: hash,
+                    url: url_bounded,
+                    result: ReviewResult { result: 0 },
+                },
+            );
+
+            Self::deposit_event(Event::ExecutionRequest {
+                who: sender,
+                url: url,
+                hash: hash,
+            });
+            // Return a successful DispatchResultWithPostInfo
+            Ok(())
+        }
+
+        /// Cancel request due to invalid parameters
+        #[pallet::weight(100 + T::DbWeight::get().writes(1))]
+        pub fn tool_exec_cancel_invalid(origin: OriginFor<T>, hash: T::Hash) -> DispatchResult {
+            Ok(())
+        }
+
+        /// Record automated request processing results
+        #[pallet::weight(1000 + T::DbWeight::get().writes(1))]
+        pub fn tool_exec_auto_report(
+            origin: OriginFor<T>,
+            hash: T::Hash,
+            result: Vec<u8>,
+        ) -> DispatchResult {
+            Ok(())
+        }
+    }
 }

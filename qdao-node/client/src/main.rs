@@ -3,12 +3,12 @@
 
 mod chain_spec;
 #[macro_use]
-mod service;
+mod benchmarking;
 mod cli;
 mod command;
-mod command_helper;
 mod rpc;
+mod service;
 
 fn main() -> sc_cli::Result<()> {
-	command::run()
+    command::run()
 }
