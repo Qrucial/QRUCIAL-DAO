@@ -82,7 +82,14 @@ pub fn new_test_ext() -> sp_io::TestExternalities {
         .build_storage::<Test>()
         .unwrap();
     pallet_balances::GenesisConfig::<Test> {
-        balances: vec![(1, 100), (2, 100), (3, 100), (10, 100), (20, 100), (30, 100)],
+        balances: vec![
+            (1, 100),
+            (2, 100),
+            (3, 100),
+            (10, 100),
+            (20, 100),
+            (30, 100),
+        ],
     }
     .assimilate_storage(&mut t)
     .unwrap();

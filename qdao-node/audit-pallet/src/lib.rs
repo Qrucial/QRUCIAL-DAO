@@ -183,10 +183,7 @@ pub mod pallet {
                 <AuditorMap<T>>::try_get(&to_approve).map_err(|_| Error::<T>::UnknownApprovee)?;
 
             // Make sure that has not already auditor status
-            ensure!(
-                to_approve_data.score.is_none(),
-                Error::<T>::AlreadyAuditor,
-            );
+            ensure!(to_approve_data.score.is_none(), Error::<T>::AlreadyAuditor,);
 
             // Make sure that user was not already approved by sender
             ensure!(
