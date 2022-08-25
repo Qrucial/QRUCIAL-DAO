@@ -1,4 +1,4 @@
-use crate::{mock::*, AuditorScore, Error};
+use crate::{mock::*, AuditorMap, AuditorScore, Error};
 use frame_support::{assert_noop, assert_ok};
 use frame_system::ensure_signed;
 use sp_core::H256;
@@ -15,10 +15,10 @@ fn sign_up_works() {
         assert_ok!(AuditRepModule::sign_up(Origin::signed(1), hash, 10));
 
         // Then
-        let auditor_score = AuditorScore::<Test>::try_get(sender);
+        let auditor_data = AuditorMap::<Test>::try_get(sender);
         // Check that new Auditor exists with score None and correct Profile
-        assert_eq!(auditor_score.as_ref().unwrap().score, None);
-        assert_eq!(auditor_score.as_ref().unwrap().profile_hash, hash);
+        assert_eq!(auditor_data.as_ref().unwrap().score, None);
+        assert_eq!(auditor_data.as_ref().unwrap().profile_hash, hash);
     });
 }
 

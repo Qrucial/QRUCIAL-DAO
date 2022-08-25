@@ -70,7 +70,7 @@ pub mod pallet {
     // If a new Auditor signed up whose approval is pending, the Auditor scrore will be None
     #[pallet::storage]
     #[pallet::getter(fn auditor_score)]
-    pub(super) type AuditorScore<T: Config> =
+    pub(super) type AuditorMap<T: Config> =
         StorageMap<_, Blake2_128Concat, T::AccountId, AuditorData<sp_core::H256, T::AccountId>>;
 
     // New Auditor signed up
@@ -98,6 +98,12 @@ pub mod pallet {
         AlreadySignedUp,
         // Auditor doesn't provide enough stake for sign up
         InsufficientStake,
+        // User is not registered as an Auditor
+        UnknownAuditor,
+        // User is registered as an Auditor but has not been approved
+        UnapprovedAuditor,
+        // Auditor is registered, but the reputation score is to low for the intended interaction
+        ReputationToLow,
     }
 
     // Dispatchable functions allows users to interact with the pallet and invoke state changes.
@@ -120,7 +126,7 @@ pub mod pallet {
 
             // Ensure that auditor is not already signed up
             ensure!(
-                !AuditorScore::<T>::contains_key(&sender),
+                !AuditorMap::<T>::contains_key(&sender),
                 Error::<T>::AlreadySignedUp
             );
 
@@ -138,7 +144,7 @@ pub mod pallet {
                 profile_hash,
                 approved_by: BoundedVec::with_bounded_capacity(3),
             };
-            <AuditorScore<T>>::insert(sender.clone(), auditor_data);
+            <AuditorMap<T>>::insert(sender.clone(), auditor_data);
 
             // Emit an event.
             Self::deposit_event(Event::SignedUp { who: sender });
@@ -157,8 +163,34 @@ pub mod pallet {
         }
 
         #[pallet::weight(10_000 + T::DbWeight::get().writes(1))]
-        pub fn approve_auditor(_origin: OriginFor<T>, _to_approve: T::AccountId) -> DispatchResult {
-            unimplemented!();
+        pub fn approve_auditor(origin: OriginFor<T>, to_approve: T::AccountId) -> DispatchResult {
+            let sender = ensure_signed(origin)?;
+            let sender_data =
+                <AuditorMap<T>>::try_get(&sender).map_err(|_| Error::<T>::UnknownAuditor)?;
+            let sender_score = sender_data.score.ok_or(Error::<T>::UnapprovedAuditor)?;
+            ensure!(sender_score >= 2000, Error::<T>::ReputationToLow);
+            let mut to_approve_data =
+                <AuditorMap<T>>::try_get(&to_approve).map_err(|_| Error::<T>::UnknownAuditor)?;
+            ensure!(
+                to_approve_data.score.is_none(),
+                Error::<T>::UnapprovedAuditor
+            );
+            ensure!(
+                !to_approve_data.approved_by.contains(&sender),
+                Error::<T>::UnapprovedAuditor
+            );
+            to_approve_data
+                .approved_by
+                .try_push(sender)
+                .map_err(|_| Error::<T>::UnknownAuditor)?;
+
+            if to_approve_data.approved_by.len() == 3 {
+                to_approve_data.score = Some(1000);
+            }
+
+            <AuditorMap<T>>::insert(to_approve, to_approve_data);
+
+            Ok(())
         }
 
         #[pallet::weight(10_000 + T::DbWeight::get().writes(1))]
