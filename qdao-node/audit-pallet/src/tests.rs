@@ -1,4 +1,4 @@
-use crate::{mock::*, AuditorMap, AuditorScore, Error};
+use crate::{mock::*, AuditorMap, Error};
 use frame_support::{assert_noop, assert_ok};
 use frame_system::ensure_signed;
 use sp_core::H256;
@@ -9,10 +9,11 @@ fn sign_up_works() {
         // Given
         let sender = ensure_signed(Origin::signed(1)).unwrap();
         let hash = H256::repeat_byte(1);
+        let stake = 100;
 
         // When
         // Sign up a new auditor, should work
-        assert_ok!(AuditRepModule::sign_up(Origin::signed(1), hash, 10));
+        assert_ok!(AuditRepModule::sign_up(Origin::signed(1), hash, stake));
 
         // Then
         let auditor_data = AuditorMap::<Test>::try_get(sender);
