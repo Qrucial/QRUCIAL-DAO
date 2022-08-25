@@ -76,14 +76,6 @@ impl qdao_pallet_dummy::Config for Test {
     type MinAuditorStake = frame_support::traits::ConstU64<100>;
 }
 
-// // Build genesis storage according to the mock runtime.
-// pub fn new_test_ext() -> sp_io::TestExternalities {
-//     system::GenesisConfig::default()
-//         .build_storage::<Test>()
-//         .unwrap()
-//         .into()
-// }
-
 // Build genesis storage according to the mock runtime.
 pub fn new_test_ext() -> sp_io::TestExternalities {
     let mut t = system::GenesisConfig::default()
