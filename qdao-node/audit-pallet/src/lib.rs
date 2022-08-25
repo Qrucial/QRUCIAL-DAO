@@ -165,29 +165,41 @@ pub mod pallet {
         #[pallet::weight(10_000 + T::DbWeight::get().writes(1))]
         pub fn approve_auditor(origin: OriginFor<T>, to_approve: T::AccountId) -> DispatchResult {
             let sender = ensure_signed(origin)?;
+
+            // Get sender data and check that sender is qualified to approve auditors
             let sender_data =
                 <AuditorMap<T>>::try_get(&sender).map_err(|_| Error::<T>::UnknownAuditor)?;
             let sender_score = sender_data.score.ok_or(Error::<T>::UnapprovedAuditor)?;
             ensure!(sender_score >= 2000, Error::<T>::ReputationToLow);
+
+            // Get data of user which should get approved
             let mut to_approve_data =
                 <AuditorMap<T>>::try_get(&to_approve).map_err(|_| Error::<T>::UnknownAuditor)?;
+
+            // Make sure that has not already auditor status
             ensure!(
                 to_approve_data.score.is_none(),
                 Error::<T>::UnapprovedAuditor
             );
+
+            // Make sure that user was not already approved by sender
             ensure!(
                 !to_approve_data.approved_by.contains(&sender),
                 Error::<T>::UnapprovedAuditor
             );
+
+            // Add approval by sender
             to_approve_data
                 .approved_by
                 .try_push(sender)
                 .map_err(|_| Error::<T>::UnknownAuditor)?;
 
+            // If user has 3 approvals, give user Auditor status
             if to_approve_data.approved_by.len() == 3 {
                 to_approve_data.score = Some(1000);
             }
-
+            
+            // Update user data
             <AuditorMap<T>>::insert(to_approve, to_approve_data);
 
             Ok(())
