@@ -103,7 +103,13 @@ pub mod pallet {
         // User is registered as an Auditor but has not been approved
         UnapprovedAuditor,
         // Auditor is registered, but the reputation score is to low for the intended interaction
-        ReputationToLow,
+        ReputationTooLow,
+        // The user that should eb approved is note registered as an Auditor
+        UnknownApprovee,
+        // The approvee is already an Auditor
+        AlreadyAuditor,
+        // The approvee already received an approval by the sender
+        AlreadyApproved,
     }
 
     // Dispatchable functions allows users to interact with the pallet and invoke state changes.
@@ -170,35 +176,35 @@ pub mod pallet {
             let sender_data =
                 <AuditorMap<T>>::try_get(&sender).map_err(|_| Error::<T>::UnknownAuditor)?;
             let sender_score = sender_data.score.ok_or(Error::<T>::UnapprovedAuditor)?;
-            ensure!(sender_score >= 2000, Error::<T>::ReputationToLow);
+            ensure!(sender_score >= 2000, Error::<T>::ReputationTooLow);
 
             // Get data of user which should get approved
             let mut to_approve_data =
-                <AuditorMap<T>>::try_get(&to_approve).map_err(|_| Error::<T>::UnknownAuditor)?;
+                <AuditorMap<T>>::try_get(&to_approve).map_err(|_| Error::<T>::UnknownApprovee)?;
 
             // Make sure that has not already auditor status
             ensure!(
                 to_approve_data.score.is_none(),
-                Error::<T>::UnapprovedAuditor
+                Error::<T>::AlreadyAuditor,
             );
 
             // Make sure that user was not already approved by sender
             ensure!(
                 !to_approve_data.approved_by.contains(&sender),
-                Error::<T>::UnapprovedAuditor
+                Error::<T>::AlreadyApproved,
             );
 
             // Add approval by sender
             to_approve_data
                 .approved_by
                 .try_push(sender)
-                .map_err(|_| Error::<T>::UnknownAuditor)?;
+                .map_err(|_| Error::<T>::StorageOverflow)?;
 
             // If user has 3 approvals, give user Auditor status
             if to_approve_data.approved_by.len() == 3 {
                 to_approve_data.score = Some(1000);
             }
-            
+
             // Update user data
             <AuditorMap<T>>::insert(to_approve, to_approve_data);
 
