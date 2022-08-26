@@ -1,4 +1,4 @@
-use crate::{mock::*, AuditorScore, Error};
+use crate::{mock::*, AuditorMap, Error};
 use frame_support::{assert_noop, assert_ok};
 use frame_system::ensure_signed;
 use sp_core::H256;
@@ -9,16 +9,18 @@ fn sign_up_works() {
         // Given
         let sender = ensure_signed(Origin::signed(1)).unwrap();
         let hash = H256::repeat_byte(1);
+        let stake = 100;
 
         // When
-        // Sign up a new auditor, should work
-        assert_ok!(AuditRepModule::sign_up(Origin::signed(1), hash, 10));
+        // Sign up a new auditor, read the auditor_data from Storage
+        let sign_up_result = AuditRepModule::sign_up(Origin::signed(1), hash, stake);
+        let auditor_data = AuditorMap::<Test>::try_get(sender);
 
         // Then
-        let auditor_score = AuditorScore::<Test>::try_get(sender);
         // Check that new Auditor exists with score None and correct Profile
-        assert_eq!(auditor_score.as_ref().unwrap().score, None);
-        assert_eq!(auditor_score.as_ref().unwrap().profile_hash, hash);
+        assert_ok!(sign_up_result);
+        assert_eq!(auditor_data.as_ref().unwrap().score, None);
+        assert_eq!(auditor_data.as_ref().unwrap().profile_hash, hash);
     });
 }
 
@@ -48,21 +50,21 @@ fn correct_error_for_double_sign_up() {
 
         // When
         // Sign up Auditor, should work
-        assert_ok!(AuditRepModule::sign_up(
-            auditor1.clone(),
-            H256::repeat_byte(1),
-            stake
-        ));
+        let auditor1_sign_up_result =
+            AuditRepModule::sign_up(auditor1.clone(), H256::repeat_byte(1), stake);
         //Sign up second (different) auditor, should also work
-        assert_ok!(AuditRepModule::sign_up(
-            auditor2,
-            H256::repeat_byte(1),
-            stake
-        ));
+        let auditor2_sign_up_result =
+            AuditRepModule::sign_up(auditor2, H256::repeat_byte(1), stake);
         // Sign up an already signed up auditor, should return an error
-        let result = AuditRepModule::sign_up(auditor1, H256::repeat_byte(1), stake);
+        let auditor_1_second_sign_up_result =
+            AuditRepModule::sign_up(auditor1, H256::repeat_byte(1), stake);
 
         // Then
-        assert_noop!(result, Error::<Test>::AlreadySignedUp);
+        assert_ok!(auditor1_sign_up_result);
+        assert_ok!(auditor2_sign_up_result);
+        assert_noop!(
+            auditor_1_second_sign_up_result,
+            Error::<Test>::AlreadySignedUp
+        );
     });
 }

@@ -76,21 +76,20 @@ impl qdao_pallet_dummy::Config for Test {
     type MinAuditorStake = frame_support::traits::ConstU64<100>;
 }
 
-// // Build genesis storage according to the mock runtime.
-// pub fn new_test_ext() -> sp_io::TestExternalities {
-//     system::GenesisConfig::default()
-//         .build_storage::<Test>()
-//         .unwrap()
-//         .into()
-// }
-
 // Build genesis storage according to the mock runtime.
 pub fn new_test_ext() -> sp_io::TestExternalities {
     let mut t = system::GenesisConfig::default()
         .build_storage::<Test>()
         .unwrap();
     pallet_balances::GenesisConfig::<Test> {
-        balances: vec![(1, 10), (2, 10), (3, 10), (10, 100), (20, 100), (30, 100)],
+        balances: vec![
+            (1, 100),
+            (2, 100),
+            (3, 100),
+            (10, 100),
+            (20, 100),
+            (30, 100),
+        ],
     }
     .assimilate_storage(&mut t)
     .unwrap();
