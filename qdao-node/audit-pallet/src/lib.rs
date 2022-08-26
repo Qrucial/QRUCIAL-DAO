@@ -12,6 +12,7 @@ use frame_system::Config as SystemConfig;
 pub use pallet::*;
 use sp_std::prelude::*;
 
+
 #[cfg(test)]
 mod mock;
 
@@ -27,11 +28,12 @@ type DepositBalanceOf<T> =
 #[frame_support::pallet]
 pub mod pallet {
     use super::*;
-    use frame_support::pallet_prelude::*;
+    use frame_support::{pallet_prelude::*};
     use frame_system::pallet_prelude::*;
     use sp_core::H256;
 
     #[derive(Encode, Decode, Default, Clone, PartialEq, TypeInfo, MaxEncodedLen)]
+    #[cfg_attr(feature = "std", derive(serde::Serialize, serde::Deserialize))]
     pub struct AuditorData<Hash, AccountId> {
         pub score: Option<u32>,
         pub profile_hash: Hash,
@@ -72,6 +74,28 @@ pub mod pallet {
     #[pallet::getter(fn auditor_score)]
     pub(super) type AuditorMap<T: Config> =
         StorageMap<_, Blake2_128Concat, T::AccountId, AuditorData<sp_core::H256, T::AccountId>>;
+
+    #[pallet::genesis_config]
+    pub struct GenesisConfig<T: Config> {
+        pub auditor_map: Vec<(T::AccountId,AuditorData<sp_core::H256, T::AccountId>)>,
+    }
+
+    #[cfg(feature = "std")]
+    impl<T: Config> Default for GenesisConfig<T> {
+	    fn default() -> Self {
+		    Self { auditor_map: Default::default() }
+	    }
+    }
+
+    #[pallet::genesis_build]
+    impl<T: Config> GenesisBuild<T> for GenesisConfig<T> {
+	    fn build(&self) {
+		    // <SingleValue<T>>::put(&self.single_value);
+		    for (a, b) in &self.auditor_map {
+		     	<AuditorMap<T>>::insert(a, b);
+		    }
+	    }
+    }
 
     // New Auditor signed up
     #[pallet::event]

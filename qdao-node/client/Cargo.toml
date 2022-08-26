@@ -57,6 +57,7 @@ frame-benchmarking-cli = { version = "4.0.0-dev", git = "https://github.com/pari
 
 # Local Dependencies
 qdao-runtime = { version = "0.0.1", path = "../runtime" }
+qdao-audit-pallet = { version = "0.0.1", default-features = false, path = "../audit-pallet" }
 
 # CLI-specific dependencies
 try-runtime-cli = { version = "0.10.0-dev", optional = true, git = "https://github.com/paritytech/substrate.git" }
