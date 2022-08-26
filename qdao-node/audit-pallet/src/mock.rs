@@ -98,9 +98,17 @@ pub fn new_test_ext() -> sp_io::TestExternalities {
         profile_hash: H256::repeat_byte(1),
         approved_by: BoundedVec::with_bounded_capacity(3),
     };
+    let auditor_data_low_score = AuditorData::<H256, u64> {
+        score: Some(1000),
+        profile_hash: H256::repeat_byte(1),
+        approved_by: BoundedVec::with_bounded_capacity(3),
+    };
     qdao_pallet_dummy::GenesisConfig::<Test> {
         auditor_map: vec![
-            (4, auditor_data),
+            (4, auditor_data.clone()),
+            (5, auditor_data.clone()),
+            (6, auditor_data),
+            (7, auditor_data_low_score),
         ],
     }
     .assimilate_storage(&mut t)
