@@ -68,3 +68,27 @@ fn correct_error_for_double_sign_up() {
         );
     });
 }
+
+#[test]
+fn approval_works() {
+    new_test_ext().execute_with(|| {
+        // Given
+        let approvee = ensure_signed(Origin::signed(1)).unwrap();
+        let hash = H256::repeat_byte(1);
+        let stake = 100;
+        let _approver = ensure_signed(Origin::signed(4)).unwrap();
+
+        // When
+        // Sign up a new auditor, read the auditor_data from Storage
+        let sign_up_result = AuditRepModule::sign_up(Origin::signed(1), hash, stake);
+        let approval_result = AuditRepModule::approve_auditor(Origin::signed(4), approvee);
+        let auditor_data = AuditorMap::<Test>::try_get(approvee);
+
+        // Then
+        // Check that new Auditor exists with score None and correct Profile
+        assert_ok!(sign_up_result);
+        assert_ok!(approval_result);
+        assert_eq!(auditor_data.as_ref().unwrap().score, None);
+        assert_eq!(auditor_data.as_ref().unwrap().profile_hash, hash);
+    });
+}

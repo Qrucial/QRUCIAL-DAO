@@ -94,7 +94,7 @@ pub fn new_test_ext() -> sp_io::TestExternalities {
     .assimilate_storage(&mut t)
     .unwrap();
     let auditor_data = AuditorData::<H256, u64> {
-        score: None,
+        score: Some(2000),
         profile_hash: H256::repeat_byte(1),
         approved_by: BoundedVec::with_bounded_capacity(3),
     };
