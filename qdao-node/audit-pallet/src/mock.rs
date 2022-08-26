@@ -1,7 +1,7 @@
-use crate as qdao_pallet_dummy;
+use crate::{self as qdao_pallet_dummy, AuditorData};
 use frame_support::{
     parameter_types,
-    traits::{ConstU16, ConstU64, GenesisBuild},
+    traits::{ConstU16, ConstU64, GenesisBuild}, BoundedVec,
 };
 use frame_system as system;
 use sp_core::H256;
@@ -93,8 +93,15 @@ pub fn new_test_ext() -> sp_io::TestExternalities {
     }
     .assimilate_storage(&mut t)
     .unwrap();
+    let auditor_data = AuditorData::<H256, u64> {
+        score: None,
+        profile_hash: H256::repeat_byte(1),
+        approved_by: BoundedVec::with_bounded_capacity(3),
+    };
     qdao_pallet_dummy::GenesisConfig::<Test> {
-        auditor_map: Vec::new()
+        auditor_map: vec![
+            (4, auditor_data),
+        ],
     }
     .assimilate_storage(&mut t)
     .unwrap();
