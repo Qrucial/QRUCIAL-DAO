@@ -1,7 +1,7 @@
 use crate as qdao_pallet_dummy;
 use frame_support::{
     parameter_types,
-    traits::{ConstU16, ConstU64},
+    traits::{ConstU16, ConstU64, GenesisBuild},
 };
 use frame_system as system;
 use sp_core::H256;
@@ -90,6 +90,11 @@ pub fn new_test_ext() -> sp_io::TestExternalities {
             (20, 100),
             (30, 100),
         ],
+    }
+    .assimilate_storage(&mut t)
+    .unwrap();
+    qdao_pallet_dummy::GenesisConfig::<Test> {
+        auditor_map: Vec::new()
     }
     .assimilate_storage(&mut t)
     .unwrap();

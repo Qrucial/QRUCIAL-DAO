@@ -3,7 +3,7 @@
 use frame_support::{
     sp_runtime::traits::AtLeast32BitUnsigned,
     traits::{Currency, ReservableCurrency},
-    BoundedVec,
+    BoundedVec, 
 };
 use frame_system::Config as SystemConfig;
 /// Edit this file to define custom logic or remove it if it is not needed.
@@ -95,6 +95,20 @@ pub mod pallet {
 		     	<AuditorMap<T>>::insert(a, b);
 		    }
 	    }
+
+        /// Assimilate the storage for this module into pre-existing overlays.
+	    fn assimilate_storage(&self, storage: &mut sp_runtime::Storage) -> Result<(), String> {
+		    frame_support::BasicExternalities::execute_with_storage(storage, || {
+			    self.build();
+			    Ok(())
+		    })
+	    }
+
+        fn build_storage(&self) -> Result<sp_runtime::Storage, String> {
+		let mut storage = Default::default();
+		self.assimilate_storage(&mut storage)?;
+		Ok(storage)
+	}
     }
 
     // New Auditor signed up
