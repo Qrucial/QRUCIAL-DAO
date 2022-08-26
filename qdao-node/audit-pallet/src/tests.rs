@@ -93,12 +93,16 @@ fn approval_of_auditor_works() {
         assert_ok!(approval_result);
         assert_eq!(auditor_data.as_ref().unwrap().score, None);
         assert_eq!(auditor_data.as_ref().unwrap().profile_hash, hash);
-        assert_eq!(auditor_data.as_ref().unwrap().approved_by.contains(&approver_id), true);
-        assert_eq!(auditor_data.as_ref().unwrap().approved_by.len(), 1);
-        assert_noop!(
-            double_approval_result,
-            Error::<Test>::AlreadyApproved
+        assert_eq!(
+            auditor_data
+                .as_ref()
+                .unwrap()
+                .approved_by
+                .contains(&approver_id),
+            true
         );
+        assert_eq!(auditor_data.as_ref().unwrap().approved_by.len(), 1);
+        assert_noop!(double_approval_result, Error::<Test>::AlreadyApproved);
     });
 }
 
@@ -115,16 +119,14 @@ fn approval_with_low_reputation_fails() {
         // When
         // Sign up a new auditor, read the auditor_data from Storage
         let sign_up_result = AuditRepModule::sign_up(approvee, hash, stake);
-        let approval_result = AuditRepModule::approve_auditor(approver_low_rep.clone(), approvee_id);
+        let approval_result =
+            AuditRepModule::approve_auditor(approver_low_rep.clone(), approvee_id);
         let auditor_data = AuditorMap::<Test>::try_get(approvee_id);
 
         // Then
         // Check that new Auditor exists with score None and correct Profile
         assert_ok!(sign_up_result);
-        assert_noop!(
-            approval_result,
-            Error::<Test>::ReputationTooLow
-        );
+        assert_noop!(approval_result, Error::<Test>::ReputationTooLow);
         assert_eq!(auditor_data.as_ref().unwrap().score, None);
         assert_eq!(auditor_data.as_ref().unwrap().profile_hash, hash);
         assert_eq!(auditor_data.as_ref().unwrap().approved_by.is_empty(), true);
@@ -142,7 +144,6 @@ fn approval_works() {
         let approver1 = Origin::signed(4);
         let approver2 = Origin::signed(5);
         let approver3 = Origin::signed(6);
-        
 
         // When
         // Sign up a new auditor, read the auditor_data from Storage

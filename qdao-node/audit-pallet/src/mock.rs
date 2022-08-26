@@ -1,7 +1,8 @@
 use crate::{self as qdao_pallet_dummy, AuditorData};
 use frame_support::{
     parameter_types,
-    traits::{ConstU16, ConstU64, GenesisBuild}, BoundedVec,
+    traits::{ConstU16, ConstU64, GenesisBuild},
+    BoundedVec,
 };
 use frame_system as system;
 use sp_core::H256;
