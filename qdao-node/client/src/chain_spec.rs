@@ -1,3 +1,4 @@
+use qdao_audit_pallet::pallet::GenesisConfig as AuditConfig;
 use qdao_runtime::{
     AccountId, AuraConfig, BalancesConfig, GenesisConfig, GrandpaConfig, Signature, SudoConfig,
     SystemConfig, WASM_BINARY,
@@ -162,5 +163,6 @@ fn testnet_genesis(
             key: Some(root_key),
         },
         transaction_payment: Default::default(),
+        audit_module: AuditConfig::default(),
     }
 }
