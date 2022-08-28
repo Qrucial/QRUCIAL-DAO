@@ -1,13 +1,13 @@
-use substrate_fixed::{transcendental::pow, types::I33F95};
+use substrate_fixed::{transcendental::pow, types::I33F31};
 pub struct EloRank {
     pub k: i32,
 }
 
 impl EloRank {
-    fn calculate_expected(&self, score_a: u32, score_b: u32) -> I33F95 {
-        let exp = (I33F95::from(score_b) - I33F95::from(score_a)) / I33F95::from(400);
-        let res: I33F95 = pow(I33F95::from(10), exp).unwrap();
-        I33F95::from(1) / (I33F95::from(1) + res)
+    fn calculate_expected(&self, score_a: u32, score_b: u32) -> I33F31 {
+        let exp = (I33F31::from(score_b) - I33F31::from(score_a)) / I33F31::from(400);
+        let res: I33F31 = pow(I33F31::from(10), exp).unwrap();
+        I33F31::from(1) / (I33F31::from(1) + res)
     }
 
     pub fn calculate(&self, winner: u32, looser: u32) -> (u32, u32) {
@@ -17,10 +17,10 @@ impl EloRank {
         let expected_b = self.calculate_expected(looser, winner);
 
         let (score_w, score_l) = (1, 0);
-        let winner_new_score = I33F95::from(winner)
-            + I33F95::from(k) * (I33F95::from(score_w) - expected_a);
-        let looser_new_score = I33F95::from(looser)
-            + I33F95::from(k) * (I33F95::from(score_l) - expected_b);
+        let winner_new_score = I33F31::from(winner)
+            + I33F31::from(k) * (I33F31::from(score_w) - expected_a);
+        let looser_new_score = I33F31::from(looser)
+            + I33F31::from(k) * (I33F31::from(score_l) - expected_b);
 
         (
             winner_new_score.round().to_num(),
