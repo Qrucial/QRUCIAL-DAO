@@ -1,36 +1,7 @@
-use substrate_fixed::{FixedI64,transcendental::pow, types::I33F95};
-use sp_runtime::traits::Saturating;
-use sp_runtime::{FixedPointNumber};
+use substrate_fixed::{transcendental::pow, types::I33F95};
 pub struct EloRank {
     pub k: i32,
 }
-
-// Storage for auditors and their score
-//      Auditor ID = pubkey
-//      Score (multiple of them!)
-// History of games?
-
-// Storage for audits and requestors (NFT! this is a link)
-//      Audit_Requestor --> List, NTDNFT owner, vuln approver?
-//      Tags (Rust smart contract ink! AND EVM Solidity) --> can be extended
-
-// Fixed values
-//      elo_ratio
-//      start_score
-//      max_elo_score
-//      min_elo_score
-
-// Functions needed / extrinsics!
-//      sign_up() --> anyone can sign up by paying X coins/fee/stake OR captcha
-//      add_auditor() --> governance only!
-//      remove_auditor() --> governance only! TEMPORARY FUNCTION, eg SUDO
-//      approve_signup --> governance only!
-//      extend_tag() --> governance only!
-//      challange_vuln() --> any signed up auditor
-//          - Uses the EloRank implementation
-//          - Call storage and list it, time limit
-//          - Who wins?
-//      council_challenge_decide() --> governance only! BLACKBELTS
 
 impl EloRank {
     fn calculate_expected(&self, score_a: u32, score_b: u32) -> I33F95 {
