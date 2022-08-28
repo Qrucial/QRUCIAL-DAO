@@ -82,6 +82,7 @@ pub fn new_test_ext() -> sp_io::TestExternalities {
     let mut t = system::GenesisConfig::default()
         .build_storage::<Test>()
         .unwrap();
+    // We provide some initial abalances which are high enough for users to sign_up (100 stake required)
     pallet_balances::GenesisConfig::<Test> {
         balances: vec![
             (1, 100),
@@ -94,11 +95,13 @@ pub fn new_test_ext() -> sp_io::TestExternalities {
     }
     .assimilate_storage(&mut t)
     .unwrap();
+    // We provide some initial Auditors which are able to approve other Auditors (reputation is high enough)
     let auditor_data = AuditorData::<H256, u64> {
         score: Some(2000),
         profile_hash: H256::repeat_byte(1),
         approved_by: BoundedVec::with_bounded_capacity(3),
     };
+    // We also want Auditors with a reputation score which is not high enough for Approvals, so that an attempted approval fails
     let auditor_data_low_score = AuditorData::<H256, u64> {
         score: Some(1000),
         profile_hash: H256::repeat_byte(1),

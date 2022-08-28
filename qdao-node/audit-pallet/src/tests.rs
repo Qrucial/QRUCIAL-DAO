@@ -1,4 +1,4 @@
-use crate::{mock::*, AuditorMap, Error};
+use crate::{mock::*, AuditorMap, Error, Winner};
 use frame_support::{assert_noop, assert_ok};
 use frame_system::ensure_signed;
 use sp_core::H256;
@@ -164,4 +164,31 @@ fn approval_works() {
         // User should now have the auditor status
         assert_eq!(auditor_data.as_ref().unwrap().score, Some(1000));
     });
+}
+
+#[test]
+fn elo_score_update_works() {
+    new_test_ext().execute_with(|| {
+        // Given
+        let player0 = Origin::signed(4);
+        let player0_id = ensure_signed(player0.clone()).unwrap();
+        let player1 = Origin::signed(5);
+        let player1_id = ensure_signed(player1.clone()).unwrap();
+
+        // When
+        // Submit a game result, initially both players have score 2000, Player0 wins
+        let game_result =
+            AuditRepModule::game_result(Origin::root(), player0_id, player1_id, Winner::Player0);
+        let player0_data = AuditorMap::<Test>::try_get(player0_id).unwrap();
+        let player1_data = AuditorMap::<Test>::try_get(player1_id).unwrap();
+        let (player0_score, player1_score) = (player0_data.score.unwrap(), player1_data.score.unwrap());
+
+
+        // Then
+        // Check that Score of Player0 is now higher then Score of Player1 and check for exact scores
+        assert_ok!(game_result);
+        assert!(player0_score > player1_score);
+        assert_eq!(player0_score, 2016);
+        assert_eq!(player1_score, 1984);
+    })
 }
