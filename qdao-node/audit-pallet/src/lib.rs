@@ -223,7 +223,10 @@ pub mod pallet {
             let sender_data =
                 <AuditorMap<T>>::try_get(&sender).map_err(|_| Error::<T>::UnknownAuditor)?;
             let sender_score = sender_data.score.ok_or(Error::<T>::UnapprovedAuditor)?;
-            ensure!(sender_score >= T::MinimalApproverScore::get(), Error::<T>::ReputationTooLow);
+            ensure!(
+                sender_score >= T::MinimalApproverScore::get(),
+                Error::<T>::ReputationTooLow
+            );
 
             // Get data of user which should get approved
             let mut to_approve_data =
