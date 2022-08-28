@@ -11,16 +11,16 @@ impl EloRank {
     }
 
     pub fn calculate(&self, winner: u32, looser: u32) -> (u32, u32) {
-        let k = self.k as u32;
+        let k = self.k;
 
         let expected_a = self.calculate_expected(winner, looser);
         let expected_b = self.calculate_expected(looser, winner);
 
         let (score_w, score_l) = (1, 0);
-        let winner_new_score = I33F95::from(winner as i16)
-            + I33F95::from(k) * (I33F95::from(score_w as i16) - expected_a);
-        let looser_new_score = I33F95::from(looser as i16)
-            + I33F95::from(k as i16) * (I33F95::from(score_l as i16) - expected_b);
+        let winner_new_score = I33F95::from(winner)
+            + I33F95::from(k) * (I33F95::from(score_w) - expected_a);
+        let looser_new_score = I33F95::from(looser)
+            + I33F95::from(k) * (I33F95::from(score_l) - expected_b);
 
         (
             winner_new_score.round().to_num(),
