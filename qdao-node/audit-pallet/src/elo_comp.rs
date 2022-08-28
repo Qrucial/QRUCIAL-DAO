@@ -5,10 +5,9 @@ pub struct EloRank {
 
 impl EloRank {
     fn calculate_expected(&self, score_a: u32, score_b: u32) -> I33F95 {
-        let exp = (I33F95::from(score_b) - I33F95::from(score_a))
-            / I33F95::from(400);
-        let res:I33F95 = pow(I33F95::from(10), exp).unwrap();
-        I33F95::from(1) / (I33F95::from(1)+res)
+        let exp = (I33F95::from(score_b) - I33F95::from(score_a)) / I33F95::from(400);
+        let res: I33F95 = pow(I33F95::from(10), exp).unwrap();
+        I33F95::from(1) / (I33F95::from(1) + res)
     }
 
     pub fn calculate(&self, winner: u32, looser: u32) -> (u32, u32) {

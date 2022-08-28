@@ -181,8 +181,8 @@ fn elo_score_update_works() {
             AuditRepModule::game_result(Origin::root(), player0_id, player1_id, Winner::Player0);
         let player0_data = AuditorMap::<Test>::try_get(player0_id).unwrap();
         let player1_data = AuditorMap::<Test>::try_get(player1_id).unwrap();
-        let (player0_score, player1_score) = (player0_data.score.unwrap(), player1_data.score.unwrap());
-
+        let (player0_score, player1_score) =
+            (player0_data.score.unwrap(), player1_data.score.unwrap());
 
         // Then
         // Check that Score of Player0 is now higher then Score of Player1 and check for exact scores
