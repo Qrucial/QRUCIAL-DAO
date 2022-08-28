@@ -17,10 +17,10 @@ impl EloRank {
         let expected_b = self.calculate_expected(looser, winner);
 
         let (score_w, score_l) = (1, 0);
-        let winner_new_score = I33F31::from(winner)
-            + I33F31::from(k) * (I33F31::from(score_w) - expected_a);
-        let looser_new_score = I33F31::from(looser)
-            + I33F31::from(k) * (I33F31::from(score_l) - expected_b);
+        let winner_new_score =
+            I33F31::from(winner) + I33F31::from(k) * (I33F31::from(score_w) - expected_a);
+        let looser_new_score =
+            I33F31::from(looser) + I33F31::from(k) * (I33F31::from(score_l) - expected_b);
 
         (
             winner_new_score.round().to_num(),
