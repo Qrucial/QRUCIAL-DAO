@@ -1,3 +1,6 @@
+use substrate_fixed::{FixedI64,transcendental::pow, types::I33F95};
+use sp_runtime::traits::Saturating;
+use sp_runtime::{FixedPointNumber};
 pub struct EloRank {
     pub k: i32,
 }
@@ -30,8 +33,11 @@ pub struct EloRank {
 //      council_challenge_decide() --> governance only! BLACKBELTS
 
 impl EloRank {
-    fn calculate_expected(&self, score_a: u32, score_b: u32) -> f32 {
-        1.0 / (1.0 + (10f32.powf((score_b as f32 - score_a as f32) / 400.0)))
+    fn calculate_expected(&self, score_a: u32, score_b: u32) -> I33F95 {
+        let exp = (I33F95::from(score_b) - I33F95::from(score_a))
+            / I33F95::from(400);
+        let res:I33F95 = pow(I33F95::from(10), exp).unwrap();
+        I33F95::from(1) / (I33F95::from(1)+res)
     }
 
     pub fn calculate(&self, winner: u32, looser: u32) -> (u32, u32) {
@@ -41,10 +47,15 @@ impl EloRank {
         let expected_b = self.calculate_expected(looser, winner);
 
         let (score_w, score_l) = (1, 0);
-        let winner_new_score = winner as f32 + k as f32 * (score_w as f32 - expected_a);
-        let looser_new_score = looser as f32 + k as f32 * (score_l as f32 - expected_b);
+        let winner_new_score = I33F95::from(winner as i16)
+            + I33F95::from(k) * (I33F95::from(score_w as i16) - expected_a);
+        let looser_new_score = I33F95::from(looser as i16)
+            + I33F95::from(k as i16) * (I33F95::from(score_l as i16) - expected_b);
 
-        (winner_new_score.round() as u32, looser_new_score.round() as u32)
+        (
+            winner_new_score.round().to_num(),
+            looser_new_score.round().to_num(),
+        )
     }
 }
 
