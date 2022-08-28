@@ -61,6 +61,10 @@ pub mod pallet {
         #[pallet::constant] // put the constant in metadata
         /// Minimum amount which is required for an Auditor to be able to sign up.
         type MinAuditorStake: Get<DepositBalanceOf<Self>>;
+
+        #[pallet::constant] // put the constant in metadata
+        /// Initial score for an auditor which signed up and received 3 approvals
+        type InitialAuditorScore: Get<u32>;
     }
 
     #[pallet::pallet]
@@ -238,7 +242,7 @@ pub mod pallet {
 
             // If user has 3 approvals, give user Auditor status
             if to_approve_data.approved_by.len() == 3 {
-                to_approve_data.score = Some(1000);
+                to_approve_data.score = Some(T::InitialAuditorScore::get());
             }
 
             // Update user data
