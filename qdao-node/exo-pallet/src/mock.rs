@@ -78,10 +78,10 @@ impl qdao_exo_pallet::Config for Test {
 
 impl qdao_audit_pallet::Game<Test> for Test {
     fn apply_result(
-                _player0: <Test as system::Config>::AccountId,
-                _player1: <Test as system::Config>::AccountId,
-                _winner: qdao_audit_pallet::Winner,
-            ) -> frame_support::pallet_prelude::DispatchResult {
+        _player0: <Test as system::Config>::AccountId,
+        _player1: <Test as system::Config>::AccountId,
+        _winner: qdao_audit_pallet::Winner,
+    ) -> frame_support::pallet_prelude::DispatchResult {
         unimplemented!()
     }
 }
