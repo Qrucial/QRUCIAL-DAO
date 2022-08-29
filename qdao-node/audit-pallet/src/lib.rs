@@ -21,11 +21,15 @@ mod tests;
 #[cfg(feature = "runtime-benchmarks")]
 mod benchmarking;
 
+mod elo_comp;
+
 type DepositBalanceOf<T> =
     <<T as Config>::Currency as Currency<<T as SystemConfig>::AccountId>>::Balance;
 
 #[frame_support::pallet]
 pub mod pallet {
+    use crate::elo_comp::EloRank;
+
     use super::*;
     use frame_support::pallet_prelude::*;
     use frame_system::pallet_prelude::*;
@@ -276,8 +280,37 @@ pub mod pallet {
             player1: T::AccountId,
             winner: Winner,
         ) -> DispatchResult {
-            unimplemented!(); // Here be dragons, with the actual Élő-score algorithm
+            // Get data and particularly scores of both players
+            let mut player0_data =
+                <AuditorMap<T>>::try_get(&player0).map_err(|_| Error::<T>::UnknownAuditor)?;
+            let player0_score = player0_data.score.ok_or(Error::<T>::UnapprovedAuditor)?;
+            let mut player1_data =
+                <AuditorMap<T>>::try_get(&player1).map_err(|_| Error::<T>::UnknownAuditor)?;
+            let player1_score = player1_data.score.ok_or(Error::<T>::UnapprovedAuditor)?;
 
+            // Map winner and looser scores accordingly
+            let (winner_score, looser_score) = match winner {
+                Winner::Player0 => (player0_score, player1_score),
+                Winner::Player1 => (player1_score, player0_score),
+                _ => return Ok(()),
+            };
+
+            // Instantiate EloRank, compute new scores
+            let elo = EloRank { k: 32 };
+            let (winner_new, looser_new) = elo.calculate(winner_score, looser_score);
+
+            // Map score results accordingly
+            (player0_data.score, player1_data.score) = match winner {
+                Winner::Player0 => (Some(winner_new), Some(looser_new)),
+                Winner::Player1 => (Some(looser_new), Some(winner_new)),
+                _ => return Ok(()),
+            };
+
+            // Write update of player data to runtime storage
+            <AuditorMap<T>>::insert(&player0, player0_data);
+            <AuditorMap<T>>::insert(&player1, player1_data);
+
+            // Emit GameResult event
             Self::deposit_event(Event::GameResult {
                 player0,
                 player1,
