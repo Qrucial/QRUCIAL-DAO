@@ -86,6 +86,6 @@ jobs:
         with:
           toolchain: stable
           command: nextest
-          args: run --all-features --locked --manifest-path ./qdao-node/Cargo.toml
+          args: run  --locked --manifest-path ./qdao-node/Cargo.toml
           
    
