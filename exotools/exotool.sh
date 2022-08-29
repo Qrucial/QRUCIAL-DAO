@@ -46,7 +46,7 @@ function prep_folders {
   
   if [[ ! $HASH ]]; then echo "Hash is not set, Fix code flow"; exit 1; fi
   
-  MOUNTPOINT="$SCRIPT_PATH"/audits/"$HASH"
+  MOUNTPOINT="$SCRIPT_PATH"/static/"$HASH"
   TIMESTAMP_PATH="$MOUNTPOINT"/reports/"$DATE_READABLE"/
   EXTRACT_PATH="$MOUNTPOINT"/audit_files/extract/
   DOWNLOAD_PATH="$MONTPOINT"/audit_files/download/
@@ -110,7 +110,7 @@ function scorched_earth {
   echo "~~~"
   docker container stop "$HASH"
   docker container rm "$HASH" 
-  rm -rf "$SCRIPT_PATH"/audits/"$HASH"
+  rm -rf "$MOUNTPOINT"
 }
 
 function to_local_dir () {
@@ -172,4 +172,4 @@ exec_audit
 scorched_earth
 #safe_crash
 
-## ExecutionLogger --> Monitors for new audits!
+## ExecutionLogger --> Monitors for new static!

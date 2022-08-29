@@ -14,7 +14,7 @@ type UncheckedExtrinsic = frame_system::mocking::MockUncheckedExtrinsic<Test>;
 type Block = frame_system::mocking::MockBlock<Test>;
 
 // Configure a mock runtime to test the pallet.
-frame_support::construct_runtime!(
+construct_runtime!(
     pub enum Test where
         Block = Block,
         NodeBlock = Block,
@@ -73,6 +73,17 @@ impl qdao_exo_pallet::Config for Test {
     type Event = Event;
     type Balance = u32;
     type Currency = Balances;
+    type Game = Self;
+}
+
+impl qdao_audit_pallet::Game<Test> for Test {
+    fn apply_result(
+        _player0: <Test as system::Config>::AccountId,
+        _player1: <Test as system::Config>::AccountId,
+        _winner: qdao_audit_pallet::Winner,
+    ) -> frame_support::pallet_prelude::DispatchResult {
+        unimplemented!()
+    }
 }
 
 // Build genesis storage according to the mock runtime.

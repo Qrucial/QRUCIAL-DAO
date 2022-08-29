@@ -21,11 +21,15 @@ mod tests;
 #[cfg(feature = "runtime-benchmarks")]
 mod benchmarking;
 
+mod elo_comp;
+
 type DepositBalanceOf<T> =
     <<T as Config>::Currency as Currency<<T as SystemConfig>::AccountId>>::Balance;
 
 #[frame_support::pallet]
 pub mod pallet {
+    use crate::elo_comp::EloRank;
+
     use super::*;
     use frame_support::pallet_prelude::*;
     use frame_system::pallet_prelude::*;
@@ -61,6 +65,14 @@ pub mod pallet {
         #[pallet::constant] // put the constant in metadata
         /// Minimum amount which is required for an Auditor to be able to sign up.
         type MinAuditorStake: Get<DepositBalanceOf<Self>>;
+
+        #[pallet::constant] // put the constant in metadata
+        /// Initial score for an auditor which signed up and received 3 approvals
+        type InitialAuditorScore: Get<u32>;
+
+        #[pallet::constant] // put the constant in metadata
+        /// Minimal score which allows auditors to approve other auditors
+        type MinimalApproverScore: Get<u32>;
     }
 
     #[pallet::pallet]
@@ -215,7 +227,10 @@ pub mod pallet {
             let sender_data =
                 <AuditorMap<T>>::try_get(&sender).map_err(|_| Error::<T>::UnknownAuditor)?;
             let sender_score = sender_data.score.ok_or(Error::<T>::UnapprovedAuditor)?;
-            ensure!(sender_score >= 2000, Error::<T>::ReputationTooLow);
+            ensure!(
+                sender_score >= T::MinimalApproverScore::get(),
+                Error::<T>::ReputationTooLow
+            );
 
             // Get data of user which should get approved
             let mut to_approve_data =
@@ -238,7 +253,7 @@ pub mod pallet {
 
             // If user has 3 approvals, give user Auditor status
             if to_approve_data.approved_by.len() == 3 {
-                to_approve_data.score = Some(1000);
+                to_approve_data.score = Some(T::InitialAuditorScore::get());
             }
 
             // Update user data
@@ -276,8 +291,37 @@ pub mod pallet {
             player1: T::AccountId,
             winner: Winner,
         ) -> DispatchResult {
-            unimplemented!(); // Here be dragons, with the actual Élő-score algorithm
+            // Get data and particularly scores of both players
+            let mut player0_data =
+                <AuditorMap<T>>::try_get(&player0).map_err(|_| Error::<T>::UnknownAuditor)?;
+            let player0_score = player0_data.score.ok_or(Error::<T>::UnapprovedAuditor)?;
+            let mut player1_data =
+                <AuditorMap<T>>::try_get(&player1).map_err(|_| Error::<T>::UnknownAuditor)?;
+            let player1_score = player1_data.score.ok_or(Error::<T>::UnapprovedAuditor)?;
 
+            // Map winner and looser scores accordingly
+            let (winner_score, looser_score) = match winner {
+                Winner::Player0 => (player0_score, player1_score),
+                Winner::Player1 => (player1_score, player0_score),
+                _ => return Ok(()),
+            };
+
+            // Instantiate EloRank, compute new scores
+            let elo = EloRank { k: 32 };
+            let (winner_new, looser_new) = elo.calculate(winner_score, looser_score);
+
+            // Map score results accordingly
+            (player0_data.score, player1_data.score) = match winner {
+                Winner::Player0 => (Some(winner_new), Some(looser_new)),
+                Winner::Player1 => (Some(looser_new), Some(winner_new)),
+                _ => return Ok(()),
+            };
+
+            // Write update of player data to runtime storage
+            <AuditorMap<T>>::insert(&player0, player0_data);
+            <AuditorMap<T>>::insert(&player1, player1_data);
+
+            // Emit GameResult event
             Self::deposit_event(Event::GameResult {
                 player0,
                 player1,
