@@ -19,16 +19,19 @@ exotool.sh "<URL>" "<HASH>"
   - └> save output into the report/report.json
 - convert the docker container back into image, store that in timestamp.
 - prune the image saving up space, reduce clutter.
+- notify lar.py for signing extrinsics and sending it to ExoSys
 
 
 # 🔭 Overview
 | Current Directory  | Description                                                                  |
 |------------------- |----------------------------------------------------------------------------- |
-| audits             | This folder is used to store the audits.                                     |
+| static             | This folder is used to store the audits.                                     |
 | docker             | This folder is where the various dockerfile and docker images will be stored |
 | exotool.sh         | This script will orchistrate the audit vesrions, timestamps and docker setup |
 
+## ExoTool Logger and Extrinsic reporter
+ExoTool sends succ/fail HTTP POST --> Logger checks it through API key --> Uses sube to send extrinsic to qdao-node
 
 # 📚 Wiki:
 
-EXOTOOLS-PALLET wiki [can be found here](https://github.com/Qrucial/QRUCIAL-DAO/wiki/ExoTool).   
+EXOTOOL wiki [can be found here](https://github.com/Qrucial/QRUCIAL-DAO/wiki/ExoTool).   

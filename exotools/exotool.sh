@@ -46,9 +46,9 @@ function prep_folders {
   
   if [[ ! $HASH ]]; then echo "Hash is not set, Fix code flow"; exit 1; fi
   
-  TIMESTAMP_DIR="$SCRIPT_PATH"/audits/"$HASH"/"$DATE_READABLE"/
-  PROGRAM_DIR="$SCRIPT_PATH"/audits/"$HASH"/audit_files/program/
-  REPORT_DIR="$SCRIPT_PATH"/audits/"$HASH"/reports/
+  TIMESTAMP_DIR="$SCRIPT_PATH"/static/"$HASH"/"$DATE_READABLE"/
+  PROGRAM_DIR="$SCRIPT_PATH"/static/"$HASH"/audit_files/program/
+  REPORT_DIR="$SCRIPT_PATH"/static/"$HASH"/reports/
 
   mkdir -p "$TIMESTAMP_DIR" "$PROGRAM_DIR" "$REPORT_DIR"
 
@@ -65,7 +65,7 @@ function get_audit_files {
 
   # Get hash of file.
   HASH=$(sha512sum "$TEMP_PATH" | cut -d' ' -f1)
-  DOWNLOAD_PATH="$SCRIPT_PATH"/audits/"$HASH"/audit_files/
+  DOWNLOAD_PATH="$SCRIPT_PATH"/static/"$HASH"/audit_files/
   prep_folders
   mv "$TEMP_PATH" "$DOWNLOAD_PATH"
 
@@ -145,4 +145,4 @@ exec_audit
 
 
 
-## ExecutionLogger --> Monitors for new audits!
+## ExecutionLogger --> Monitors for new static!
