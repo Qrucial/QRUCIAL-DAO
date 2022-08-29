@@ -75,6 +75,8 @@ impl qdao_pallet_dummy::Config for Test {
     type Balance = u64;
     type Currency = Balances;
     type MinAuditorStake = frame_support::traits::ConstU64<100>;
+    type InitialAuditorScore = frame_support::traits::ConstU32<1000>;
+    type MinimalApproverScore = frame_support::traits::ConstU32<2000>;
 }
 
 // Build genesis storage according to the mock runtime.
