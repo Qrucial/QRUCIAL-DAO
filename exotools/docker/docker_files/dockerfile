@@ -6,8 +6,11 @@ RUN cargo install cargo-audit # install cargo audit
 RUN cargo audit -db || : 
 RUN echo "Ignore Error above. just used to sync repo"
 
-# This is the internal directory. the shared mountpoint
-VOLUME /rustvol-testing
+ADD ./scripts/audit_script.sh /exotools/
+# Figure out a check we can do to make sure the container is running nominaly.
+# for the pallets having it send a ping without failing would work,
+# for exotools we dont really need one yet, as they get deployed and then shut down.
+# HEALTHCHECK # ping 0.0.0.0
 
-ENTRYPOINT ["tail", "-f", "/dev/null"]
+ENTRYPOINT ["/exotools/audit_script.sh", "--debug"]
 # This is a not great solution but it works
