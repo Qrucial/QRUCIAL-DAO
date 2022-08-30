@@ -33,11 +33,16 @@ cargo build
 # Build ExoSys Daemon
 cd ../exosysd/
 cargo build
+chmod +x target/debug/qdao-exosysd
+cd ../
 
 # Start the node in backgroundtmux
 chomod +x target/debug/qdao-node
-tmux new-session -d -s qdao-node './target/debug/qdao-node --dev'
+tmux new-session -d -s qdao-node './qdao-node/target/debug/qdao-node --dev'
 sleep 7  # Wait for node start, TBA 
 
 # Start ExoSys Daemon in background/tmux
-tmux new-session -d -s qdao-exosysd './target/debug/qdao-exosysd'
+tmux new-session -d -s qdao-exosysd './exosysd/target/debug/qdao-exosysd'
+
+# Print results
+echo "Your local QDAO dev node has been prepared. Please check your tmux sessions: $ tmux ls && ps aux|grep qdao"
