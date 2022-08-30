@@ -92,7 +92,7 @@ function get_audit_files {
 function docker_prep () {
   echo "Preping Docker"
   echo ""
-  if [[ $1 == 0 ]]; then
+  if [[ $1 == 1 ]]; then
     docker build -t exotools "$SCRIPT_PATH"/docker/docker_files/
   fi
 }
