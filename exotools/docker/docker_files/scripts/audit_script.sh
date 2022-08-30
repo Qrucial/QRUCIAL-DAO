@@ -61,6 +61,12 @@ set -- "${POSITIONAL_ARGS[@]}" # restore positional parameters
 
 if [[ ! ($HASH && $DATE_READABLE && $DATE) ]]; then echo "Variables are not set"; exit 1; fi
 
+echo "HASH: $HASH"
+echo "DATE_0: $DATE_READABLE"
+echo "DATE_1: $DATE"
+echo ""
+echo "~~~~~~~"
+ls /exotools/ -al
 # Variables
 
 # this variable is here so we can copy code back and forth and it will maintain compatibility
@@ -90,16 +96,20 @@ function exec_audit {
 
   # If lock is not found
   if [[ ! $LOCK_FILE ]]; then
-    echo "generate Lockfile: $(dirname $(to_local_dir $TOML_FILE))"
+    echo "generate Lockfile: $(dirname $TOML_FILE))"
     #cd or remote shell into the correct dir
 
     #cargo generate-lockfile --manifest-path $(to_local_dir $TOML_FILE) -- 
-    (cd $(dirname $TOML_FILE) && cargo generate-lockfile)
+    ( cd $(dirname $TOML_FILE) && cargo generate-lockfile )
+
+    LOCK_FILE="$(find "$EXTRACT_PATH" -name Cargo.lock)"
   fi
 
 
   touch "$REPORT_PATH"report.json
-  cargo audit --json > "$REPORT_PATH""report.json" # better save method. (?)
+
+  ( cd $(dirname $LOCK_FILE) && cargo audit --json > "$REPORT_PATH""report.json" )
+  # cargo audit --json > "$REPORT_PATH""report.json" # better save method. (?)
 
   # cp or symlink, whatever is better
   cp -r "$REPORT_PATH" "$TIMESTAMP_PATH"

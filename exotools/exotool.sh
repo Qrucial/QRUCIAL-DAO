@@ -97,19 +97,16 @@ function docker_prep () {
   fi
 }
 # Safe crash, stop docker and anything that should be cleaned up.
-function safe_crash {
+function safe_crash () {
   echo "~~~"
-  echo "Crash, stopping running processes"
-  echo "~~~"
-  docker container stop "$HASH"
-}
-
-function scorched_earth {
-  echo "~~~"
-  echo "Stable Crash, Deleting all generated files"
+  echo "Exiting, stopping running processes..."
   echo "~~~"
   docker container stop "$HASH"
+  if [[ ! ($1 == 1 || $1 == 2) ]]; then return; fi
+  echo "Removing docker container"
   docker container rm "$HASH" 
+  if [[ ! $1 == 2 ]]; then return; fi
+  echo "removing generated files"
   rm -rf "$MOUNTPOINT"
 }
 
@@ -124,8 +121,8 @@ function to_absolute_dir () {
 # Run the proper commands to generate a report
 function exec_audit {
 ## docker run $HASH parmiters x y z
-  docker run --name="$HASH" -v "$PROGRAM_PATH":/exotools exotools \
-    /extools/audit_script.sh \
+  docker run --name="$HASH" -v "$MOUNTPOINT":/exotools exotools \
+    /usr/exotools/audit_script.sh \
     -h $HASH \
     -d $DATE \
     -D $DATE_READABLE \
@@ -169,7 +166,6 @@ exec_audit
 
 
 # exit
-scorched_earth
-#safe_crash
+safe_crash 1
 
 ## ExecutionLogger --> Monitors for new static!

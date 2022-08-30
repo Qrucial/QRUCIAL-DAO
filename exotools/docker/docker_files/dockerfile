@@ -6,12 +6,14 @@ RUN cargo install cargo-audit # install cargo audit
 RUN cargo audit -db || : 
 RUN echo "Ignore Error above. just used to sync repo"
 
-ADD ./scripts/audit_script.sh /exotools/
-RUN chmod +x /exotools/audit_script.sh
+RUN mkdir /usr/exotools/
+ADD ./scripts/audit_script.sh /usr/exotools/
+RUN chmod +x /usr/exotools/audit_script.sh
 # Figure out a check we can do to make sure the container is running nominaly.
 # for the pallets having it send a ping without failing would work,
 # for exotools we dont really need one yet, as they get deployed and then shut down.
 # HEALTHCHECK # ping 0.0.0.0
 
-ENTRYPOINT ["/exotools/audit_script.sh", "--debug"]
+#ENTRYPOINT ["ls"]
+ENTRYPOINT ["/usr/exotools/audit_script.sh"]
 # This is a not great solution but it works
