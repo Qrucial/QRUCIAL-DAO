@@ -25,7 +25,6 @@ then
 fi
 
 
-
 # > SCRIPT_PATH  = directory of where the script is at starting at root
 #   > this should be used when doing filesysem changes. if not used the wrong directory might be used
 #     > ie: PWD the user executes the tools when not in the same directory as the script.
@@ -40,22 +39,29 @@ SCRIPT_PATH=$(dirname $(realpath "${BASH_SOURCE:-$0}"))
 DATE="$(date +%s)"
 DATE_READABLE=$(date +'%d-%m-%Y_%H-%M-%S')
 URL=$1
+SUPPLIED_HASH=$2
 
 # needs to run after get_audit_files, that function sets the hash
 function prep_folders {
   
   if [[ ! $HASH ]]; then echo "Hash is not set, Fix code flow"; exit 1; fi
   
-  TIMESTAMP_DIR="$SCRIPT_PATH"/static/"$HASH"/"$DATE_READABLE"/
-  PROGRAM_DIR="$SCRIPT_PATH"/static/"$HASH"/audit_files/program/
-  REPORT_DIR="$SCRIPT_PATH"/static/"$HASH"/reports/
-
-  mkdir -p "$TIMESTAMP_DIR" "$PROGRAM_DIR" "$REPORT_DIR"
+  MOUNTPOINT="$SCRIPT_PATH"/static/"$HASH"
+  TIMESTAMP_PATH="$MOUNTPOINT"/reports/"$DATE_READABLE"/
+  EXTRACT_PATH="$MOUNTPOINT"/audit_files/extract/
+  DOWNLOAD_PATH="$MONTPOINT"/audit_files/download/
+  REPORT_PATH="$MOUNTPOINT"/latest_report/
+  mkdir -p "$TIMESTAMP_PATH" "$EXTRACT_PATH" "$REPORT_PATH" "$DOWNLOAD_PATH"
 
 }
 
+
 # Downloads the files from the URL
 function get_audit_files {
+  
+  echo "Retrive Audit Files"
+  echo ""
+
   PROGRAM_NAME="${URL##*/}"
   TEMP_PATH="/tmp/qrucial"
   mkdir -p "$TEMP_PATH"/
@@ -65,19 +71,17 @@ function get_audit_files {
 
   # Get hash of file.
   HASH=$(sha512sum "$TEMP_PATH" | cut -d' ' -f1)
-  DOWNLOAD_PATH="$SCRIPT_PATH"/static/"$HASH"/audit_files/
   prep_folders
   mv "$TEMP_PATH" "$DOWNLOAD_PATH"
 
-  if ! { tar ztf "$DOWNLOAD_PATH" || tar tf "$DOWNLOAD_PATH"; } >/dev/null 2>&1; then
+  if ! { tar ztf "$DOWNLOAD_PATH"/"$PROGRAM_NAME" || tar tf "$DOWNLOAD_PATH"/"$PROGRAM_NAME"; } >/dev/null 2>&1; then
     echo "$DOWNLOAD_PATH is not a tar file"
     exit 1
   fi
   
   # Extract file. to program dir (to root directory of the docker/)
-  tar xf "$DOWNLOAD_PATH"/"$PROGRAM_NAME" --directory=$PROGRAM_DIR
+  tar xf "$DOWNLOAD_PATH"/"$PROGRAM_NAME" --directory=$EXTRACT_PATH
 
-  echo "ok, lets move to execution..."
 
   # https://unix.stackexchange.com/questions/457117/how-to-unshare-network-for-current-process
 }
@@ -85,34 +89,45 @@ function get_audit_files {
 ## Docker prep
 # > Creates a docker container called auditor, mounted at dir, from the image exotools
 # > Creates container
-function docker_prep {
-  
-  docker build -t exotools "$SCRIPT_PATH"/docker/docker_files/
-  docker create --name="$HASH" -v "$PROGRAM_DIR":/auditdir exotools
+function docker_prep () {
+  echo "Preping Docker"
+  echo ""
+  if [[ $1 == 1 ]]; then
+    docker build -t exotools "$SCRIPT_PATH"/docker/docker_files/
+  fi
+}
+# Safe crash, stop docker and anything that should be cleaned up.
+function safe_crash () {
+  echo "~~~"
+  echo "Exiting, stopping running processes..."
+  echo "~~~"
+  docker container stop "$HASH"
+  if [[ ! ($1 == 1 || $1 == 2) ]]; then return; fi
+  echo "Removing docker container"
+  docker container rm "$HASH" 
+  if [[ ! $1 == 2 ]]; then return; fi
+  echo "removing generated files"
+  rm -rf "$MOUNTPOINT"
 }
 
+function to_local_dir () {
+  echo "/auditdir/""${1##*$MOUNTPOINT}"
+}
+
+function to_absolute_dir () {
+  echo "${1##*/auditdir}"
+}
 
 # Run the proper commands to generate a report
 function exec_audit {
-  if [[ ! $HASH ]]; then echo "Hash is not set, Fix code flow"; exit 1; fi
-
-  # start the docker so we can later execute commands 
-  docker start "$HASH"
-
-  # Generate Lock file if it cannot be found
-  docker exec "$HASH" "cargo generate-lockfile" 
-
-  # Start an automated audit, save output.
-  docker exec "$HASH" "cargo audit --json" > "$REPORT_DIR"/report.json # better save method. (?)
-
-  # cp or symlink, whatever is better
-  cp "$REPORT_DIR"/report.json "$TIMESTAMP_DIR"/
-
-  # Stop docker
-  docker stop "$HASH"
-
-  # Delete docker? 
-
+## docker run $HASH parmiters x y z
+  docker run --name="$HASH" -v "$MOUNTPOINT":/exotools exotools \
+    /usr/exotools/audit_script.sh \
+    -h $HASH \
+    -d $DATE \
+    -D $DATE_READABLE \
+    --debug
+  # Hopefully works...
 }
 
 function call_logger {
@@ -121,12 +136,15 @@ function call_logger {
 }
 
 function check_hash {
-  if [[ ! $HASH == $2 ]]
-    echo "$HASH != $2"
+  echo "Hash Check"
+  echo ""
+  if [[ ! $HASH == $SUPPLIED_HASH ]]; then
+    echo "Hashes don't match: $HASH != $SUPPLIED_HASH"
+    exit 1
   fi
+  echo "Hashes Match"
+  echo ""
 }
-
-
 
 # Execute functions
 
@@ -135,14 +153,19 @@ get_audit_files
 ## Check Hash of the script vs download > run after get_audit_files
 check_hash
 ## Sets up folder structure > run after check_hash
-prep_folder
+prep_folders
 ## Setup docker, build image, etc
-docker_prep 
-## Run Auditor, cargo audit
+docker_prep 1 
+## Run Auditor script bundled in the docker image
 exec_audit
 ## [TODO] Document
 #call_logger
 
+# Would it be smart to offload some of the logic here into the docker file?
+# we could Have a bash script that gets loaded into the docker
 
+
+# exit
+safe_crash 1
 
 ## ExecutionLogger --> Monitors for new static!
