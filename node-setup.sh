@@ -18,8 +18,8 @@ type cargo >/dev/null || { echo >&2 "cargo is missing. please install it." ; exi
 type docker >/dev/null || { echo >&2 "docker is missing. please install it." ; exit 1;}
 type python3 >/dev/null || { echo >&2 "python3 is missing. please install it." ; exit 1;}
 type curl >/dev/null || { echo >&2 "curl is missing. please install it." ; exit 1;}
-type sha512sum >/dev/null || { echo >&2 "sha512sum is missing. please install it." ; exit 1;}
 type tmux >/dev/null || { echo >&2 "tmux is missing. please install it." ; exit 1;}
+type keccak256 >/dev/null || { echo >&2 "keccak256 is missing. please install it." ; exit 1;}
 
 # If dep missing ask for install? TBA
 

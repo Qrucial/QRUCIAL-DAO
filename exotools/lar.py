@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-# QDAO Logger and Notifier API
+# QDAO API
 # Author: six
 
 from flask import Flask, jsonify, request

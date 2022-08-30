@@ -9,7 +9,7 @@
 # Dependency checks
 type curl >/dev/null || { echo >&2 "curl is missing. please install it." ; exit 1;}
 type docker >/dev/null || { echo >&2 "docker is missing. please install it." ; exit 1;}
-type sha512sum >/dev/null || { echo >&2 "sha512sum is missing. please install it." ; exit 1;}
+type keccak256 >/dev/null || { echo >&2 "keccak256 is missing. please install it." ; exit 1;}
 
 # Process Args
 if (( $# != 2 )); then  
@@ -59,7 +59,7 @@ function prep_folders {
 # Downloads the files from the URL
 function get_audit_files {
   
-  echo "Retrive Audit Files"
+  echo "Retrieve Audit Files"
   echo ""
 
   PROGRAM_NAME="${URL##*/}"
@@ -70,7 +70,7 @@ function get_audit_files {
   echo "$TEMP_PATH"
 
   # Get hash of file.
-  HASH=$(sha512sum "$TEMP_PATH" | cut -d' ' -f1)
+  HASH=$(cat "$TEMP_PATH" | keccak256 --no-0x)
   prep_folders
   mv "$TEMP_PATH" "$DOWNLOAD_PATH"
 

@@ -43,7 +43,7 @@ pub struct ReviewData<T: Config> {
     /// Remaining balance stored in "NFT"
     deposit: DepositBalanceOf<T>,
     /// Owner of request
-    author: T::AccountId,
+    requestor: T::AccountId,
     /// Request ID
     hash: T::Hash,
     /// Original link to reviewed package
@@ -129,7 +129,7 @@ pub mod pallet {
                 Error::<T>::DuplicateEntry
             );
 
-            let author = sender.clone();
+            let requestor = sender.clone();
 
             T::Currency::reserve(&sender, stake)?;
 
@@ -139,7 +139,7 @@ pub mod pallet {
                 hash,
                 ReviewData {
                     deposit: stake,
-                    author: author,
+                    requestor: requestor,
                     hash: hash,
                     url: url_bounded,
                     result: ReviewResult { result: 0 },
@@ -181,7 +181,7 @@ pub mod pallet {
             let sender = ensure_signed(origin)?;
             let review = ReviewRecord::<T>::get(challenged_hash).ok_or(Error::<T>::NoneValue)?;
             // TODO Not all challenges should win, right? :smile:
-            T::Game::apply_result(sender, review.author, qdao_audit_pallet::Winner::Player0)?;
+            T::Game::apply_result(sender, review.requestor, qdao_audit_pallet::Winner::Player0)?;
             Ok(())
         }
     }
