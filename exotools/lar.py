@@ -35,7 +35,7 @@ def index():
         return jsonify({'Error':"This is a GET API method"}), 400
 
 # ExoTool calls this
-# curl -X POST "http://127.0.0.1:9999/notify_logger?key=x7roVhBsiZ18Dg3DX3iCm9pXhXdbZWx2" 
+# curl -X POST "http://127.0.0.1:9999/notify_logger?key=x7roVhBsiZ18Dg3DX3iCm9pXhXdbZWx2?hash=0x3ac225168df54212a25c1c01fd35bebfea408fdac2e31ddd6f80a4bbf9a5f1cb"
 @app.route("/notify_logger", methods=['POST'])
 def notif():
     if request.remote_addr == '127.0.0.1':
@@ -44,19 +44,20 @@ def notif():
         return ""
     if request.method == 'POST':
         api_key_received = request.args.get('key')
+        hash_received = request.args.get('hash')      # TODO check validity
+        result_received = request.args.get('result')  # TODO be more specific + validity + dont accept req without these
         if api_key == api_key_received:
             pass
         else:
             return jsonify("Wrong API key!")
         run( [ '/usr/bin/touch', '/tmp/OK' ] )
 
-        # Send extrinsic !! TODO change this to QDAO's pallet extrinsic call !!
         call = substrate.compose_call(
-        call_module='Balances',
-        call_function='transfer',
+        call_module='ExoSys',
+        call_function='tool_exec_auto_report',
         call_params={
-            'dest': '5E9oDs9PjpsBbxXxRE9uMaZZhnBAV38n2ouLB28oecBDdeQo',
-            'value': 1
+            'hash': str(hash_received),
+            'result': int(result_received)
         })
 
         extrinsic = substrate.create_signed_extrinsic(call=call, keypair=keypair)

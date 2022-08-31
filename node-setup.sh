@@ -37,7 +37,7 @@ chmod +x target/debug/qdao-exosysd
 cd ../
 
 # Start the node in backgroundtmux
-chomod +x target/debug/qdao-node
+chmod +x target/debug/qdao-node
 tmux new-session -d -s qdao-node './qdao-node/target/debug/qdao-node --dev'
 sleep 7  # Wait for node start, TBA 
 
@@ -49,4 +49,9 @@ cd ..
 tmux new-session -d -s qdao-api 'python3 exotools/lar.py'
 
 # Print results
-echo "Your local QDAO dev node has been prepared. Please check your tmux sessions: $ tmux ls"
+if [ -z "$(pgrep qdao)" ]
+  then
+      echo "There was an error running node setup. Please check the output above and the logs."
+  else
+      echo "Your local QDAO dev node has been prepared. Please check your tmux sessions: $ tmux ls"
+fi
