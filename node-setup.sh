@@ -26,6 +26,7 @@ type keccak256 >/dev/null || { echo >&2 "keccak256 is missing. please install it
 # Get from git (later from IPFS?)
 git clone https://github.com/Qrucial/QRUCIAL-DAO
 cd QRUCIAL-DAO/qdao-node
+git checkout milestone1
 
 # Build the node
 cargo build
