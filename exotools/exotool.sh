@@ -102,14 +102,15 @@ function docker_prep () {
   fi
 }
 # Safe crash, stop docker and anything that should be cleaned up.
-function safe_crash () {
-  echo "~~~"
+function safe_exit () {
   echo "Exiting, stopping running processes..."
-  echo "~~~"
-  docker container stop "$HASH"
-  if [[ ! ($1 == 1 || $1 == 2) ]]; then return; fi
-  echo "Removing docker container"
-  docker container rm "$HASH" 
+
+  if [[ $(docker container list | grep "$HASH") ]]; then
+    docker container stop "$HASH"
+    if [[ ! ($1 == 1 || $1 == 2) ]]; then return; fi
+    echo "Removing docker container"
+    docker container rm "$HASH" 
+  fi
   if [[ ! $1 == 2 ]]; then return; fi
   echo "removing generated files"
   rm -rf "$MOUNTPOINT"
@@ -171,6 +172,6 @@ exec_audit
 
 
 # exit
-safe_crash 1
+safe_exit 1
 
 ## ExecutionLogger --> Monitors for new static!

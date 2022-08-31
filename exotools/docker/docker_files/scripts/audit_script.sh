@@ -1,24 +1,7 @@
 #!/bin/bash
 
-# this should be stored in /qrucial/scripts
-# this is inside the docker container.
-# this runs just a few simple scripts.
-# this can be the entry point perhaps? 
-# this should do some basic args parsing to run in different modes?
-  # mode default runs when no other option is selected.
-  # mode debug? 
-  # mode ...
-  # debug flag - more logs
-
 # this program should do none of the thinking. it should only execute commands and save it.
 # things like hash checking and date getting should be done externaly
-
-
-# global variables
-# Date
-# Date_Readable
-# Hash 
-#!/bin/bash
 
 POSITIONAL_ARGS=()
 
@@ -60,13 +43,16 @@ set -- "${POSITIONAL_ARGS[@]}" # restore positional parameters
 
 
 if [[ ! ($HASH && $DATE_READABLE && $DATE) ]]; then echo "Variables are not set"; exit 1; fi
-
-echo "HASH: $HASH"
-echo "DATE_0: $DATE_READABLE"
-echo "DATE_1: $DATE"
-echo ""
-echo "~~~~~~~"
-ls /exotools/ -al
+if [[ $DEBUG == 1 ]]; then
+  echo ""
+  echo "----------------------"
+  echo "HASH: $HASH"
+  echo "DATE_0: $DATE_READABLE"
+  echo "DATE_1: $DATE"
+  echo "----------------------"
+  echo ""
+  ls /exotools/ -al
+fi
 # Variables
 
 # this variable is here so we can copy code back and forth and it will maintain compatibility
