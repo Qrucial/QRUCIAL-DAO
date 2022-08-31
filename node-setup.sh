@@ -44,5 +44,9 @@ sleep 7  # Wait for node start, TBA
 # Start ExoSys Daemon in background/tmux
 tmux new-session -d -s qdao-exosysd './exosysd/target/debug/qdao-exosysd'
 
+# Start the QDAO API
+cd ..
+tmux new-session -d -s qdao-api 'python3 exotools/lar.py'
+
 # Print results
-echo "Your local QDAO dev node has been prepared. Please check your tmux sessions: $ tmux ls && ps aux|grep qdao"
+echo "Your local QDAO dev node has been prepared. Please check your tmux sessions: $ tmux ls"

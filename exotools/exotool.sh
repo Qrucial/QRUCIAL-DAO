@@ -1,7 +1,8 @@
 #!/bin/bash
 # ExoTool for QDAO
 #
-# Description: This script is called by ExoSys Daemon
+# Description: This script is called by ExoSys Daemon.
+# For development efficiency we use bash now, in the future, this will be rewritten in python3 or rust.
 #
 # Author: QDAO Team
 # License: GNU AFFERO GENERAL PUBLIC LICENSE - Version 3, 19 November 2007
@@ -24,6 +25,9 @@ then
   exit 1
 fi
 
+# Step back because it is started from Daemon TODO: change this to fix path
+cd ../exotools/
+pwd
 
 # > SCRIPT_PATH  = directory of where the script is at starting at root
 #   > this should be used when doing filesysem changes. if not used the wrong directory might be used
@@ -41,16 +45,17 @@ DATE_READABLE=$(date +'%d-%m-%Y_%H-%M-%S')
 URL=$1
 SUPPLIED_HASH=$2
 
+
 # needs to run after get_audit_files, that function sets the hash
 function prep_folders {
   
   if [[ ! $HASH ]]; then echo "Hash is not set, Fix code flow"; exit 1; fi
   
-  MOUNTPOINT="$SCRIPT_PATH"/static/"$HASH"
-  TIMESTAMP_PATH="$MOUNTPOINT"/reports/"$DATE_READABLE"/
-  EXTRACT_PATH="$MOUNTPOINT"/audit_files/extract/
-  DOWNLOAD_PATH="$MONTPOINT"/audit_files/download/
-  REPORT_PATH="$MOUNTPOINT"/latest_report/
+  MOUNTPOINT="$SCRIPT_PATH"./static/"$HASH"
+  TIMESTAMP_PATH="$MOUNTPOINT"./reports/"$DATE_READABLE"/
+  EXTRACT_PATH="$MOUNTPOINT"./audit_files/extract/
+  DOWNLOAD_PATH="$MONTPOINT"./audit_files/download/
+  REPORT_PATH="$MOUNTPOINT"./latest_report/
   mkdir -p "$TIMESTAMP_PATH" "$EXTRACT_PATH" "$REPORT_PATH" "$DOWNLOAD_PATH"
 
 }
@@ -70,7 +75,7 @@ function get_audit_files {
   echo "$TEMP_PATH"
 
   # Get hash of file.
-  HASH=$(cat "$TEMP_PATH" | keccak256 --no-0x)
+  HASH=$(cat "$TEMP_PATH" | keccak256)
   prep_folders
   mv "$TEMP_PATH" "$DOWNLOAD_PATH"
 
