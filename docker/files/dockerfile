@@ -1,0 +1,26 @@
+FROM docker.io/paritytech/ci-linux:production as builder
+#FROM parity/substrate:latest
+
+
+RUN apt update 
+RUN apt-get install -y supervisor
+RUN apt-get install -y tmux
+RUN apt-get install -y curl
+RUN apt-get install -y wget
+RUN apt-get install -y python3
+
+ADD scripts/supervisord.conf /etc/supervisor/conf.d/supervisord.conf 
+
+RUN ( cd / && git clone https://github.com/Qrucial/QRUCIAL-DAO.git )
+RUN ( cd /QRUCIAL-DAO/qdao-node && cargo build --release )
+RUN ( cd /QRUCIAL-DAO/exosysd/ && cargo build --release ) 
+
+#RUN chmod +x /QRUCIAL-DAO/exosysd/target/release/qdao-exosysd
+#RUN chmod +x /QRUCIAL-DAO/qdao-node/target/release/qdao-node
+
+
+
+# Q2 - Add some sort of healthcheck
+# HEALTHCHECK 
+
+ENTRYPOINT ["/usr/bin/supervisord"]
