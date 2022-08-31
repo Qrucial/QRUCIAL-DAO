@@ -18,8 +18,8 @@ type cargo >/dev/null || { echo >&2 "cargo is missing. please install it." ; exi
 type docker >/dev/null || { echo >&2 "docker is missing. please install it." ; exit 1;}
 type python3 >/dev/null || { echo >&2 "python3 is missing. please install it." ; exit 1;}
 type curl >/dev/null || { echo >&2 "curl is missing. please install it." ; exit 1;}
-type sha512sum >/dev/null || { echo >&2 "sha512sum is missing. please install it." ; exit 1;}
 type tmux >/dev/null || { echo >&2 "tmux is missing. please install it." ; exit 1;}
+type keccak256 >/dev/null || { echo >&2 "keccak256 is missing. please install it." ; exit 1;}
 
 # If dep missing ask for install? TBA
 
@@ -33,11 +33,20 @@ cargo build
 # Build ExoSys Daemon
 cd ../exosysd/
 cargo build
+chmod +x target/debug/qdao-exosysd
+cd ../
 
 # Start the node in backgroundtmux
 chomod +x target/debug/qdao-node
-tmux new-session -d -s qdao-node './target/debug/qdao-node --dev'
+tmux new-session -d -s qdao-node './qdao-node/target/debug/qdao-node --dev'
 sleep 7  # Wait for node start, TBA 
 
 # Start ExoSys Daemon in background/tmux
-tmux new-session -d -s qdao-exosysd './target/debug/qdao-exosysd'
+tmux new-session -d -s qdao-exosysd './exosysd/target/debug/qdao-exosysd'
+
+# Start the QDAO API
+cd ..
+tmux new-session -d -s qdao-api 'python3 exotools/lar.py'
+
+# Print results
+echo "Your local QDAO dev node has been prepared. Please check your tmux sessions: $ tmux ls"

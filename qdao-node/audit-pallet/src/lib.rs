@@ -108,20 +108,6 @@ pub mod pallet {
                 <AuditorMap<T>>::insert(a, b);
             }
         }
-
-        /// Assimilate the storage for this module into pre-existing overlays.
-        fn assimilate_storage(&self, storage: &mut sp_runtime::Storage) -> Result<(), String> {
-            frame_support::BasicExternalities::execute_with_storage(storage, || {
-                self.build();
-                Ok(())
-            })
-        }
-
-        fn build_storage(&self) -> Result<sp_runtime::Storage, String> {
-            let mut storage = Default::default();
-            self.assimilate_storage(&mut storage)?;
-            Ok(storage)
-        }
     }
 
     // New Auditor signed up

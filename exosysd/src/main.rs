@@ -18,7 +18,7 @@ use parser_reworked::{
     decode_blob_as_type,
 };
 
-const MODULE_NAME: &str = "TemplateModule";
+const MODULE_NAME: &str = "ExoSys";
 const EXECUTION_REQUEST_NAME: &str = "ExecutionRequest";
 const WHO: &str = "who";
 const HASH: &str = "hash";
@@ -218,11 +218,12 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                                                                                     arg_url
                                                                                 );
 
+                                                                                let arg_full_hash=format!("{:?}", arg_hash);
                                                                                 println!(
                                                                                     "Author with ID {:?} requested to run exotool: {:?}",
                                                                                     arg_who,
                                                                                     std::process::Command::new("../exotools/exotool.sh")
-                                                                                        .args([arg_url, arg_hash.to_string()])
+                                                                                        .args([arg_url, arg_full_hash])
                                                                                         .spawn());
                                                                             }
                                                                         }

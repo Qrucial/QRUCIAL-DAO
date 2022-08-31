@@ -1,7 +1,8 @@
 #!/bin/bash
 # ExoTool for QDAO
 #
-# Description: This script is called by ExoSys Daemon
+# Description: This script is called by ExoSys Daemon.
+# For development efficiency we use bash now, in the future, this will be rewritten in python3 or rust.
 #
 # Author: QDAO Team
 # License: GNU AFFERO GENERAL PUBLIC LICENSE - Version 3, 19 November 2007
@@ -9,7 +10,7 @@
 # Dependency checks
 type curl >/dev/null || { echo >&2 "curl is missing. please install it." ; exit 1;}
 type docker >/dev/null || { echo >&2 "docker is missing. please install it." ; exit 1;}
-type sha512sum >/dev/null || { echo >&2 "sha512sum is missing. please install it." ; exit 1;}
+type keccak256 >/dev/null || { echo >&2 "keccak256 is missing. please install it." ; exit 1;}
 
 # Process Args
 if (( $# != 2 )); then  
@@ -24,6 +25,9 @@ then
   exit 1
 fi
 
+# Step back because it is started from Daemon TODO: change this to fix path
+cd ../exotools/
+pwd
 
 # > SCRIPT_PATH  = directory of where the script is at starting at root
 #   > this should be used when doing filesysem changes. if not used the wrong directory might be used
@@ -41,6 +45,7 @@ DATE_READABLE=$(date +'%d-%m-%Y_%H-%M-%S')
 URL=$1
 SUPPLIED_HASH=$2
 
+
 # needs to run after get_audit_files, that function sets the hash
 function prep_folders {
   
@@ -49,7 +54,7 @@ function prep_folders {
   MOUNTPOINT="$SCRIPT_PATH"/static/"$HASH"
   TIMESTAMP_PATH="$MOUNTPOINT"/reports/"$DATE_READABLE"/
   EXTRACT_PATH="$MOUNTPOINT"/audit_files/extract/
-  DOWNLOAD_PATH="$MONTPOINT"/audit_files/download/
+  DOWNLOAD_PATH="$MOUNTPOINT"/audit_files/download/
   REPORT_PATH="$MOUNTPOINT"/latest_report/
   mkdir -p "$TIMESTAMP_PATH" "$EXTRACT_PATH" "$REPORT_PATH" "$DOWNLOAD_PATH"
 
@@ -59,7 +64,7 @@ function prep_folders {
 # Downloads the files from the URL
 function get_audit_files {
   
-  echo "Retrive Audit Files"
+  echo "Retrieve Audit Files"
   echo ""
 
   PROGRAM_NAME="${URL##*/}"
@@ -70,7 +75,7 @@ function get_audit_files {
   echo "$TEMP_PATH"
 
   # Get hash of file.
-  HASH=$(sha512sum "$TEMP_PATH" | cut -d' ' -f1)
+  HASH=$(cat "$TEMP_PATH" | keccak256)
   prep_folders
   mv "$TEMP_PATH" "$DOWNLOAD_PATH"
 
