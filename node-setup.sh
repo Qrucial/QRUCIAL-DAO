@@ -38,7 +38,7 @@ chmod +x target/debug/qdao-exosysd
 cd ../
 
 # Start the node in backgroundtmux
-chmod +x target/debug/qdao-node
+chmod +x ./qdao-node/target/debug/qdao-node
 tmux new-session -d -s qdao-node './qdao-node/target/debug/qdao-node --dev'
 sleep 7  # Wait for node start, TBA 
 
