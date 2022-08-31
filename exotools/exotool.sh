@@ -51,11 +51,11 @@ function prep_folders {
   
   if [[ ! $HASH ]]; then echo "Hash is not set, Fix code flow"; exit 1; fi
   
-  MOUNTPOINT="$SCRIPT_PATH"./static/"$HASH"
-  TIMESTAMP_PATH="$MOUNTPOINT"./reports/"$DATE_READABLE"/
-  EXTRACT_PATH="$MOUNTPOINT"./audit_files/extract/
-  DOWNLOAD_PATH="$MONTPOINT"./audit_files/download/
-  REPORT_PATH="$MOUNTPOINT"./latest_report/
+  MOUNTPOINT="$SCRIPT_PATH"/static/"$HASH"
+  TIMESTAMP_PATH="$MOUNTPOINT"/reports/"$DATE_READABLE"/
+  EXTRACT_PATH="$MOUNTPOINT"/audit_files/extract/
+  DOWNLOAD_PATH="$MOUNTPOINT"/audit_files/download/
+  REPORT_PATH="$MOUNTPOINT"/latest_report/
   mkdir -p "$TIMESTAMP_PATH" "$EXTRACT_PATH" "$REPORT_PATH" "$DOWNLOAD_PATH"
 
 }
