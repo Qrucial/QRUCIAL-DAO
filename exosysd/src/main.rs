@@ -18,7 +18,7 @@ use parser_reworked::{
     decode_blob_as_type,
 };
 
-const MODULE_NAME: &str = "TemplateModule";
+const MODULE_NAME: &str = "ExoSys";
 const EXECUTION_REQUEST_NAME: &str = "ExecutionRequest";
 const WHO: &str = "who";
 const HASH: &str = "hash";
