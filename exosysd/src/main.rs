@@ -13,7 +13,7 @@ use serde_json::value::Value;
 use sp_core::{twox_128, H256};
 mod error;
 
-use parser_reworked::{
+use substrate_parser::{
     cards::{Event, ParsedData, Sequence},
     decode_blob_as_type,
 };
@@ -218,7 +218,10 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                                                                                     arg_url
                                                                                 );
 
-                                                                                let arg_full_hash=format!("{:?}", arg_hash);
+                                                                                let arg_full_hash = format!(
+                                                                                    "{:?}",
+                                                                                    arg_hash
+                                                                                );
                                                                                 println!(
                                                                                     "Author with ID {:?} requested to run exotool: {:?}",
                                                                                     arg_who,
