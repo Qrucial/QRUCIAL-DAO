@@ -218,7 +218,10 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                                                                                     arg_url
                                                                                 );
 
-                                                                                let arg_full_hash=format!("{:?}", arg_hash);
+                                                                                let arg_full_hash = format!(
+                                                                                    "{:?}",
+                                                                                    arg_hash
+                                                                                );
                                                                                 println!(
                                                                                     "Author with ID {:?} requested to run exotool: {:?}",
                                                                                     arg_who,
