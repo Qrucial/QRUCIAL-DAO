@@ -147,6 +147,8 @@ pub mod pallet {
         AlreadyAuditor,
         // The approvee already received an approval by the sender
         AlreadyApproved,
+        // Eloscore computational overflow (expected not to happen with Eloscore formula)
+        UnexpectedEloOverflow,
     }
 
     // Dispatchable functions allows users to interact with the pallet and invoke state changes.
@@ -294,7 +296,7 @@ pub mod pallet {
 
             // Instantiate EloRank, compute new scores
             let elo = EloRank { k: 32 };
-            let (winner_new, looser_new) = elo.calculate(winner_score, looser_score);
+            let (winner_new, looser_new) = elo.calculate(winner_score, looser_score).map_err(|_| Error::<T>::UnexpectedEloOverflow)?;
 
             // Map score results accordingly
             (player0_data.score, player1_data.score) = match winner {
