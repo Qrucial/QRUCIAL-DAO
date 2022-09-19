@@ -35,7 +35,7 @@ pub mod pallet {
     use frame_system::pallet_prelude::*;
     use sp_core::H256;
 
-    #[derive(Encode, Decode, Default, Clone, PartialEq, TypeInfo, MaxEncodedLen)]
+    #[derive(Encode, Decode, Default, Clone, Debug, PartialEq, TypeInfo, MaxEncodedLen)]
     #[cfg_attr(feature = "std", derive(serde::Serialize, serde::Deserialize))]
     pub struct AuditorData<Hash, AccountId> {
         pub score: Option<u32>,
@@ -156,7 +156,6 @@ pub mod pallet {
     impl<T: Config> Pallet<T> {
         #[pallet::weight(10_000 + T::DbWeight::get().writes(1))]
         // Signs up a new Auditor
-        // ToDo: Auditor needs to stake tokens, needs to provide hash of porfile markdown
         pub fn sign_up(
             origin: OriginFor<T>,
             profile_hash: H256,
@@ -189,6 +188,8 @@ pub mod pallet {
             };
             <AuditorMap<T>>::insert(sender.clone(), auditor_data);
 
+            // ToDo: we need to lock/stake the Auditors token. Staking pallet is Milestone2
+
             // Emit an event.
             Self::deposit_event(Event::SignedUp { who: sender });
             // Return a successful DispatchResultWithPostInfo
@@ -197,7 +198,6 @@ pub mod pallet {
 
         #[pallet::weight(10_000 + T::DbWeight::get().writes(1))]
         pub fn update_profile(origin: OriginFor<T>, profile_hash: H256) -> DispatchResult {
-
             let sender = ensure_signed(origin)?;
 
             let mut auditor_data_to_update =
@@ -211,8 +211,19 @@ pub mod pallet {
         }
 
         #[pallet::weight(10_000 + T::DbWeight::get().writes(1))]
-        pub fn cancel_account(_origin: OriginFor<T>) -> DispatchResult {
-            unimplemented!();
+        pub fn cancel_account(origin: OriginFor<T>) -> DispatchResult {
+            let sender = ensure_signed(origin)?;
+
+            ensure!(
+                <AuditorMap<T>>::contains_key(&sender),
+                Error::<T>::UnknownAuditor
+            );
+
+            // ToDo: we need to unlock/unstake the Auditors token. Staking pallet is Milestone2
+
+            <AuditorMap<T>>::remove(sender);
+
+            Ok(())
         }
 
         #[pallet::weight(10_000 + T::DbWeight::get().writes(1))]
