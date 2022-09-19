@@ -196,8 +196,18 @@ pub mod pallet {
         }
 
         #[pallet::weight(10_000 + T::DbWeight::get().writes(1))]
-        pub fn update_profile(_origin: OriginFor<T>, _profile_hash: H256) -> DispatchResult {
-            unimplemented!();
+        pub fn update_profile(origin: OriginFor<T>, profile_hash: H256) -> DispatchResult {
+
+            let sender = ensure_signed(origin)?;
+
+            let mut auditor_data_to_update =
+                <AuditorMap<T>>::try_get(&sender).map_err(|_| Error::<T>::UnknownAuditor)?;
+
+            auditor_data_to_update.profile_hash = profile_hash;
+
+            <AuditorMap<T>>::insert(sender, auditor_data_to_update);
+
+            Ok(())
         }
 
         #[pallet::weight(10_000 + T::DbWeight::get().writes(1))]
