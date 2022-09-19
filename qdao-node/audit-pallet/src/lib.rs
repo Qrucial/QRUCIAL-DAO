@@ -296,7 +296,9 @@ pub mod pallet {
 
             // Instantiate EloRank, compute new scores
             let elo = EloRank { k: 32 };
-            let (winner_new, looser_new) = elo.calculate(winner_score, looser_score).map_err(|_| Error::<T>::UnexpectedEloOverflow)?;
+            let (winner_new, looser_new) = elo
+                .calculate(winner_score, looser_score)
+                .map_err(|_| Error::<T>::UnexpectedEloOverflow)?;
 
             // Map score results accordingly
             (player0_data.score, player1_data.score) = match winner {
