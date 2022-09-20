@@ -159,7 +159,6 @@ pub mod pallet {
         pub fn sign_up(
             origin: OriginFor<T>,
             profile_hash: H256,
-            stake: DepositBalanceOf<T>,
         ) -> DispatchResult {
             // Check that the extrinsic was signed and get the signer.
             // This function will return an error if the extrinsic is not signed.
@@ -172,13 +171,7 @@ pub mod pallet {
                 Error::<T>::AlreadySignedUp
             );
 
-            // Ensure that the Auditor provided enough stake
-            ensure!(
-                stake >= T::MinAuditorStake::get(),
-                Error::<T>::InsufficientStake
-            );
-
-            T::Currency::reserve(&sender, stake)?;
+            T::Currency::reserve(&sender, T::MinAuditorStake::get())?;
 
             // Register new Auditor
             let auditor_data = AuditorData::<H256, T::AccountId> {
@@ -214,12 +207,12 @@ pub mod pallet {
         pub fn cancel_account(origin: OriginFor<T>) -> DispatchResult {
             let sender = ensure_signed(origin)?;
 
-            ensure!(
-                <AuditorMap<T>>::contains_key(&sender),
-                Error::<T>::UnknownAuditor
-            );
+            let to_remove_data =
+                <AuditorMap<T>>::try_get(&sender).map_err(|_| Error::<T>::UnknownAuditor)?;
 
-            // ToDo: we need to unlock/unstake the Auditors token. Staking pallet is Milestone2
+            ensure!(to_remove_data.score.is_none(), Error::<T>::AlreadyAuditor);
+
+            T::Currency::unreserve(&sender, T::MinAuditorStake::get());
 
             <AuditorMap<T>>::remove(sender);
 
@@ -244,7 +237,7 @@ pub mod pallet {
                 <AuditorMap<T>>::try_get(&to_approve).map_err(|_| Error::<T>::UnknownApprovee)?;
 
             // Make sure that has not already auditor status
-            ensure!(to_approve_data.score.is_none(), Error::<T>::AlreadyAuditor,);
+            ensure!(to_approve_data.score.is_none(), Error::<T>::AlreadyAuditor);
 
             // Make sure that user was not already approved by sender
             ensure!(

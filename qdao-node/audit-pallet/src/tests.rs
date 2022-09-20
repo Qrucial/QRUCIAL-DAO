@@ -9,11 +9,10 @@ fn sign_up_works() {
         // Given
         let sender = ensure_signed(Origin::signed(1)).expect("Signing failed");
         let hash = H256::repeat_byte(1);
-        let stake = 100;
 
         // When
         // Sign up a new auditor, read the auditor_data from Storage
-        let sign_up_result = AuditRepModule::sign_up(Origin::signed(1), hash, stake);
+        let sign_up_result = AuditRepModule::sign_up(Origin::signed(1), hash);
         let auditor_data = AuditorMap::<Test>::try_get(sender);
 
         // Then
@@ -32,11 +31,10 @@ fn sign_up_update_profile_works() {
         let sender = ensure_signed(Origin::signed(1)).expect("Sigining failed");
         let hash = H256::repeat_byte(1);
         let hash_for_update = H256::repeat_byte(2);
-        let stake = 100;
 
         // When
         // Sign up a new auditor, read the auditor_data from Storage
-        let sign_up_result = AuditRepModule::sign_up(Origin::signed(1), hash, stake);
+        let sign_up_result = AuditRepModule::sign_up(Origin::signed(1), hash);
         let auditor_data_before_update = AuditorMap::<Test>::try_get(&sender);
         let update_profile_result =
             AuditRepModule::update_profile(Origin::signed(1), hash_for_update);
@@ -64,15 +62,14 @@ fn sign_up_update_profile_works() {
 }
 
 #[test]
-fn sign_up_fails_when_stake_too_low() {
+fn sign_up_fails_when_balance_too_low() {
     new_test_ext().execute_with(|| {
         // Given
         let auditor = Origin::signed(1);
-        let hash = H256::repeat_byte(1);
-        let stake = 50;
+        let hash = H256::repeat_byte(4);
 
         // When
-        let result = AuditRepModule::sign_up(auditor, hash, stake);
+        let result = AuditRepModule::sign_up(auditor, hash);
 
         // Then
         assert_noop!(result, Error::<Test>::InsufficientStake);
@@ -85,18 +82,17 @@ fn sign_up_error_for_double_sign_up() {
         // Given
         let auditor1 = Origin::signed(1);
         let auditor2 = Origin::signed(2);
-        let stake = 100;
 
         // When
         // Sign up Auditor, should work
         let auditor1_sign_up_result =
-            AuditRepModule::sign_up(auditor1.clone(), H256::repeat_byte(1), stake);
+            AuditRepModule::sign_up(auditor1.clone(), H256::repeat_byte(1));
         //Sign up second (different) auditor, should also work
         let auditor2_sign_up_result =
-            AuditRepModule::sign_up(auditor2, H256::repeat_byte(1), stake);
+            AuditRepModule::sign_up(auditor2, H256::repeat_byte(1));
         // Sign up an already signed up auditor, should return an error
         let auditor_1_second_sign_up_result =
-            AuditRepModule::sign_up(auditor1, H256::repeat_byte(1), stake);
+            AuditRepModule::sign_up(auditor1, H256::repeat_byte(1));
 
         // Then
         assert_ok!(auditor1_sign_up_result);
@@ -114,11 +110,10 @@ fn sign_up_cancellation_works() {
         // Given
         let sender = ensure_signed(Origin::signed(1)).expect("Signing failed");
         let hash = H256::repeat_byte(1);
-        let stake = 100;
 
         // When
         // Sign up a new auditor, read the auditor_data from Storage
-        let sign_up_result = AuditRepModule::sign_up(Origin::signed(1), hash, stake);
+        let sign_up_result = AuditRepModule::sign_up(Origin::signed(1), hash);
         let auditor_data_before_cancellation = AuditorMap::<Test>::try_get(&sender);
         let cancellation_result = AuditRepModule::cancel_account(Origin::signed(1));
         let auditor_data_after_cancellation = AuditorMap::<Test>::try_get(sender);
@@ -148,13 +143,12 @@ fn approval_of_auditor_works() {
         let approvee = Origin::signed(1);
         let approvee_id = ensure_signed(approvee.clone()).expect("Sigining failed");
         let hash = H256::repeat_byte(1);
-        let stake = 100;
         let approver = Origin::signed(4);
         let approver_id = ensure_signed(approver.clone()).expect("Sigining failed");
 
         // When
         // Sign up a new auditor, read the auditor_data from Storage
-        let sign_up_result = AuditRepModule::sign_up(approvee, hash, stake);
+        let sign_up_result = AuditRepModule::sign_up(approvee, hash);
         let approval_result = AuditRepModule::approve_auditor(approver.clone(), approvee_id);
         let double_approval_result = AuditRepModule::approve_auditor(approver.clone(), approvee_id);
         let auditor_data = AuditorMap::<Test>::try_get(approvee_id);
@@ -179,12 +173,11 @@ fn approval_with_low_reputation_fails() {
         let approvee = Origin::signed(1);
         let approvee_id = ensure_signed(approvee.clone()).expect("Signing failed");
         let hash = H256::repeat_byte(1);
-        let stake = 100;
         let approver_low_rep = Origin::signed(7);
 
         // When
         // Sign up a new auditor, read the auditor_data from Storage
-        let sign_up_result = AuditRepModule::sign_up(approvee, hash, stake);
+        let sign_up_result = AuditRepModule::sign_up(approvee, hash);
         let approval_result =
             AuditRepModule::approve_auditor(approver_low_rep.clone(), approvee_id);
         let auditor_data = AuditorMap::<Test>::try_get(approvee_id);
@@ -207,14 +200,13 @@ fn approval_works() {
         let approvee = Origin::signed(1);
         let approvee_id = ensure_signed(approvee.clone()).expect("Signing failed");
         let hash = H256::repeat_byte(1);
-        let stake = 100;
         let approver1 = Origin::signed(4);
         let approver2 = Origin::signed(5);
         let approver3 = Origin::signed(6);
 
         // When
         // Sign up a new auditor, read the auditor_data from Storage
-        let sign_up_result = AuditRepModule::sign_up(approvee, hash, stake);
+        let sign_up_result = AuditRepModule::sign_up(approvee, hash);
         let approval1_result = AuditRepModule::approve_auditor(approver1, approvee_id);
         let approval2_result = AuditRepModule::approve_auditor(approver2, approvee_id);
         let approval3_result = AuditRepModule::approve_auditor(approver3, approvee_id);
