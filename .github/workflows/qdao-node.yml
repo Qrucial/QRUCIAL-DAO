@@ -38,7 +38,6 @@ jobs:
           toolchain: nightly
           target: wasm32-unknown-unknown 
           components: clippy
-          arg: -- -D warnings
 
       - uses: actions/checkout@v3
 
@@ -47,7 +46,7 @@ jobs:
         with:
           toolchain: nightly
           command: clippy
-          args: --locked --manifest-path ./qdao-node/Cargo.toml
+          args: --locked --manifest-path ./qdao-node/Cargo.toml -- -D warnings
   
           
   build:
