@@ -46,7 +46,7 @@ jobs:
         with:
           toolchain: nightly
           command: clippy
-          args: --locked --manifest-path ./qdao-node/Cargo.toml
+          args: --locked --manifest-path ./qdao-node/Cargo.toml -- -D warnings
   
           
   build:
