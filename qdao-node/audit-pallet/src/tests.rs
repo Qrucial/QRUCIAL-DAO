@@ -1,5 +1,5 @@
 use crate::{mock::*, AuditorMap, Error, Winner};
-use frame_support::{assert_noop, assert_ok};
+use frame_support::{assert_noop, assert_ok, traits::Currency};
 use frame_system::ensure_signed;
 use sp_core::H256;
 
@@ -65,14 +65,15 @@ fn sign_up_update_profile_works() {
 fn sign_up_fails_when_balance_too_low() {
     new_test_ext().execute_with(|| {
         // Given
-        let auditor = Origin::signed(1);
-        let hash = H256::repeat_byte(4);
+        // Auditor an mock config with index 8 has a given balance of 10 which is too low for sign_up
+        let auditor = Origin::signed(8);
+        let hash = H256::repeat_byte(1);
 
         // When
         let result = AuditRepModule::sign_up(auditor, hash);
 
         // Then
-        assert_noop!(result, Error::<Test>::InsufficientStake);
+        assert_noop!(result, pallet_balances::Error::<Test>::InsufficientBalance);
     });
 }
 
