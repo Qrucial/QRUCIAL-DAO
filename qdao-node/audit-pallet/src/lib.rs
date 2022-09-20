@@ -207,10 +207,7 @@ pub mod pallet {
         pub fn cancel_account(origin: OriginFor<T>) -> DispatchResult {
             let sender = ensure_signed(origin)?;
 
-            let to_remove_data =
-                <AuditorMap<T>>::try_get(&sender).map_err(|_| Error::<T>::UnknownAuditor)?;
-
-            ensure!(to_remove_data.score.is_none(), Error::<T>::AlreadyAuditor);
+            ensure!(<AuditorMap<T>>::contains_key(&sender), Error::<T>::UnknownAuditor);
 
             T::Currency::unreserve(&sender, T::MinAuditorStake::get());
 
