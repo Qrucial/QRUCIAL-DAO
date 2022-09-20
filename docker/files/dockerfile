@@ -9,18 +9,21 @@ RUN apt-get install -y curl
 RUN apt-get install -y wget
 RUN apt-get install -y python3
 
-ADD scripts/supervisord.conf /etc/supervisor/conf.d/supervisord.conf 
+ADD qdao_services.sh /bin/qdao_services.sh 
 
 RUN ( cd / && git clone https://github.com/Qrucial/QRUCIAL-DAO.git )
 RUN ( cd /QRUCIAL-DAO/qdao-node && cargo build --release )
 RUN ( cd /QRUCIAL-DAO/exosysd/ && cargo build --release ) 
 
-#RUN chmod +x /QRUCIAL-DAO/exosysd/target/release/qdao-exosysd
-#RUN chmod +x /QRUCIAL-DAO/qdao-node/target/release/qdao-node
+RUN ( chmod +x /QRUCIAL-DAO/exosysd/target/release/qdao-exosysd )
+RUN ( chmod +x /QRUCIAL-DAO/qdao-node/target/release/qdao-node )
 
-
+RUN ( tmux new-session -d -s qdao-node '/QRUCIAL-DAO/qdao-node/target/debug/qdao-node --dev' )
+RUN ( tmux new-session -d -s qdao-exosysd '/QRUCIAL-DAO/exosysd/target/debug/qdao-exosysd' )
+RUN ( tmux new-session -d -s qdao-api 'python3 /QRUCIAL-DAO/exotools/lar.py' )
 
 # Q2 - Add some sort of healthcheck
 # HEALTHCHECK 
 
-ENTRYPOINT ["/usr/bin/supervisord"]
+RUN ( chmod +x /bin/qdao_services.sh )
+ENTRYPOINT ["/bin/qdao_services.sh"]
