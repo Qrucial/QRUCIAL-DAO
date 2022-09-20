@@ -89,8 +89,7 @@ fn sign_up_error_for_double_sign_up() {
         let auditor1_sign_up_result =
             AuditRepModule::sign_up(auditor1.clone(), H256::repeat_byte(1));
         //Sign up second (different) auditor, should also work
-        let auditor2_sign_up_result =
-            AuditRepModule::sign_up(auditor2, H256::repeat_byte(1));
+        let auditor2_sign_up_result = AuditRepModule::sign_up(auditor2, H256::repeat_byte(1));
         // Sign up an already signed up auditor, should return an error
         let auditor_1_second_sign_up_result =
             AuditRepModule::sign_up(auditor1, H256::repeat_byte(1));

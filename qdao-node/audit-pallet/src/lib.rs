@@ -156,10 +156,7 @@ pub mod pallet {
     impl<T: Config> Pallet<T> {
         #[pallet::weight(10_000 + T::DbWeight::get().writes(1))]
         // Signs up a new Auditor
-        pub fn sign_up(
-            origin: OriginFor<T>,
-            profile_hash: H256,
-        ) -> DispatchResult {
+        pub fn sign_up(origin: OriginFor<T>, profile_hash: H256) -> DispatchResult {
             // Check that the extrinsic was signed and get the signer.
             // This function will return an error if the extrinsic is not signed.
             // https://docs.substrate.io/v3/runtime/origins
@@ -207,7 +204,10 @@ pub mod pallet {
         pub fn cancel_account(origin: OriginFor<T>) -> DispatchResult {
             let sender = ensure_signed(origin)?;
 
-            ensure!(<AuditorMap<T>>::contains_key(&sender), Error::<T>::UnknownAuditor);
+            ensure!(
+                <AuditorMap<T>>::contains_key(&sender),
+                Error::<T>::UnknownAuditor
+            );
 
             T::Currency::unreserve(&sender, T::MinAuditorStake::get());
 
