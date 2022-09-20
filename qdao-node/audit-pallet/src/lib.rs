@@ -35,7 +35,7 @@ pub mod pallet {
     use frame_system::pallet_prelude::*;
     use sp_core::H256;
 
-    #[derive(Encode, Decode, Default, Clone, PartialEq, TypeInfo, MaxEncodedLen)]
+    #[derive(Encode, Decode, Default, Clone, Debug, PartialEq, TypeInfo, MaxEncodedLen)]
     #[cfg_attr(feature = "std", derive(serde::Serialize, serde::Deserialize))]
     pub struct AuditorData<Hash, AccountId> {
         pub score: Option<u32>,
@@ -158,12 +158,7 @@ pub mod pallet {
     impl<T: Config> Pallet<T> {
         #[pallet::weight(10_000 + T::DbWeight::get().writes(1))]
         // Signs up a new Auditor
-        // ToDo: Auditor needs to stake tokens, needs to provide hash of porfile markdown
-        pub fn sign_up(
-            origin: OriginFor<T>,
-            profile_hash: H256,
-            stake: DepositBalanceOf<T>,
-        ) -> DispatchResult {
+        pub fn sign_up(origin: OriginFor<T>, profile_hash: H256) -> DispatchResult {
             // Check that the extrinsic was signed and get the signer.
             // This function will return an error if the extrinsic is not signed.
             // https://docs.substrate.io/v3/runtime/origins
@@ -175,13 +170,7 @@ pub mod pallet {
                 Error::<T>::AlreadySignedUp
             );
 
-            // Ensure that the Auditor provided enough stake
-            ensure!(
-                stake >= T::MinAuditorStake::get(),
-                Error::<T>::InsufficientStake
-            );
-
-            T::Currency::reserve(&sender, stake)?;
+            T::Currency::reserve(&sender, T::MinAuditorStake::get())?;
 
             // Register new Auditor
             let auditor_data = AuditorData::<H256, T::AccountId> {
@@ -191,6 +180,8 @@ pub mod pallet {
             };
             <AuditorMap<T>>::insert(sender.clone(), auditor_data);
 
+            // ToDo: we need to lock/stake the Auditors token. Staking pallet is Milestone2
+
             // Emit an event.
             Self::deposit_event(Event::SignedUp { who: sender });
             // Return a successful DispatchResultWithPostInfo
@@ -198,13 +189,33 @@ pub mod pallet {
         }
 
         #[pallet::weight(10_000 + T::DbWeight::get().writes(1))]
-        pub fn update_profile(_origin: OriginFor<T>, _profile_hash: H256) -> DispatchResult {
-            unimplemented!();
+        pub fn update_profile(origin: OriginFor<T>, profile_hash: H256) -> DispatchResult {
+            let sender = ensure_signed(origin)?;
+
+            let mut auditor_data_to_update =
+                <AuditorMap<T>>::try_get(&sender).map_err(|_| Error::<T>::UnknownAuditor)?;
+
+            auditor_data_to_update.profile_hash = profile_hash;
+
+            <AuditorMap<T>>::insert(sender, auditor_data_to_update);
+
+            Ok(())
         }
 
         #[pallet::weight(10_000 + T::DbWeight::get().writes(1))]
-        pub fn cancel_account(_origin: OriginFor<T>) -> DispatchResult {
-            unimplemented!();
+        pub fn cancel_account(origin: OriginFor<T>) -> DispatchResult {
+            let sender = ensure_signed(origin)?;
+
+            ensure!(
+                <AuditorMap<T>>::contains_key(&sender),
+                Error::<T>::UnknownAuditor
+            );
+
+            T::Currency::unreserve(&sender, T::MinAuditorStake::get());
+
+            <AuditorMap<T>>::remove(sender);
+
+            Ok(())
         }
 
         #[pallet::weight(10_000 + T::DbWeight::get().writes(1))]
@@ -225,7 +236,7 @@ pub mod pallet {
                 <AuditorMap<T>>::try_get(&to_approve).map_err(|_| Error::<T>::UnknownApprovee)?;
 
             // Make sure that has not already auditor status
-            ensure!(to_approve_data.score.is_none(), Error::<T>::AlreadyAuditor,);
+            ensure!(to_approve_data.score.is_none(), Error::<T>::AlreadyAuditor);
 
             // Make sure that user was not already approved by sender
             ensure!(
