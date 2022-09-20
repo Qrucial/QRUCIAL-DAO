@@ -139,8 +139,8 @@ pub mod pallet {
                 hash,
                 ReviewData {
                     deposit: stake,
-                    requestor: requestor,
-                    hash: hash,
+                    requestor,
+                    hash,
                     url: url_bounded,
                     result: ReviewResult { result: 0 },
                 },
@@ -148,8 +148,8 @@ pub mod pallet {
 
             Self::deposit_event(Event::ExecutionRequest {
                 who: sender,
-                url: url,
-                hash: hash,
+                url,
+                hash,
             });
             // Return a successful DispatchResultWithPostInfo
             Ok(())
@@ -157,16 +157,16 @@ pub mod pallet {
 
         /// Cancel request due to invalid parameters
         #[pallet::weight(100 + T::DbWeight::get().writes(1))]
-        pub fn tool_exec_cancel_invalid(origin: OriginFor<T>, hash: T::Hash) -> DispatchResult {
+        pub fn tool_exec_cancel_invalid(_origin: OriginFor<T>, _hash: T::Hash) -> DispatchResult {
             Ok(())
         }
 
         /// Record automated request processing results
         #[pallet::weight(1000 + T::DbWeight::get().writes(1))]
         pub fn tool_exec_auto_report(
-            origin: OriginFor<T>,
-            hash: T::Hash,
-            result: Vec<u8>,
+            _origin: OriginFor<T>,
+            _hash: T::Hash,
+            _result: Vec<u8>,
         ) -> DispatchResult {
             Ok(())
         }
@@ -176,7 +176,7 @@ pub mod pallet {
         pub fn challenge_report(
             origin: OriginFor<T>,
             challenged_hash: T::Hash,
-            result: Vec<u8>,
+            _result: Vec<u8>,
         ) -> DispatchResult {
             let sender = ensure_signed(origin)?;
             let review = ReviewRecord::<T>::get(challenged_hash).ok_or(Error::<T>::NoneValue)?;

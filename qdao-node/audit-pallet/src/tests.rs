@@ -84,7 +84,7 @@ fn approval_of_auditor_works() {
         // Sign up a new auditor, read the auditor_data from Storage
         let sign_up_result = AuditRepModule::sign_up(approvee, hash, stake);
         let approval_result = AuditRepModule::approve_auditor(approver.clone(), approvee_id);
-        let double_approval_result = AuditRepModule::approve_auditor(approver.clone(), approvee_id);
+        let double_approval_result = AuditRepModule::approve_auditor(approver, approvee_id);
         let auditor_data = AuditorMap::<Test>::try_get(approvee_id);
 
         // Then
@@ -120,7 +120,7 @@ fn approval_with_low_reputation_fails() {
         // Sign up a new auditor, read the auditor_data from Storage
         let sign_up_result = AuditRepModule::sign_up(approvee, hash, stake);
         let approval_result =
-            AuditRepModule::approve_auditor(approver_low_rep.clone(), approvee_id);
+            AuditRepModule::approve_auditor(approver_low_rep, approvee_id);
         let auditor_data = AuditorMap::<Test>::try_get(approvee_id);
 
         // Then
@@ -171,9 +171,9 @@ fn elo_score_update_works() {
     new_test_ext().execute_with(|| {
         // Given
         let player0 = Origin::signed(4);
-        let player0_id = ensure_signed(player0.clone()).unwrap();
+        let player0_id = ensure_signed(player0).unwrap();
         let player1 = Origin::signed(5);
-        let player1_id = ensure_signed(player1.clone()).unwrap();
+        let player1_id = ensure_signed(player1).unwrap();
 
         // When
         // Submit a game result, initially both players have score 2000, Player0 wins
