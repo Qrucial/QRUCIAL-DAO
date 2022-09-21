@@ -4,6 +4,8 @@ on:
   push:
     branches:
       - main
+      - milestone1
+      - milestone2
   pull_request:
 
 env:
