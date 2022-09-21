@@ -35,29 +35,19 @@ pub(crate) type FullClient =
     sc_service::TFullClient<Block, RuntimeApi, NativeElseWasmExecutor<ExecutorDispatch>>;
 type FullBackend = sc_service::TFullBackend<Block>;
 type FullSelectChain = sc_consensus::LongestChain<FullBackend, Block>;
-
-pub fn new_partial(
-    config: &Configuration,
-) -> Result<
-    sc_service::PartialComponents<
-        FullClient,
-        FullBackend,
-        FullSelectChain,
-        sc_consensus::DefaultImportQueue<Block, FullClient>,
-        sc_transaction_pool::FullPool<Block, FullClient>,
-        (
-            sc_finality_grandpa::GrandpaBlockImport<
-                FullBackend,
-                Block,
-                FullClient,
-                FullSelectChain,
-            >,
-            sc_finality_grandpa::LinkHalf<Block, FullClient, FullSelectChain>,
-            Option<Telemetry>,
-        ),
-    >,
-    ServiceError,
-> {
+type ServiceResult = sc_service::PartialComponents<
+    FullClient,
+    FullBackend,
+    FullSelectChain,
+    sc_consensus::DefaultImportQueue<Block, FullClient>,
+    sc_transaction_pool::FullPool<Block, FullClient>,
+    (
+        sc_finality_grandpa::GrandpaBlockImport<FullBackend, Block, FullClient, FullSelectChain>,
+        sc_finality_grandpa::LinkHalf<Block, FullClient, FullSelectChain>,
+        Option<Telemetry>,
+    ),
+>;
+pub fn new_partial(config: &Configuration) -> Result<ServiceResult, ServiceError> {
     if config.keystore_remote.is_some() {
         return Err(ServiceError::Other(
             "Remote Keystores are not supported.".into(),
