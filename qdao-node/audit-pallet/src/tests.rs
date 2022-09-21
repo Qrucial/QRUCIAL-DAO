@@ -1,5 +1,5 @@
 use crate::{mock::*, AuditorMap, Error, Winner};
-use frame_support::{assert_noop, assert_ok, traits::Currency};
+use frame_support::{assert_noop, assert_ok};
 use frame_system::ensure_signed;
 use sp_core::H256;
 
@@ -177,7 +177,7 @@ fn approval_with_low_reputation_fails() {
 
         // When
         // Sign up a new auditor, read the auditor_data from Storage
-        let sign_up_result = AuditRepModule::sign_up(approvee, hash, stake);
+        let sign_up_result = AuditRepModule::sign_up(approvee, hash);
         let approval_result = AuditRepModule::approve_auditor(approver_low_rep, approvee_id);
         let auditor_data = AuditorMap::<Test>::try_get(approvee_id);
 
