@@ -35,7 +35,7 @@ pub mod pallet {
     use frame_system::pallet_prelude::*;
     use sp_core::H256;
 
-    #[derive(Encode, Decode, Default, Clone, Debug, PartialEq, TypeInfo, MaxEncodedLen)]
+    #[derive(Encode, Decode, Default, Clone, Debug, PartialEq, Eq, TypeInfo, MaxEncodedLen)]
     #[cfg_attr(feature = "std", derive(serde::Serialize, serde::Deserialize))]
     pub struct AuditorData<Hash, AccountId> {
         pub score: Option<u32>,
@@ -43,7 +43,7 @@ pub mod pallet {
         pub approved_by: BoundedVec<AccountId, ConstU32<3>>,
     }
 
-    #[derive(Encode, Decode, Debug, Clone, PartialEq, TypeInfo, MaxEncodedLen)]
+    #[derive(Encode, Decode, Debug, Clone, PartialEq, Eq, TypeInfo, MaxEncodedLen)]
     pub enum Winner {
         Player0,
         Player1,
@@ -86,9 +86,14 @@ pub mod pallet {
     pub(super) type AuditorMap<T: Config> =
         StorageMap<_, Blake2_128Concat, T::AccountId, AuditorData<sp_core::H256, T::AccountId>>;
 
+    type AuditorMapData<T> = (
+        <T as frame_system::Config>::AccountId,
+        AuditorData<sp_core::H256, <T as frame_system::Config>::AccountId>,
+    );
+
     #[pallet::genesis_config]
     pub struct GenesisConfig<T: Config> {
-        pub auditor_map: Vec<(T::AccountId, AuditorData<sp_core::H256, T::AccountId>)>,
+        pub auditor_map: Vec<AuditorMapData<T>>,
     }
 
     #[cfg(feature = "std")]
