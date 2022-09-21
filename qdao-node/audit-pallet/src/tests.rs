@@ -119,8 +119,7 @@ fn approval_with_low_reputation_fails() {
         // When
         // Sign up a new auditor, read the auditor_data from Storage
         let sign_up_result = AuditRepModule::sign_up(approvee, hash, stake);
-        let approval_result =
-            AuditRepModule::approve_auditor(approver_low_rep, approvee_id);
+        let approval_result = AuditRepModule::approve_auditor(approver_low_rep, approvee_id);
         let auditor_data = AuditorMap::<Test>::try_get(approvee_id);
 
         // Then

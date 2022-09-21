@@ -86,9 +86,14 @@ pub mod pallet {
     pub(super) type AuditorMap<T: Config> =
         StorageMap<_, Blake2_128Concat, T::AccountId, AuditorData<sp_core::H256, T::AccountId>>;
 
+    type AuditorMapData<T> = (
+        <T as frame_system::Config>::AccountId,
+        AuditorData<sp_core::H256, <T as frame_system::Config>::AccountId>,
+    );
+
     #[pallet::genesis_config]
     pub struct GenesisConfig<T: Config> {
-        pub auditor_map: Vec<(T::AccountId, AuditorData<sp_core::H256, T::AccountId>)>,
+        pub auditor_map: Vec<AuditorMapData<T>>,
     }
 
     #[cfg(feature = "std")]
