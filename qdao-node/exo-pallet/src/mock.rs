@@ -82,7 +82,7 @@ impl qdao_audit_pallet::Game<Test> for Test {
         _player1: <Test as system::Config>::AccountId,
         _winner: qdao_audit_pallet::Winner,
     ) -> frame_support::pallet_prelude::DispatchResult {
-        unimplemented!()
+        Ok(())
     }
 }
 
