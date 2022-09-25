@@ -16,15 +16,18 @@ RUN ( cd / && git clone https://github.com/Qrucial/QRUCIAL-DAO.git )
 RUN ( cd /QRUCIAL-DAO/qdao-node && cargo build --release )
 RUN ( cd /QRUCIAL-DAO/exosysd/ && cargo build --release ) 
 
-RUN ( chmod +x /QRUCIAL-DAO/exosysd/target/release/qdao-exosysd )
-RUN ( chmod +x /QRUCIAL-DAO/qdao-node/target/release/qdao-node )
+RUN chmod +x /QRUCIAL-DAO/exosysd/target/release/qdao-exosysd
+RUN chmod +x /QRUCIAL-DAO/qdao-node/target/release/qdao-node
 
-RUN ( tmux new-session -d -s qdao-node '/QRUCIAL-DAO/qdao-node/target/debug/qdao-node --dev' )
-RUN ( tmux new-session -d -s qdao-exosysd '/QRUCIAL-DAO/exosysd/target/debug/qdao-exosysd' )
-RUN ( tmux new-session -d -s qdao-api 'python3 /QRUCIAL-DAO/exotools/lar.py' )
+RUN tmux new-session -d -s qdao-node '/QRUCIAL-DAO/qdao-node/target/debug/qdao-node --dev'
+RUN echo "qdao-node started"
+RUN tmux new-session -d -s qdao-exosysd '/QRUCIAL-DAO/exosysd/target/debug/qdao-exosysd'
+RUN echo "qdao-exosysd started"
+RUN tmux new-session -d -s qdao-api 'python3 /QRUCIAL-DAO/exotools/lar.py'
+RUN echo "exotools started"
 
 # Q2 - Add some sort of healthcheck
 # HEALTHCHECK 
 
-RUN ( chmod +x /bin/qdao_services.sh )
+RUN chmod +x /bin/qdao_services.sh
 ENTRYPOINT ["/bin/qdao_services.sh"]
