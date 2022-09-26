@@ -10,21 +10,35 @@ RUN apt-get install -y wget
 RUN apt-get install -y python3
 RUN cargo install keccak256-cli
 
-ADD qdao_services.sh /bin/qdao_services.sh 
+ADD scripts/qdao_services.sh /bin/qdao_services.sh 
 
-RUN ( cd / && git clone https://github.com/Qrucial/QRUCIAL-DAO.git )
-RUN ( cd /QRUCIAL-DAO/qdao-node && cargo build --release )
-RUN ( cd /QRUCIAL-DAO/exosysd/ && cargo build --release ) 
+ADD ./data /opt/data
+RUN mkdir /opt/testing
 
-RUN chmod +x /QRUCIAL-DAO/exosysd/target/release/qdao-exosysd
-RUN chmod +x /QRUCIAL-DAO/qdao-node/target/release/qdao-node
+RUN echo "downloading git repo..."
+RUN if [ -d "/opt/data/QRUCIAL-DAO" ]; then \
+  echo "QRUCIAL-DAO exists"; \
+  ( cd /opt/data/QRUCIAL-DAO && git pull https://github.com/Qrucial/QRUCIAL-DAO.git ); \
+  else \
+  ( cd /opt/data/ && git clone https://github.com/Qrucial/QRUCIAL-DAO.git ); \
+  fi
 
-RUN tmux new-session -d -s qdao-node '/QRUCIAL-DAO/qdao-node/target/debug/qdao-node --dev'
-RUN echo "qdao-node started"
-RUN tmux new-session -d -s qdao-exosysd '/QRUCIAL-DAO/exosysd/target/debug/qdao-exosysd'
-RUN echo "qdao-exosysd started"
-RUN tmux new-session -d -s qdao-api 'python3 /QRUCIAL-DAO/exotools/lar.py'
-RUN echo "exotools started"
+
+RUN echo "compileing qdao-node..."
+#RUN ( cd /opt/data/QRUCIAL-DAO/qdao-node && cargo build --release )
+RUN if [ ! -f "/opt/data/QRUCIAL-DAO/exosysd/target/release/qdao-exosysd" ]; then \
+  ( cd /opt/data/QRUCIAL-DAO/qdao-node && cargo build --release ); \
+  fi
+
+RUN echo "compileing exosysd"
+RUN if [ ! -f "/opt/data/QRUCIAL-DAO/qdao-node/target/release/qdao-node" ]; then \
+  ( cd /opt/data/QRUCIAL-DAO/exosysd && cargo build --release ); \
+  fi
+
+#RUN ( cd /opt/data/QRUCIAL-DAO/exosysd/ && cargo build --release ) 
+
+RUN chmod +x /opt/data/QRUCIAL-DAO/exosysd/target/release/qdao-exosysd
+RUN chmod +x /opt/data/QRUCIAL-DAO/qdao-node/target/release/qdao-node
 
 # Q2 - Add some sort of healthcheck
 # HEALTHCHECK 
