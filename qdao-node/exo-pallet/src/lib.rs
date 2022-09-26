@@ -62,7 +62,7 @@ pub mod pallet {
     #[pallet::config]
     pub trait Config: frame_system::Config {
         /// Because this pallet emits events, it depends on the runtime's definition of an event.
-        type Event: From<Event<Self>> + IsType<<Self as frame_system::Config>::Event>;
+        type RuntimeEvent: From<Event<Self>> + IsType<<Self as frame_system::Config>::RuntimeEvent>;
 
         /// Units for balance
         type Balance: Member + Parameter + AtLeast32BitUnsigned + Default + Copy;
@@ -115,7 +115,7 @@ pub mod pallet {
     #[pallet::call]
     impl<T: Config> Pallet<T> {
         ///Request an audit - declare release location, its hash and proposed stake amount
-        #[pallet::weight(10_000 + T::DbWeight::get().writes(1))]
+        #[pallet::weight(Weight::from_ref_time(10_000) + T::DbWeight::get().writes(1))]
         pub fn tool_exec_req(
             origin: OriginFor<T>,
             url: Vec<u8>,
@@ -156,13 +156,13 @@ pub mod pallet {
         }
 
         /// Cancel request due to invalid parameters
-        #[pallet::weight(100 + T::DbWeight::get().writes(1))]
+        #[pallet::weight(Weight::from_ref_time(100) + T::DbWeight::get().writes(1))]
         pub fn tool_exec_cancel_invalid(_origin: OriginFor<T>, _hash: T::Hash) -> DispatchResult {
             Ok(())
         }
 
         /// Record automated request processing results
-        #[pallet::weight(1000 + T::DbWeight::get().writes(1))]
+        #[pallet::weight(Weight::from_ref_time(1000) + T::DbWeight::get().writes(1))]
         pub fn tool_exec_auto_report(
             _origin: OriginFor<T>,
             _hash: T::Hash,
@@ -172,7 +172,7 @@ pub mod pallet {
         }
 
         /// Record automated request processing results
-        #[pallet::weight(1000 + T::DbWeight::get().writes(1))]
+        #[pallet::weight(Weight::from_ref_time(1000) + T::DbWeight::get().writes(1))]
         pub fn challenge_report(
             origin: OriginFor<T>,
             challenged_hash: T::Hash,

@@ -1,0 +1,9 @@
+version: '3'
+services:
+  qdao:
+    image: qdao:V0.2
+    environment:
+      - EXAMPLE_VAR="/path/for/something"
+    volumes:
+     - ./data:/opt/testing
+    #ports: # does this need internet access?

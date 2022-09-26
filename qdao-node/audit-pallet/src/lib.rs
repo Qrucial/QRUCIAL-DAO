@@ -54,7 +54,7 @@ pub mod pallet {
     #[pallet::config]
     pub trait Config: frame_system::Config {
         /// Because this pallet emits events, it depends on the runtime's definition of an event.
-        type Event: From<Event<Self>> + IsType<<Self as frame_system::Config>::Event>;
+        type RuntimeEvent: From<Event<Self>> + IsType<<Self as frame_system::Config>::RuntimeEvent>;
 
         /// Units for balance
         type Balance: Member + Parameter + AtLeast32BitUnsigned + Default + Copy;
@@ -158,10 +158,10 @@ pub mod pallet {
 
     // Dispatchable functions allows users to interact with the pallet and invoke state changes.
     // These functions materialize as "extrinsics", which are often compared to transactions.
-    // Dispatchable functions must be annotated with a weight and must return a DispatchResult.
+    // Dispatchable functions must be annotated with a  and must return a DispatchResult.
     #[pallet::call]
     impl<T: Config> Pallet<T> {
-        #[pallet::weight(10_000 + T::DbWeight::get().writes(1))]
+        #[pallet::weight(Weight::from_ref_time(10_000) + T::DbWeight::get().writes(1))]
         // Signs up a new Auditor
         pub fn sign_up(origin: OriginFor<T>, profile_hash: H256) -> DispatchResult {
             // Check that the extrinsic was signed and get the signer.
@@ -193,7 +193,7 @@ pub mod pallet {
             Ok(())
         }
 
-        #[pallet::weight(10_000 + T::DbWeight::get().writes(1))]
+        #[pallet::weight(Weight::from_ref_time(10_000) + T::DbWeight::get().writes(1))]
         pub fn update_profile(origin: OriginFor<T>, profile_hash: H256) -> DispatchResult {
             let sender = ensure_signed(origin)?;
 
@@ -207,7 +207,7 @@ pub mod pallet {
             Ok(())
         }
 
-        #[pallet::weight(10_000 + T::DbWeight::get().writes(1))]
+        #[pallet::weight(Weight::from_ref_time(10_000) + T::DbWeight::get().writes(1))]
         pub fn cancel_account(origin: OriginFor<T>) -> DispatchResult {
             let sender = ensure_signed(origin)?;
 
@@ -223,7 +223,7 @@ pub mod pallet {
             Ok(())
         }
 
-        #[pallet::weight(10_000 + T::DbWeight::get().writes(1))]
+        #[pallet::weight(Weight::from_ref_time(10_000) + T::DbWeight::get().writes(1))]
         pub fn approve_auditor(origin: OriginFor<T>, to_approve: T::AccountId) -> DispatchResult {
             let sender = ensure_signed(origin)?;
 
@@ -266,7 +266,7 @@ pub mod pallet {
             Ok(())
         }
 
-        #[pallet::weight(10_000 + T::DbWeight::get().writes(1))]
+        #[pallet::weight(Weight::from_ref_time(10_000) + T::DbWeight::get().writes(1))]
         pub fn game_result(
             origin: OriginFor<T>,
             player0: T::AccountId,
