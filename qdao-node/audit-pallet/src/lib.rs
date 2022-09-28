@@ -50,7 +50,6 @@ pub mod pallet {
         Draw,
     }
 
-    /// Configure the pallet by specifying the parameters and types on which it depends.
     #[pallet::config]
     pub trait Config: frame_system::Config {
         /// Because this pallet emits events, it depends on the runtime's definition of an event.
@@ -62,15 +61,15 @@ pub mod pallet {
         /// Currency mechanism
         type Currency: ReservableCurrency<Self::AccountId>;
 
-        #[pallet::constant] // put the constant in metadata
+        #[pallet::constant] 
         /// Minimum amount which is required for an Auditor to be able to sign up.
         type MinAuditorStake: Get<DepositBalanceOf<Self>>;
 
-        #[pallet::constant] // put the constant in metadata
+        #[pallet::constant] 
         /// Initial score for an auditor which signed up and received 3 approvals
         type InitialAuditorScore: Get<u32>;
 
-        #[pallet::constant] // put the constant in metadata
+        #[pallet::constant] 
         /// Minimal score which allows auditors to approve other auditors
         type MinimalApproverScore: Get<u32>;
     }
@@ -79,10 +78,10 @@ pub mod pallet {
     #[pallet::generate_store(pub(super) trait Store)]
     pub struct Pallet<T>(_);
 
-    // Storage for auditor scores
-    // If a new Auditor signed up whose approval is pending, the Auditor scrore will be None
     #[pallet::storage]
     #[pallet::getter(fn auditor_score)]
+    /// Storage for auditor scores
+    /// If a new Auditor signed up whose approval is pending, the Auditor scrore will be None
     pub(super) type AuditorMap<T: Config> =
         StorageMap<_, Blake2_128Concat, T::AccountId, AuditorData<sp_core::H256, T::AccountId>>;
 
@@ -92,6 +91,7 @@ pub mod pallet {
     );
 
     #[pallet::genesis_config]
+    /// Allows a Genesis config with pre-assigned Auditors
     pub struct GenesisConfig<T: Config> {
         pub auditor_map: Vec<AuditorMapData<T>>,
     }
@@ -115,13 +115,14 @@ pub mod pallet {
         }
     }
 
-    // New Auditor signed up
+    
     #[pallet::event]
     #[pallet::generate_deposit(pub(super) fn deposit_event)]
+    /// Events which are emitted by `qdao-audit-pallet`
     pub enum Event<T: Config> {
-        /// Event documentation should end with an array that provides descriptive names for event
-        /// parameters. [something, who]
+        /// New Auditor signed up
         SignedUp { who: T::AccountId },
+        /// A new challenge result was submitted
         GameResult {
             player0: T::AccountId,
             player1: T::AccountId,
@@ -129,40 +130,38 @@ pub mod pallet {
         },
     }
 
-    // Errors inform users that something went wrong.
+    
     #[pallet::error]
+    /// Errors of `qdao-audit-pallet`
     pub enum Error<T> {
         /// Error names should be descriptive.
         NoneValue,
         /// Errors should have helpful documentation associated with them.
         StorageOverflow,
-        // Auditor is already signed up
+        /// Auditor is already signed up
         AlreadySignedUp,
-        // Auditor doesn't provide enough stake for sign up
+        /// Auditor doesn't provide enough stake for sign up
         InsufficientStake,
-        // User is not registered as an Auditor
+        /// User is not registered as an Auditor
         UnknownAuditor,
-        // User is registered as an Auditor but has not been approved
+        /// User is registered as an Auditor but has not been approved
         UnapprovedAuditor,
-        // Auditor is registered, but the reputation score is to low for the intended interaction
+        /// Auditor is registered, but the reputation score is to low for the intended interaction
         ReputationTooLow,
-        // The user that should eb approved is note registered as an Auditor
+        /// The user that should eb approved is note registered as an Auditor
         UnknownApprovee,
-        // The approvee is already an Auditor
+        /// The approvee is already an Auditor
         AlreadyAuditor,
-        // The approvee already received an approval by the sender
+        /// The approvee already received an approval by the sender
         AlreadyApproved,
-        // Eloscore computational overflow (expected not to happen with Eloscore formula)
+        /// Eloscore computational overflow (expected not to happen with Eloscore formula)
         UnexpectedEloOverflow,
     }
 
-    // Dispatchable functions allows users to interact with the pallet and invoke state changes.
-    // These functions materialize as "extrinsics", which are often compared to transactions.
-    // Dispatchable functions must be annotated with a  and must return a DispatchResult.
     #[pallet::call]
     impl<T: Config> Pallet<T> {
         #[pallet::weight(Weight::from_ref_time(10_000) + T::DbWeight::get().writes(1))]
-        // Signs up a new Auditor
+        /// Signs up a new Auditor
         pub fn sign_up(origin: OriginFor<T>, profile_hash: H256) -> DispatchResult {
             // Check that the extrinsic was signed and get the signer.
             // This function will return an error if the extrinsic is not signed.
@@ -194,6 +193,12 @@ pub mod pallet {
         }
 
         #[pallet::weight(Weight::from_ref_time(10_000) + T::DbWeight::get().writes(1))]
+        /// An Auditor which signed up for auditor status can call this extrinsic to update their profile hash
+        /// # Arguments
+        ///
+        /// * `profile_hash` - a hash auf the new auditors profile of type `H256`
+        ///
+
         pub fn update_profile(origin: OriginFor<T>, profile_hash: H256) -> DispatchResult {
             let sender = ensure_signed(origin)?;
 
@@ -208,6 +213,8 @@ pub mod pallet {
         }
 
         #[pallet::weight(Weight::from_ref_time(10_000) + T::DbWeight::get().writes(1))]
+
+        /// Is called by an auditor which signed up for auditor status to cancel their account and to unreserve the associated funds.
         pub fn cancel_account(origin: OriginFor<T>) -> DispatchResult {
             let sender = ensure_signed(origin)?;
 
@@ -267,6 +274,15 @@ pub mod pallet {
         }
 
         #[pallet::weight(Weight::from_ref_time(10_000) + T::DbWeight::get().writes(1))]
+        /// Returns a person with the name given them
+        ///
+        /// # Arguments
+        ///
+        /// * `player0` - AccountId of player 0
+        ///
+        /// * `player1` - AccountId of player 1
+        ///
+
         pub fn game_result(
             origin: OriginFor<T>,
             player0: T::AccountId,
@@ -282,6 +298,7 @@ pub mod pallet {
     }
 
     pub trait Game<T: frame_system::Config> {
+        /// Is called after a auditor was challenged to transmit the result of the challenge
         fn apply_result(
             player0: T::AccountId,
             player1: T::AccountId,
@@ -290,6 +307,15 @@ pub mod pallet {
     }
 
     impl<T: Config> Game<T> for Pallet<T> {
+        /// Is called after a auditor was challenged to transmit the result of the challenge
+        ///
+        /// * `player0` - ``T::AccountId`` of player 0
+        ///
+        /// * `player1` - ``T::AccountId`` of player 1
+        ///
+        /// * `winner` - ``Winner`` the enum that indicates who won the challenge
+        ///
+
         fn apply_result(
             player0: T::AccountId,
             player1: T::AccountId,
