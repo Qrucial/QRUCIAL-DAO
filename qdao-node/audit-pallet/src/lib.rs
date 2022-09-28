@@ -37,6 +37,18 @@ pub mod pallet {
 
     #[derive(Encode, Decode, Default, Clone, Debug, PartialEq, Eq, TypeInfo, MaxEncodedLen)]
     #[cfg_attr(feature = "std", derive(serde::Serialize, serde::Deserialize))]
+    /// Holds the data which is associated to an auditor.
+    /// # Fields
+    ///
+    /// * `score` - the Auditors Eloscore of type `Option<u32>`. This is also used to keep track of the auditor's approval status.
+    ///             Unapproved auditors have a `score` of value `None`
+    ///
+    /// * `profile_hash` - A hash of the profile that the user submitted. Is supposed to be the hash of a markdown document which describes the user's
+    ///                    background and qualification of being an auditor.
+    ///
+    /// * `approved_by` - A user needs three approval's from already approved auditor's.Therefore this `BoundedVec<AccountId, ConstU32<3>>` can hold up
+    ///                   to three `AccountId`'s of approving auditors.
+    ///
     pub struct AuditorData<Hash, AccountId> {
         pub score: Option<u32>,
         pub profile_hash: Hash,
@@ -44,6 +56,7 @@ pub mod pallet {
     }
 
     #[derive(Encode, Decode, Debug, Clone, PartialEq, Eq, TypeInfo, MaxEncodedLen)]
+    /// Denotes the result/winner after challenging an auditor
     pub enum Winner {
         Player0,
         Player1,
@@ -51,6 +64,7 @@ pub mod pallet {
     }
 
     #[pallet::config]
+    /// The `qdao-audit-pallet` Config trait implementation
     pub trait Config: frame_system::Config {
         /// Because this pallet emits events, it depends on the runtime's definition of an event.
         type RuntimeEvent: From<Event<Self>> + IsType<<Self as frame_system::Config>::RuntimeEvent>;
@@ -161,7 +175,11 @@ pub mod pallet {
     #[pallet::call]
     impl<T: Config> Pallet<T> {
         #[pallet::weight(Weight::from_ref_time(10_000) + T::DbWeight::get().writes(1))]
-        /// Signs up a new Auditor
+        /// Signs up a new Auditor, the auditor has to provide a hashed version of his auditor profile
+        /// # Arguments
+        ///
+        /// * `profile_hash` - a hash auf the new auditors profile of type `H256`
+        ///
         pub fn sign_up(origin: OriginFor<T>, profile_hash: H256) -> DispatchResult {
             // Check that the extrinsic was signed and get the signer.
             // This function will return an error if the extrinsic is not signed.
@@ -184,8 +202,6 @@ pub mod pallet {
             };
             <AuditorMap<T>>::insert(sender.clone(), auditor_data);
 
-            // ToDo: we need to lock/stake the Auditors token. Staking pallet is Milestone2
-
             // Emit an event.
             Self::deposit_event(Event::SignedUp { who: sender });
             // Return a successful DispatchResultWithPostInfo
@@ -198,7 +214,6 @@ pub mod pallet {
         ///
         /// * `profile_hash` - a hash auf the new auditors profile of type `H256`
         ///
-
         pub fn update_profile(origin: OriginFor<T>, profile_hash: H256) -> DispatchResult {
             let sender = ensure_signed(origin)?;
 
@@ -214,7 +229,9 @@ pub mod pallet {
 
         #[pallet::weight(Weight::from_ref_time(10_000) + T::DbWeight::get().writes(1))]
 
-        /// Is called by an auditor which signed up for auditor status to cancel their account and to unreserve the associated funds.
+        /// Is called by an auditor which signed up for auditor status to cancel their 
+        /// account and to unreserve the associated funds.
+        ///
         pub fn cancel_account(origin: OriginFor<T>) -> DispatchResult {
             let sender = ensure_signed(origin)?;
 
@@ -231,6 +248,11 @@ pub mod pallet {
         }
 
         #[pallet::weight(Weight::from_ref_time(10_000) + T::DbWeight::get().writes(1))]
+        /// Is called to give an approval to someone who signed up as an auditor. Can only be called by user's which are already approved auditors.
+        /// # Arguments
+        ///
+        /// * `to_approve` - the account id of type `T::AccountId` of the user which should get approved.
+        ///
         pub fn approve_auditor(origin: OriginFor<T>, to_approve: T::AccountId) -> DispatchResult {
             let sender = ensure_signed(origin)?;
 
@@ -299,6 +321,13 @@ pub mod pallet {
 
     pub trait Game<T: frame_system::Config> {
         /// Is called after a auditor was challenged to transmit the result of the challenge
+        ///
+        /// * `player0` - ``T::AccountId`` of player 0
+        ///
+        /// * `player1` - ``T::AccountId`` of player 1
+        ///
+        /// * `winner` - ``Winner`` the enum that indicates who won the challenge
+        ///
         fn apply_result(
             player0: T::AccountId,
             player1: T::AccountId,
@@ -307,7 +336,8 @@ pub mod pallet {
     }
 
     impl<T: Config> Game<T> for Pallet<T> {
-        /// Is called after a auditor was challenged to transmit the result of the challenge
+        /// Is called after a auditor was challenged to transmit the result of the challenge. This finally updates the Eloscores
+        /// of both players accordingly.
         ///
         /// * `player0` - ``T::AccountId`` of player 0
         ///
