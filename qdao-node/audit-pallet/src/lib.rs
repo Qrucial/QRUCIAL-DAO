@@ -114,7 +114,7 @@ pub mod pallet {
     impl<T: Config> Default for GenesisConfig<T> {
         fn default() -> Self {
             Self {
-                auditor_map: Default::default(),
+                auditor_map: Default::default(), // TODO
             }
         }
     }
