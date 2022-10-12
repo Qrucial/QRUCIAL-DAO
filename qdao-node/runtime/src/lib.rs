@@ -6,7 +6,10 @@
 #[cfg(feature = "std")]
 include!(concat!(env!("OUT_DIR"), "/wasm_binary.rs"));
 
-use frame_system::limits::{BlockLength, BlockWeights};
+use frame_system::{
+    limits::{BlockLength, BlockWeights},
+    EnsureRoot,
+};
 use pallet_grandpa::{
     fg_primitives, AuthorityId as GrandpaId, AuthorityList as GrandpaAuthorityList,
 };
@@ -30,7 +33,8 @@ pub use frame_support::{
     dispatch::{DispatchClass, DispatchInfo, GetDispatchInfo, PostDispatchInfo},
     parameter_types,
     traits::{
-        ConstU128, ConstU32, ConstU64, ConstU8, KeyOwnerProofSystem, Randomness, StorageInfo,
+        ConstU128, ConstU32, ConstU64, ConstU8, EitherOfDiverse, EnsureOrigin, KeyOwnerProofSystem,
+        Randomness, StorageInfo,
     },
     weights::{
         constants::{BlockExecutionWeight, ExtrinsicBaseWeight, RocksDbWeight, WEIGHT_PER_SECOND},
@@ -96,8 +100,8 @@ pub mod opaque {
 //   https://docs.substrate.io/v3/runtime/upgrades#runtime-versioning
 #[sp_version::runtime_version]
 pub const VERSION: RuntimeVersion = RuntimeVersion {
-    spec_name: create_runtime_str!("node-template"),
-    impl_name: create_runtime_str!("node-template"),
+    spec_name: create_runtime_str!("qdao"),
+    impl_name: create_runtime_str!("qdao-runtime"),
     authoring_version: 1,
     // The version of the runtime specification. A full node will not attempt to use its native
     //   runtime in substitute for the on-chain Wasm runtime unless all of `spec_name`,
@@ -171,6 +175,9 @@ parameter_types! {
     pub const MinAuditorStake: Balance = 100;
     pub const InitialAuditorScore: u32 = 1000;
     pub const MinimalApproverScore: u32 = 2000;
+    pub const ChallengeDuration: BlockNumber = DAYS * 7;
+    pub const MaxChallenges: u32 = 50;
+    pub const ChallengeCouncilSize: u32 = 10;
 }
 
 // Configure FRAME pallets to include in runtime.
@@ -293,6 +300,18 @@ impl pallet_sudo::Config for Runtime {
     type RuntimeCall = RuntimeCall;
 }
 
+type ChallengeCollective = pallet_collective::Instance1;
+impl pallet_collective::Config<ChallengeCollective> for Runtime {
+    type RuntimeOrigin = RuntimeOrigin;
+    type Proposal = RuntimeCall;
+    type RuntimeEvent = RuntimeEvent;
+    type MotionDuration = ChallengeDuration;
+    type MaxProposals = MaxChallenges;
+    type MaxMembers = ChallengeCouncilSize;
+    type DefaultVote = pallet_collective::MoreThanMajorityThenPrimeDefaultVote;
+    type WeightInfo = pallet_collective::weights::SubstrateWeight<Runtime>;
+}
+
 /// Configure the qdao-audit-pallet.
 impl qdao_audit_pallet::Config for Runtime {
     type RuntimeEvent = RuntimeEvent;
@@ -308,6 +327,14 @@ impl qdao_exo_pallet::Config for Runtime {
     type RuntimeEvent = RuntimeEvent;
     type Balance = Balance;
     type Currency = Balances;
+    type ApproveChallengeOrigin = EitherOfDiverse<
+        EnsureRoot<AccountId>,
+        pallet_collective::EnsureProportionMoreThan<AccountId, ChallengeCollective, 1, 2>,
+    >;
+    type RejectChallengeOrigin = EitherOfDiverse<
+        EnsureRoot<AccountId>,
+        pallet_collective::EnsureProportionMoreThan<AccountId, ChallengeCollective, 1, 2>,
+    >;
     type Game = qdao_audit_pallet::Pallet<Runtime>;
 }
 
@@ -326,6 +353,7 @@ construct_runtime!(
         Balances: pallet_balances,
         TransactionPayment: pallet_transaction_payment,
         Sudo: pallet_sudo,
+        ChallengeCouncil: pallet_collective::<Instance1>,
         // Include the custom logic from the pallet-template in the runtime.
         ExoSys: qdao_exo_pallet,
         AuditModule: qdao_audit_pallet,
