@@ -39,7 +39,7 @@ pub struct ReviewResult {
 #[derive(Clone, Encode, Decode, Eq, PartialEq, RuntimeDebug, TypeInfo, MaxEncodedLen, Default)]
 #[scale_info(skip_type_params(T))]
 ///All information related to requested review
-pub struct ReviewData<T: Config> {
+pub struct Review<T: Config> {
     /// Remaining balance stored in "NFT"
     deposit: DepositBalanceOf<T>,
     /// Owner of request
@@ -64,10 +64,16 @@ pub mod pallet {
         /// Because this pallet emits events, it depends on the runtime's definition of an event.
         type RuntimeEvent: From<Event<Self>> + IsType<<Self as frame_system::Config>::RuntimeEvent>;
 
+        /// Origin that can approve challenges
+        type ApproveChallengeOrigin: EnsureOrigin<Self::RuntimeOrigin>;
+
+        /// Origin that can reject challenges
+        type RejectChallengeOrigin: EnsureOrigin<Self::RuntimeOrigin>;
+
         /// Units for balance
         type Balance: Member + Parameter + AtLeast32BitUnsigned + Default + Copy;
 
-        ///Currency mechanism
+        /// Currency mechanism
         type Currency: ReservableCurrency<Self::AccountId>;
 
         type Game: qdao_audit_pallet::pallet::Game<Self>;
@@ -80,7 +86,7 @@ pub mod pallet {
     #[pallet::storage]
     #[pallet::getter(fn something)]
     ///
-    pub type ReviewRecord<T: Config> = StorageMap<_, Blake2_128Concat, T::Hash, ReviewData<T>>;
+    pub type Reviews<T: Config> = StorageMap<_, Blake2_128Concat, T::Hash, Review<T>>;
 
     // Pallets use events to inform users when important changes are made.
     // https://docs.substrate.io/v3/runtime/events-and-errors
@@ -131,7 +137,7 @@ pub mod pallet {
             let sender = ensure_signed(origin)?;
 
             ensure!(
-                !ReviewRecord::<T>::contains_key(hash),
+                !Reviews::<T>::contains_key(hash),
                 Error::<T>::DuplicateEntry
             );
 
@@ -141,9 +147,9 @@ pub mod pallet {
 
             let url_bounded = url.clone().try_into().map_err(|_| Error::<T>::UrlTooLong)?;
 
-            ReviewRecord::<T>::insert(
+            Reviews::<T>::insert(
                 hash,
-                ReviewData {
+                Review {
                     deposit: stake,
                     requestor,
                     hash,
@@ -192,9 +198,59 @@ pub mod pallet {
             _result: Vec<u8>,
         ) -> DispatchResult {
             let sender = ensure_signed(origin)?;
-            let review = ReviewRecord::<T>::get(challenged_hash).ok_or(Error::<T>::NoneValue)?;
+            let review = Reviews::<T>::get(challenged_hash).ok_or(Error::<T>::NoneValue)?;
+
             // TODO Not all challenges should win, right? :smile:
             T::Game::apply_result(sender, review.requestor, qdao_audit_pallet::Winner::Player0)?;
+            Ok(())
+        }
+
+        /// Approve a challenge. When the audit is finished, part of the audit fee goes to the challenger
+        /// and the original deposit will be returned.
+        ///
+        /// May only be called from `T::ApproveOrigin`.
+        ///
+        /// # <weight>
+        /// - Complexity: O(1).
+        /// - DbReads: `Proposals`, `Approvals`
+        /// - DbWrite: `Approvals`
+        /// # </weight>
+        #[pallet::weight(Weight::from_ref_time(1000) + T::DbWeight::get().writes(1))]
+        pub fn approve_challenge(origin: OriginFor<T>, _challenge: T::Hash) -> DispatchResult {
+            T::ApproveChallengeOrigin::ensure_origin(origin)?;
+
+            // ensure!(
+            //     <Proposals<T, I>>::contains_key(proposal_id),
+            //     Error::<T, I>::InvalidIndex
+            // );
+            // Approvals::<T, I>::try_append(proposal_id)
+            //     .map_err(|_| Error::<T, I>::TooManyApprovals)?;
+            Ok(())
+        }
+
+        /// Reject a challenge. The challenge deposit will be slashed.
+        ///
+        /// May only be called from `T::RejectChallengeOrigin`.
+        ///
+        /// # <weight>
+        /// - Complexity: O(1)
+        /// - DbReads: `Proposals`, `rejected proposer account`
+        /// - DbWrites: `Proposals`, `rejected proposer account`
+        /// # </weight>
+        #[pallet::weight(Weight::from_ref_time(1000) + T::DbWeight::get().writes(1))]
+        pub fn reject_challenge(origin: OriginFor<T>, _challenge: T::Hash) -> DispatchResult {
+            T::RejectChallengeOrigin::ensure_origin(origin)?;
+
+            // let proposal =
+            //     <Proposals<T, I>>::take(&proposal_id).ok_or(Error::<T, I>::InvalidIndex)?;
+            // let value = proposal.bond;
+            // let imbalance = T::Currency::slash_reserved(&proposal.proposer, value).0;
+            // T::OnSlash::on_unbalanced(imbalance);
+
+            // Self::deposit_event(Event::<T, I>::Rejected {
+            //     proposal_index: proposal_id,
+            //     slashed: value,
+            // });
             Ok(())
         }
     }
