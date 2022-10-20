@@ -1,7 +1,7 @@
 use qdao_audit_pallet::pallet::GenesisConfig as AuditConfig;
 use qdao_runtime::{
-    AccountId, AuraConfig, BalancesConfig, ChallengeCouncilConfig, GenesisConfig, GrandpaConfig,
-    Signature, SudoConfig, SystemConfig, WASM_BINARY,
+    AccountId, AuraConfig, BalancesConfig, GenesisConfig, GrandpaConfig, Signature, SudoConfig,
+    SystemConfig, WASM_BINARY,
 };
 use sc_service::ChainType;
 use sp_consensus_aura::sr25519::AuthorityId as AuraId;
@@ -163,8 +163,6 @@ fn testnet_genesis(
             key: Some(root_key),
         },
         transaction_payment: Default::default(),
-        challenge_council: ChallengeCouncilConfig::default(),
-        // TODO exo_sys: ExoSysConfig::default(),
         audit_module: AuditConfig::default(),
     }
 }

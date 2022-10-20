@@ -75,15 +75,15 @@ pub mod pallet {
         /// Currency mechanism
         type Currency: ReservableCurrency<Self::AccountId>;
 
-        #[pallet::constant]
+        #[pallet::constant] 
         /// Minimum amount which is required for an Auditor to be able to sign up.
         type MinAuditorStake: Get<DepositBalanceOf<Self>>;
 
-        #[pallet::constant]
+        #[pallet::constant] 
         /// Initial score for an auditor which signed up and received 3 approvals
         type InitialAuditorScore: Get<u32>;
 
-        #[pallet::constant]
+        #[pallet::constant] 
         /// Minimal score which allows auditors to approve other auditors
         type MinimalApproverScore: Get<u32>;
     }
@@ -114,7 +114,7 @@ pub mod pallet {
     impl<T: Config> Default for GenesisConfig<T> {
         fn default() -> Self {
             Self {
-                auditor_map: Default::default(), // TODO
+                auditor_map: Default::default(),
             }
         }
     }
@@ -129,6 +129,7 @@ pub mod pallet {
         }
     }
 
+    
     #[pallet::event]
     #[pallet::generate_deposit(pub(super) fn deposit_event)]
     /// Events which are emitted by `qdao-audit-pallet`
@@ -143,6 +144,7 @@ pub mod pallet {
         },
     }
 
+    
     #[pallet::error]
     /// Errors of `qdao-audit-pallet`
     pub enum Error<T> {
@@ -227,7 +229,7 @@ pub mod pallet {
 
         #[pallet::weight(Weight::from_ref_time(10_000) + T::DbWeight::get().writes(1))]
 
-        /// Is called by an auditor which signed up for auditor status to cancel their
+        /// Is called by an auditor which signed up for auditor status to cancel their 
         /// account and to unreserve the associated funds.
         ///
         pub fn cancel_account(origin: OriginFor<T>) -> DispatchResult {
