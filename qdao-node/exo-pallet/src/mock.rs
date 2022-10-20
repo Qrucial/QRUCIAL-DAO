@@ -3,7 +3,7 @@ use frame_support::{
     construct_runtime, parameter_types,
     traits::{ConstU16, ConstU64},
 };
-use frame_system::{self as system, EnsureRoot};
+use frame_system as system;
 use sp_core::H256;
 use sp_runtime::{
     testing::Header,
@@ -26,10 +26,8 @@ construct_runtime!(
     }
 );
 
-type RuntimeBalance = u64;
-
 parameter_types! {
-    pub const ExistentialDeposit: RuntimeBalance = 1;
+    pub const ExistentialDeposit: u64 = 1;
 }
 
 impl system::Config for Test {
@@ -60,7 +58,7 @@ impl system::Config for Test {
 }
 
 impl pallet_balances::Config for Test {
-    type Balance = RuntimeBalance;
+    type Balance = u64;
     type DustRemoval = ();
     type RuntimeEvent = RuntimeEvent;
     type ExistentialDeposit = ExistentialDeposit;
@@ -73,17 +71,15 @@ impl pallet_balances::Config for Test {
 
 impl qdao_exo_pallet::Config for Test {
     type RuntimeEvent = RuntimeEvent;
-    type Balance = RuntimeBalance;
+    type Balance = u32;
     type Currency = Balances;
-    type ApproveChallengeOrigin = EnsureRoot<<Self as system::Config>::AccountId>;
-    type RejectChallengeOrigin = EnsureRoot<<Self as system::Config>::AccountId>;
     type Game = Self;
 }
 
 impl qdao_audit_pallet::Game<Test> for Test {
     fn apply_result(
-        _player0: <Self as system::Config>::AccountId,
-        _player1: <Self as system::Config>::AccountId,
+        _player0: <Test as system::Config>::AccountId,
+        _player1: <Test as system::Config>::AccountId,
         _winner: qdao_audit_pallet::Winner,
     ) -> frame_support::pallet_prelude::DispatchResult {
         Ok(())
