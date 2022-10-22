@@ -7,7 +7,10 @@ use sc_service::ChainType;
 use sp_consensus_aura::sr25519::AuthorityId as AuraId;
 use sp_core::{sr25519, Pair, Public, H256};
 use sp_finality_grandpa::AuthorityId as GrandpaId;
-use sp_runtime::{traits::{IdentifyAccount, Verify}, BoundedVec};
+use sp_runtime::{
+    traits::{IdentifyAccount, Verify},
+    BoundedVec,
+};
 
 // The URL for the telemetry server.
 // const STAGING_TELEMETRY_URL: &str = "wss://telemetry.polkadot.io/submit/";
@@ -59,6 +62,8 @@ pub fn development_config() -> Result<ChainSpec, String> {
                     get_account_id_from_seed::<sr25519::Public>("Bob"),
                     get_account_id_from_seed::<sr25519::Public>("Charlie"),
                     get_account_id_from_seed::<sr25519::Public>("Dave"),
+                    get_account_id_from_seed::<sr25519::Public>("Eve"),
+                    get_account_id_from_seed::<sr25519::Public>("Ferdie"),
                     get_account_id_from_seed::<sr25519::Public>("Alice//stash"),
                     get_account_id_from_seed::<sr25519::Public>("Bob//stash"),
                 ],
@@ -172,9 +177,19 @@ fn testnet_genesis(
         transaction_payment: Default::default(),
         audit_module: AuditConfig {
             auditor_map: vec![
-                (endowed_accounts.get(0).unwrap().clone(), auditor_data.clone()),
-                (endowed_accounts.get(1).unwrap().clone(), auditor_data.clone()),
-                (endowed_accounts.get(2).unwrap().clone(), auditor_data),
+                (
+                    endowed_accounts.get(0).unwrap().clone(),
+                    auditor_data.clone(),
+                ),
+                (
+                    endowed_accounts.get(1).unwrap().clone(),
+                    auditor_data.clone(),
+                ),
+                (
+                    endowed_accounts.get(2).unwrap().clone(),
+                    auditor_data.clone(),
+                ),
+                (endowed_accounts.get(3).unwrap().clone(), auditor_data),
             ],
         },
     }
