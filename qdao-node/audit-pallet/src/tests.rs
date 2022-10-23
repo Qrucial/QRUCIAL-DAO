@@ -7,12 +7,12 @@ use sp_core::H256;
 fn sign_up_works() {
     new_test_ext().execute_with(|| {
         // Given
-        let sender = ensure_signed(Origin::signed(1)).expect("Signing failed");
+        let sender = ensure_signed(RuntimeOrigin::signed(1)).expect("Signing failed");
         let hash = H256::repeat_byte(1);
 
         // When
         // Sign up a new auditor, read the auditor_data from Storage
-        let sign_up_result = AuditRepModule::sign_up(Origin::signed(1), hash);
+        let sign_up_result = AuditRepModule::sign_up(RuntimeOrigin::signed(1), hash);
         let auditor_data = AuditorMap::<Test>::try_get(sender);
 
         // Then
@@ -28,16 +28,16 @@ fn sign_up_works() {
 fn sign_up_update_profile_works() {
     new_test_ext().execute_with(|| {
         // Given
-        let sender = ensure_signed(Origin::signed(1)).expect("Sigining failed");
+        let sender = ensure_signed(RuntimeOrigin::signed(1)).expect("Sigining failed");
         let hash = H256::repeat_byte(1);
         let hash_for_update = H256::repeat_byte(2);
 
         // When
         // Sign up a new auditor, read the auditor_data from Storage
-        let sign_up_result = AuditRepModule::sign_up(Origin::signed(1), hash);
+        let sign_up_result = AuditRepModule::sign_up(RuntimeOrigin::signed(1), hash);
         let auditor_data_before_update = AuditorMap::<Test>::try_get(&sender);
         let update_profile_result =
-            AuditRepModule::update_profile(Origin::signed(1), hash_for_update);
+            AuditRepModule::update_profile(RuntimeOrigin::signed(1), hash_for_update);
         let auditor_data_after_update = AuditorMap::<Test>::try_get(sender);
 
         // Then
@@ -66,7 +66,7 @@ fn sign_up_fails_when_balance_too_low() {
     new_test_ext().execute_with(|| {
         // Given
         // Auditor an mock config with index 8 has a given balance of 10 which is too low for sign_up
-        let auditor = Origin::signed(8);
+        let auditor = RuntimeOrigin::signed(8);
         let hash = H256::repeat_byte(1);
 
         // When
@@ -81,8 +81,8 @@ fn sign_up_fails_when_balance_too_low() {
 fn sign_up_error_for_double_sign_up() {
     new_test_ext().execute_with(|| {
         // Given
-        let auditor1 = Origin::signed(1);
-        let auditor2 = Origin::signed(2);
+        let auditor1 = RuntimeOrigin::signed(1);
+        let auditor2 = RuntimeOrigin::signed(2);
 
         // When
         // Sign up Auditor, should work
@@ -108,16 +108,17 @@ fn sign_up_error_for_double_sign_up() {
 fn sign_up_cancellation_works() {
     new_test_ext().execute_with(|| {
         // Given
-        let sender = ensure_signed(Origin::signed(1)).expect("Signing failed");
+        let sender = ensure_signed(RuntimeOrigin::signed(1)).expect("Signing failed");
         let hash = H256::repeat_byte(1);
 
         // When
         // Sign up a new auditor, read the auditor_data from Storage
-        let sign_up_result = AuditRepModule::sign_up(Origin::signed(1), hash);
+        let sign_up_result = AuditRepModule::sign_up(RuntimeOrigin::signed(1), hash);
         let auditor_data_before_cancellation = AuditorMap::<Test>::try_get(&sender);
-        let cancellation_result = AuditRepModule::cancel_account(Origin::signed(1));
+        let cancellation_result = AuditRepModule::cancel_account(RuntimeOrigin::signed(1));
         let auditor_data_after_cancellation = AuditorMap::<Test>::try_get(sender);
-        let cancellation_of_cancelled_account = AuditRepModule::cancel_account(Origin::signed(1));
+        let cancellation_of_cancelled_account =
+            AuditRepModule::cancel_account(RuntimeOrigin::signed(1));
 
         // Then
         // Check that new Auditor exists after creation and is successfully cancelled
@@ -140,10 +141,10 @@ fn sign_up_cancellation_works() {
 fn approval_of_auditor_works() {
     new_test_ext().execute_with(|| {
         // Given
-        let approvee = Origin::signed(1);
+        let approvee = RuntimeOrigin::signed(1);
         let approvee_id = ensure_signed(approvee.clone()).expect("Sigining failed");
         let hash = H256::repeat_byte(1);
-        let approver = Origin::signed(4);
+        let approver = RuntimeOrigin::signed(4);
         let approver_id = ensure_signed(approver.clone()).expect("Sigining failed");
 
         // When
@@ -170,10 +171,10 @@ fn approval_of_auditor_works() {
 fn approval_with_low_reputation_fails() {
     new_test_ext().execute_with(|| {
         // Given
-        let approvee = Origin::signed(1);
+        let approvee = RuntimeOrigin::signed(1);
         let approvee_id = ensure_signed(approvee.clone()).expect("Signing failed");
         let hash = H256::repeat_byte(1);
-        let approver_low_rep = Origin::signed(7);
+        let approver_low_rep = RuntimeOrigin::signed(7);
 
         // When
         // Sign up a new auditor, read the auditor_data from Storage
@@ -196,12 +197,12 @@ fn approval_with_low_reputation_fails() {
 fn approval_works() {
     new_test_ext().execute_with(|| {
         // Given
-        let approvee = Origin::signed(1);
+        let approvee = RuntimeOrigin::signed(1);
         let approvee_id = ensure_signed(approvee.clone()).expect("Signing failed");
         let hash = H256::repeat_byte(1);
-        let approver1 = Origin::signed(4);
-        let approver2 = Origin::signed(5);
-        let approver3 = Origin::signed(6);
+        let approver1 = RuntimeOrigin::signed(4);
+        let approver2 = RuntimeOrigin::signed(5);
+        let approver3 = RuntimeOrigin::signed(6);
 
         // When
         // Sign up a new auditor, read the auditor_data from Storage
@@ -229,15 +230,19 @@ fn approval_works() {
 fn elo_score_update_works() {
     new_test_ext().execute_with(|| {
         // Given
-        let player0 = Origin::signed(4);
+        let player0 = RuntimeOrigin::signed(4);
         let player0_id = ensure_signed(player0).unwrap();
-        let player1 = Origin::signed(5);
+        let player1 = RuntimeOrigin::signed(5);
         let player1_id = ensure_signed(player1).unwrap();
 
         // When
         // Submit a game result, initially both players have score 2000, Player0 wins
-        let game_result =
-            AuditRepModule::game_result(Origin::root(), player0_id, player1_id, Winner::Player0);
+        let game_result = AuditRepModule::game_result(
+            RuntimeOrigin::root(),
+            player0_id,
+            player1_id,
+            Winner::Player0,
+        );
         let player0_data = AuditorMap::<Test>::try_get(player0_id);
         let player1_data = AuditorMap::<Test>::try_get(player1_id);
 
