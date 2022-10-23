@@ -117,7 +117,8 @@ fn sign_up_cancellation_works() {
         let auditor_data_before_cancellation = AuditorMap::<Test>::try_get(&sender);
         let cancellation_result = AuditRepModule::cancel_account(RuntimeOrigin::signed(1));
         let auditor_data_after_cancellation = AuditorMap::<Test>::try_get(sender);
-        let cancellation_of_cancelled_account = AuditRepModule::cancel_account(RuntimeOrigin::signed(1));
+        let cancellation_of_cancelled_account =
+            AuditRepModule::cancel_account(RuntimeOrigin::signed(1));
 
         // Then
         // Check that new Auditor exists after creation and is successfully cancelled
@@ -236,8 +237,12 @@ fn elo_score_update_works() {
 
         // When
         // Submit a game result, initially both players have score 2000, Player0 wins
-        let game_result =
-            AuditRepModule::game_result(RuntimeOrigin::root(), player0_id, player1_id, Winner::Player0);
+        let game_result = AuditRepModule::game_result(
+            RuntimeOrigin::root(),
+            player0_id,
+            player1_id,
+            Winner::Player0,
+        );
         let player0_data = AuditorMap::<Test>::try_get(player0_id);
         let player1_data = AuditorMap::<Test>::try_get(player1_id);
 
