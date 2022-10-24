@@ -35,29 +35,20 @@ pub(crate) type FullClient =
     sc_service::TFullClient<Block, RuntimeApi, NativeElseWasmExecutor<ExecutorDispatch>>;
 type FullBackend = sc_service::TFullBackend<Block>;
 type FullSelectChain = sc_consensus::LongestChain<FullBackend, Block>;
+type ServiceResult = sc_service::PartialComponents<
+    FullClient,
+    FullBackend,
+    FullSelectChain,
+    sc_consensus::DefaultImportQueue<Block, FullClient>,
+    sc_transaction_pool::FullPool<Block, FullClient>,
+    (
+        sc_finality_grandpa::GrandpaBlockImport<FullBackend, Block, FullClient, FullSelectChain>,
+        sc_finality_grandpa::LinkHalf<Block, FullClient, FullSelectChain>,
+        Option<Telemetry>,
+    ),
+>;
 
-pub fn new_partial(
-    config: &Configuration,
-) -> Result<
-    sc_service::PartialComponents<
-        FullClient,
-        FullBackend,
-        FullSelectChain,
-        sc_consensus::DefaultImportQueue<Block, FullClient>,
-        sc_transaction_pool::FullPool<Block, FullClient>,
-        (
-            sc_finality_grandpa::GrandpaBlockImport<
-                FullBackend,
-                Block,
-                FullClient,
-                FullSelectChain,
-            >,
-            sc_finality_grandpa::LinkHalf<Block, FullClient, FullSelectChain>,
-            Option<Telemetry>,
-        ),
-    >,
-    ServiceError,
-> {
+pub fn new_partial(config: &Configuration) -> Result<ServiceResult, ServiceError> {
     if config.keystore_remote.is_some() {
         return Err(ServiceError::Other(
             "Remote Keystores are not supported.".into(),
@@ -130,7 +121,7 @@ pub fn new_partial(
 						slot_duration,
 					);
 
-                Ok((timestamp, slot))
+                Ok((slot, timestamp))
             },
             spawner: &task_manager.spawn_essential_handle(),
             registry: config.prometheus_registry(),
@@ -150,7 +141,7 @@ pub fn new_partial(
     })
 }
 
-fn remote_keystore(_url: &String) -> Result<Arc<LocalKeystore>, &'static str> {
+fn remote_keystore(_url: &str) -> Result<Arc<LocalKeystore>, &'static str> {
     // FIXME: here would the concrete keystore be built,
     //        must return a concrete type (NOT `LocalKeystore`) that
     //        implements `CryptoStore` and `SyncCryptoStore`
@@ -202,7 +193,7 @@ pub fn new_full(mut config: Configuration) -> Result<TaskManager, ServiceError> 
         Vec::default(),
     ));
 
-    let (network, system_rpc_tx, network_starter) =
+    let (network, system_rpc_tx, tx_handler_controller, network_starter) =
         sc_service::build_network(sc_service::BuildNetworkParams {
             config: &config,
             client: client.clone(),
@@ -254,6 +245,7 @@ pub fn new_full(mut config: Configuration) -> Result<TaskManager, ServiceError> 
         system_rpc_tx,
         config,
         telemetry: telemetry.as_mut(),
+        tx_handler_controller,
     })?;
 
     if role.is_authority() {
@@ -283,7 +275,7 @@ pub fn new_full(mut config: Configuration) -> Result<TaskManager, ServiceError> 
 							slot_duration,
 						);
 
-                    Ok((timestamp, slot))
+                    Ok((slot, timestamp))
                 },
                 force_authoring,
                 backoff_authoring_blocks,
