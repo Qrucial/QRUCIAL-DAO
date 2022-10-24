@@ -7,7 +7,6 @@ use crate::{
 use frame_benchmarking_cli::{BenchmarkCmd, ExtrinsicFactory, SUBSTRATE_REFERENCE_HARDWARE};
 use qdao_runtime::{Block, EXISTENTIAL_DEPOSIT};
 use sc_cli::{ChainSpec, RuntimeVersion, SubstrateCli};
-use clap::{CommandFactory, FromArgMatches, Parser};
 use sc_service::PartialComponents;
 use sp_keyring::Sr25519Keyring;
 
