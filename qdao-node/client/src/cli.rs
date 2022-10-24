@@ -1,6 +1,4 @@
 use sc_cli::RunCmd;
-// use clap::FromArgMatches, Parser;
-// use sc_service::Configuration;
 
 #[derive(Debug, clap::Parser)]
 pub struct Cli {
