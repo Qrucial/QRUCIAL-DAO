@@ -8,6 +8,7 @@ RUN apt-get install -y tmux
 RUN apt-get install -y curl
 RUN apt-get install -y wget
 RUN apt-get install -y python3
+RUN apt-get install -y python3-setuptools
 RUN pip3 install Flask
 RUN cargo install keccak256-cli
 
