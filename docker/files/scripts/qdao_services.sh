@@ -6,4 +6,9 @@ tmux new-session -d -s qdao-api 'python3 /opt/data/QRUCIAL-DAO/exotools/lar.py'
 
 # Required for persistant builds. will never recompile unless these files are deleted
 cp -r /opt/data/* /opt/testing
-sleep 999 # Debugging
+
+# Debugging
+while :
+do
+    sleep 1
+done
