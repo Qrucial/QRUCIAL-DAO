@@ -138,7 +138,7 @@ function exec_audit {
 
 function call_logger {
   # Target HTTP service of --> ../logger_and_reporter/python/lar.py
-  curl -X POST "http://127.0.0.1:9999/notify_logger?key=x7roVhBsiZ18Dg3DX3iCm9pXhXdbZWx2"  # TODO Add correct arguments! What do we pass here? succ/fail/info
+  curl -X POST "http://127.0.0.1:9999/notify_logger?key=x7roVhBsiZ18Dg3DX3iCm9pXhXdbZWx2&hash=0x9b945af23f0701cddcdb7dabcd72c9c7ffd3a155ace237a084b65460a9d36322&result=1"
 }
 
 function check_hash {
@@ -164,8 +164,8 @@ prep_folders
 docker_prep 1 
 ## Run Auditor script bundled in the docker image
 exec_audit
-## [TODO] Document
-#call_logger
+## Notify the logger about execution
+call_logger
 
 # Would it be smart to offload some of the logic here into the docker file?
 # we could Have a bash script that gets loaded into the docker
