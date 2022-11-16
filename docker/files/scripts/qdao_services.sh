@@ -1,5 +1,5 @@
 #!/bin/sh
-tmux new-session -d -s qdao-node '/opt/data/QRUCIAL-DAO/qdao-node/target/release/qdao-node --dev'
+tmux new-session -d -s qdao-node '/opt/data/QRUCIAL-DAO/qdao-node/target/release/qdao-node --dev --ws-external'
 sleep 10 # Wait til node starts, TODO
 tmux new-session -d -s qdao-exosysd '/opt/data/QRUCIAL-DAO/exosysd/target/release/qdao-exosysd'
 tmux new-session -d -s qdao-api 'python3 /opt/data/QRUCIAL-DAO/exotools/lar.py'
