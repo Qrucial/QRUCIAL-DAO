@@ -225,7 +225,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                                                                                 println!(
                                                                                     "Author with ID {:?} requested to run exotool: {:?}",
                                                                                     arg_who,
-                                                                                    std::process::Command::new("~/exotools/exotool.sh")
+                                                                                    std::process::Command::new("../exotools/exotool.sh")
                                                                                         .args([arg_url, arg_full_hash])
                                                                                         .spawn());
                                                                             }
