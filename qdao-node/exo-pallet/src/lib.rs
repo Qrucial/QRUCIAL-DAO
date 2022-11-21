@@ -94,6 +94,10 @@ pub mod pallet {
             url: Vec<u8>,
             hash: T::Hash,
         },
+        ExecutionFinish {
+            hash: T::Hash,
+            result: Vec<u8>,
+        },
     }
 
     // Errors inform users that something went wrong.
@@ -168,6 +172,10 @@ pub mod pallet {
             _hash: T::Hash,
             _result: Vec<u8>,
         ) -> DispatchResult {
+            Self::deposit_event(Event::ExecutionFinish {
+                hash: _hash,
+                result: _result,
+            });
             Ok(())
         }
 
