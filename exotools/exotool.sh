@@ -14,19 +14,33 @@ type keccak256 >/dev/null || { echo >&2 "keccak256 is missing. please install it
 
 # Process Args
 if (( $# != 2 )); then
-  >&2 echo "incorrect number of args, use: \n\texotool.sh <URL> <HASH>"
+  >&2 echo "[DEBUG] Incorrect number of args, use: \n\texotool.sh <URL> <HASH>"
 fi
 
 # Check if URL is valid
 regex='(https?)://[-[:alnum:]\+&@#/%?=~_|!:,.;]*[-[:alnum:]\+&@#/%=~_|]'
 if [[ ! $1 =~ $regex ]]
 then
-  echo "Invalid URL"
+  echo "[DEBUG] Invalid URL was passed to ExoTool."
   exit 1
 fi
 
-# Step back because it is started from Daemon TODO: change this to fix path - Idea, we should use ~ and qdao user
-cd ../exotools/
+# Step back because it is started from Daemon
+echo '[DEBUG] We cd to ~/QRUCIAL-DAO/exotools/ or ../exotools'
+
+if [ -d ~/QRUCIAL-DAO/exotools/  ]
+then
+    echo "[DEBUG] Assuming non-docker environment"
+    cd ~/QRUCIAL-DAO/exotools/ # For non-docker environment
+fi
+
+if [ ! -d ~/QRUCIAL-DAO/exotools/  ]
+then
+    echo "[DEBUG] Assuming docker environment"
+    cd ../exotools # For docker environment
+fi
+
+echo "[DEBUG] Location:"
 pwd
 
 # > SCRIPT_PATH  = Directory of where the script is at starting at root
@@ -48,7 +62,7 @@ SUPPLIED_HASH=$2
 # Prepare the security audit working folders
 function prep_folders {
 
-  if [[ ! $HASH ]]; then echo "Hash is not set, Fix code flow"; exit 1; fi
+  if [[ ! $HASH ]]; then echo "[DEBUG] Hash passed to ExoTool was not set correctly."; exit 1; fi
 
   MOUNTPOINT="$SCRIPT_PATH"/static/"$HASH"
   TIMESTAMP_PATH="$MOUNTPOINT"/reports/"$DATE_READABLE"/
@@ -61,7 +75,7 @@ function prep_folders {
 
 # Downloads the files from the URL given by ExosysD
 function get_audit_files {
-  echo "Retrieve Audit Files"
+  echo "[DEBUG] Retrieve Audit Files: $URL"
   echo ""
 
   PROGRAM_NAME="${URL##*/}"
@@ -78,11 +92,12 @@ function get_audit_files {
 
   # The file needs to be a tar file
   if ! { tar ztf "$DOWNLOAD_PATH"/"$PROGRAM_NAME" || tar tf "$DOWNLOAD_PATH"/"$PROGRAM_NAME"; } >/dev/null 2>&1; then
-    echo "$DOWNLOAD_PATH is not a tar file"
+    echo "[DEBUG] $DOWNLOAD_PATH is not a tar file"
     exit 1
   fi
 
   # Extract file. to program dir (to root directory of the docker/)
+  echo '[DEBUG] Extractiong $PROGRAM_NAME to $EXTRACT_PATH'
   tar xf "$DOWNLOAD_PATH"/"$PROGRAM_NAME" --directory=$EXTRACT_PATH
   # Idea: https://unix.stackexchange.com/questions/457117/how-to-unshare-network-for-current-process
   # We don't want to provide network connection to the security audit files/processes.
@@ -92,7 +107,7 @@ function get_audit_files {
 # > Creates a docker container called auditor, mounted at dir, from the image exotools
 # > Creates container
 function docker_prep () {
-  echo "Preparing Docker"
+  echo "[DEBUG] Preparing Docker instance"
   echo ""
   if [[ $1 == 1 ]]; then
     docker build -t exotools "$SCRIPT_PATH"/docker/docker_files/
@@ -101,7 +116,7 @@ function docker_prep () {
 
 # Safe crash, stop docker and anything that should be cleaned up.
 function safe_exit () {
-  echo "Exiting, stopping running processes..."
+  echo "[DEBUG] Exiting, stopping running processes..."
 
   if [[ $(docker container list | grep "$HASH") ]]; then
     docker container stop "$HASH"
@@ -136,17 +151,21 @@ function exec_audit {
 
 function call_logger {
   # Target HTTP service of --> ../logger_and_reporter/python/lar.py
-  curl -X POST "http://127.0.0.1:9999/notify_logger?key=x7roVhBsiZ18Dg3DX3iCm9pXhXdbZWx2&hash=0x9b945af23f0701cddcdb7dabcd72c9c7ffd3a155ace237a084b65460a9d36322&result=1"
+  # exotestflipper.tar 0xa03f6ba3eb8141f0f8daee4ea016d4144f44fc4cba9e7477a4c1f041aaeb6c38
+  # TODO check for result and make sure the passed arguments are accurate always
+  # curl -X POST "http://127.0.0.1:9999/notify_logger?key=x7roVhBsiZ18Dg3DX3iCm9pXhXdbZWx2&hash=0xa03f6ba3eb8141f0f8daee4ea016d4144f44fc4cba9e7477a4c1f041aaeb6c38&result=1"
+  echo "[DEBUG] Calling and reporting to logger with $HASH and result=1"
+  curl -X POST "http://127.0.0.1:9999/notify_logger?key=x7roVhBsiZ18Dg3DX3iCm9pXhXdbZWx2&hash=$HASH&result=1"
 }
 
 function check_hash {
-  echo "Hash Check"
+  echo "[DEBUG] Run hash check"
   echo ""
   if [[ ! $HASH == $SUPPLIED_HASH ]]; then
-    echo "Hashes don't match: $HASH != $SUPPLIED_HASH"
+    echo "[DEBUG] Hashes don't match: $HASH != $SUPPLIED_HASH"
     exit 1
   fi
-  echo "Hashes Match"
+  echo "[DEBUG] Hashes received do match."
   echo ""
 }
 

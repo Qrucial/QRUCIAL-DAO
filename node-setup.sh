@@ -8,7 +8,7 @@
 
 # Don't run as root
 if [ "$EUID" -eq 0 ]
-  then echo "You must not run this as root. Please apply basic hardening."
+  then echo "You must not run this as root. Please apply basic hardening and create the qdao user."
   exit
 fi
 
@@ -24,6 +24,7 @@ type gcc >/dev/null || { echo >&2 "gcc is missing. Please install it." ; exit 1;
 type make >/dev/null || { echo >&2 "make is missing. Please install it." ; exit 1;}
 
 # Get from git (later from IPFS?)
+cd ~
 git clone https://github.com/Qrucial/QRUCIAL-DAO
 cd QRUCIAL-DAO/qdao-node
 git checkout milestone1
