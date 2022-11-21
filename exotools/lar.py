@@ -55,7 +55,6 @@ while substrate==None:
             type_registry_preset='kusama'
         )
         logger.info("Successfullly connected to QDAO chain!")
-        logger.info("Successfullly connected to QDAO chain!")
     except Exception as e:
         logger.info("Couldn't connect to QDAO's WebSocket. Trying again in 5 seconds.")
         time.sleep(5)
