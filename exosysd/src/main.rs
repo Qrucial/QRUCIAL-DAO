@@ -15,7 +15,7 @@ mod error;
 
 use substrate_parser::{
     cards::{Event, ParsedData, Sequence},
-    decode_blob_as_type,
+    decode_all_as_type,
 };
 
 const MODULE_NAME: &str = "ExoSys";
@@ -143,7 +143,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                     for entry in storage.entries.iter() {
                         if entry.name == "Events" {
                             if let Value::String(ref hex_data) = events {
-                                let mut data = unhex(hex_data, error::NotHex::Value).unwrap();
+                                let data = unhex(hex_data, error::NotHex::Value).unwrap();
                                 let ty_symbol = match entry.ty {
                                     frame_metadata::v14::StorageEntryType::Plain(a) => a,
                                     frame_metadata::v14::StorageEntryType::Map {
@@ -152,11 +152,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                                         value,
                                     } => value,
                                 };
-                                match decode_blob_as_type(&ty_symbol, &mut data, &metadata_v14) {
+                                match decode_all_as_type(&ty_symbol, &data, &metadata_v14.types) {
                                     Ok(data_parsed) => {
-                                        if !data.is_empty() {
-                                            println!("Not empty data when done")
-                                        }
                                         if let ParsedData::SequenceRaw(a) = data_parsed.data {
                                             for i in a.data {
                                                 if let ParsedData::Composite(b) = i {
