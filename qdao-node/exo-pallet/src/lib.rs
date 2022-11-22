@@ -95,8 +95,8 @@ pub mod pallet {
             hash: T::Hash,
         },
         ExecutionFinish {
-            hash: T::Hash,
-            result: Vec<u8>,
+            ret_hash: T::Hash,
+            ret_result: Vec<u8>,
         },
     }
 
@@ -173,8 +173,8 @@ pub mod pallet {
             result: Vec<u8>,
         ) -> DispatchResult {
             Self::deposit_event(Event::ExecutionFinish {
-                hash: hash,
-                result: result,
+                ret_hash: hash,
+                ret_result: result,
             });
             Ok(())
         }
