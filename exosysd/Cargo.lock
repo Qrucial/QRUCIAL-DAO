@@ -2396,9 +2396,9 @@ dependencies = [
 
 [[package]]
 name = "substrate_parser"
-version = "0.3.0"
+version = "0.3.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e78605a9a7806f5931a28402befca4547f92a2cbb14625523715597547fe8c9e"
+checksum = "258dc0278aa8c384a87f48dbfc4a8edf1909ddc4e1abba9b92ec81742708c95b"
 dependencies = [
  "bitvec",
  "frame-metadata",
