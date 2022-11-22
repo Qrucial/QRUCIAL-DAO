@@ -8,14 +8,17 @@ RUN apt-get install -y tmux
 RUN apt-get install -y curl
 RUN apt-get install -y wget
 RUN apt-get install -y python3
+RUN apt-get install -y python3-setuptools
+RUN python3 -m pip install --upgrade pip setuptools wheel
+RUN pip3 install Flask
+RUN pip3 install substrate-interface
 RUN cargo install keccak256-cli
 
 ADD scripts/qdao_services.sh /bin/qdao_services.sh 
 
-ADD ./data /opt/data
-RUN mkdir /opt/testing
+RUN mkdir /opt/data
 
-RUN echo "downloading git repo..."
+RUN echo "Downloading git repo..."
 RUN if [ -d "/opt/data/QRUCIAL-DAO" ]; then \
   echo "QRUCIAL-DAO exists"; \
   ( cd /opt/data/QRUCIAL-DAO && git pull https://github.com/Qrucial/QRUCIAL-DAO.git ); \
@@ -24,21 +27,21 @@ RUN if [ -d "/opt/data/QRUCIAL-DAO" ]; then \
   fi
 
 
-RUN echo "compileing qdao-node..."
-#RUN ( cd /opt/data/QRUCIAL-DAO/qdao-node && cargo build --release )
+RUN echo "Compiling exosys..."
 RUN if [ ! -f "/opt/data/QRUCIAL-DAO/exosysd/target/release/qdao-exosysd" ]; then \
-  ( cd /opt/data/QRUCIAL-DAO/qdao-node && cargo build --release ); \
-  fi
-
-RUN echo "compileing exosysd"
-RUN if [ ! -f "/opt/data/QRUCIAL-DAO/qdao-node/target/release/qdao-node" ]; then \
   ( cd /opt/data/QRUCIAL-DAO/exosysd && cargo build --release ); \
   fi
 
-#RUN ( cd /opt/data/QRUCIAL-DAO/exosysd/ && cargo build --release ) 
+RUN echo "Compiling qdao-node..."
+RUN if [ ! -f "/opt/data/QRUCIAL-DAO/qdao-node/target/release/qdao-node" ]; then \
+  ( cd /opt/data/QRUCIAL-DAO/qdao-node && cargo build --release ); \
+  fi
 
-RUN chmod +x /opt/data/QRUCIAL-DAO/exosysd/target/release/qdao-exosysd
+#RUN ls -la /opt/data/QRUCIAL-DAO/qdao-node/target/release/qdao-node 1>&2
+#RUN ls -la /opt/data/QRUCIAL-DAO/exosysd/target/release 1>&2
+
 RUN chmod +x /opt/data/QRUCIAL-DAO/qdao-node/target/release/qdao-node
+RUN chmod +x /opt/data/QRUCIAL-DAO/exosysd/target/release/qdao-exosysd
 
 # Q2 - Add some sort of healthcheck
 # HEALTHCHECK 
