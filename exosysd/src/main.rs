@@ -14,7 +14,7 @@ use sp_core::{twox_128, H256};
 mod error;
 
 use substrate_parser::{
-    cards::{Event, ParsedData, Sequence},
+    cards::{ParsedData, Sequence},
     decode_all_as_type,
 };
 
@@ -160,71 +160,76 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                                                     for j in b {
                                                         if j.field_name == Some("event".to_string())
                                                         {
-                                                            if let ParsedData::Event(Event(c)) =
+                                                            if let ParsedData::Variant(c) =
                                                                 j.data.data
                                                             {
-                                                                if c.pallet_name == MODULE_NAME
-                                                                    && c.variant_name
-                                                                        == EXECUTION_REQUEST_NAME
-                                                                {
-                                                                    let mut who: Option<sp_core::crypto::AccountId32> = None;
-                                                                    let mut hash: Option<H256> =
-                                                                        None;
-                                                                    let mut url: Option<String> =
-                                                                        None;
-                                                                    for l in c.fields {
-                                                                        if let Some(e) =
-                                                                            l.field_name
+                                                                if c.variant_name == MODULE_NAME {
+                                                                    for k in c.fields {
+                                                                        if let ParsedData::Variant(
+                                                                            d,
+                                                                        ) = k.data.data
                                                                         {
-                                                                            match e.as_str() {
-                                                                                WHO => if let ParsedData::Id(f) = l.data.data {
-                                                                                    who = Some(f);
-                                                                                },
-                                                                                HASH => if let ParsedData::H256(f) = l.data.data {
-                                                                                    hash = Some(f)
-                                                                                },
-                                                                                URL => if let ParsedData::Sequence(f) = l.data.data {
-                                                                                    if let Sequence::U8(g) = f.data {
-                                                                                        if let Ok(url_string) = String::from_utf8(g) {
-                                                                                            url = Some(url_string);
-                                                                                        } else {
-                                                                                            println!("Error! url is not UTF-8");
+                                                                            if d.variant_name == EXECUTION_REQUEST_NAME {
+                                                                                let mut who: Option<sp_core::crypto::AccountId32> = None;
+                                                                                let mut hash: Option<H256> =
+                                                                                    None;
+                                                                                 let mut url: Option<String> =
+                                                                                    None;
+                                                                                for l in d.fields {
+                                                                                    if let Some(e) =
+                                                                                        l.field_name
+                                                                                    {
+                                                                                        match e.as_str() {
+                                                                                            WHO => if let ParsedData::Id(f) = l.data.data {
+                                                                                                who = Some(f);
+                                                                                            },
+                                                                                            HASH => if let ParsedData::H256(f) = l.data.data {
+                                                                                                hash = Some(f)
+                                                                                            },
+                                                                                            URL => if let ParsedData::Sequence(f) = l.data.data {
+                                                                                                if let Sequence::U8(g) = f.data {
+                                                                                                    if let Ok(url_string) = String::from_utf8(g) {
+                                                                                                        url = Some(url_string);
+                                                                                                    } else {
+                                                                                                        println!("Error! url is not UTF-8");
+                                                                                                    }
+                                                                                                }
+                                                                                            },
+                                                                                            _ => println!("warning: unknown field in execution request event"),
                                                                                         }
                                                                                     }
-                                                                                },
-                                                                                _ => println!("warning: unknown field in execution request event"),
-                                                                            }
-                                                                        }
-                                                                    }
-                                                                    if let Some(arg_who) = who {
-                                                                        if let Some(arg_hash) = hash
-                                                                        {
-                                                                            if let Some(arg_url) =
-                                                                                url
-                                                                            {
-                                                                                println!(
-                                                                                    "who: {:?}",
-                                                                                    arg_who
-                                                                                );
-                                                                                println!(
-                                                                                    "hash: {:?}",
-                                                                                    arg_hash
-                                                                                );
-                                                                                println!(
-                                                                                    "url: {:?}",
-                                                                                    arg_url
-                                                                                );
-
-                                                                                let arg_full_hash = format!(
-                                                                                    "{:?}",
-                                                                                    arg_hash
-                                                                                );
-                                                                                println!(
-                                                                                    "Author with ID {:?} requested to run exotool: {:?}",
-                                                                                    arg_who,
-                                                                                    std::process::Command::new("../exotools/exotool.sh")
-                                                                                        .args([arg_url, arg_full_hash])
-                                                                                        .spawn());
+                                                                                }
+                                                                                if let Some(arg_who) = who {
+                                                                                    if let Some(arg_hash) = hash
+                                                                                    {
+                                                                                        if let Some(arg_url) =
+                                                                                            url
+                                                                                        {
+                                                                                            println!(
+                                                                                                "who: {:?}",
+                                                                                                arg_who
+                                                                                            );
+                                                                                            println!(
+                                                                                                "hash: {:?}",
+                                                                                                arg_hash
+                                                                                            );
+                                                                                            println!(
+                                                                                                "url: {:?}",
+                                                                                                arg_url
+                                                                                            );
+                                                                                            let arg_full_hash = format!(
+                                                                                                "{:?}",
+                                                                                                arg_hash
+                                                                                            );
+                                                                                            println!(
+                                                                                                "Author with ID {:?} requested to run exotool: {:?}",
+                                                                                                arg_who,
+                                                                                                std::process::Command::new("../exotools/exotool.sh")
+                                                                                                    .args([arg_url, arg_full_hash])
+                                                                                                    .spawn());
+                                                                                        }
+                                                                                    }
+                                                                                }
                                                                             }
                                                                         }
                                                                     }
