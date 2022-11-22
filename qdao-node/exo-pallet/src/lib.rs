@@ -94,6 +94,10 @@ pub mod pallet {
             url: Vec<u8>,
             hash: T::Hash,
         },
+        ExecutionFinish {
+            ret_hash: T::Hash,
+            ret_result: Vec<u8>,
+        },
     }
 
     // Errors inform users that something went wrong.
@@ -165,9 +169,13 @@ pub mod pallet {
         #[pallet::weight(Weight::from_ref_time(1000) + T::DbWeight::get().writes(1))]
         pub fn tool_exec_auto_report(
             _origin: OriginFor<T>,
-            _hash: T::Hash,
-            _result: Vec<u8>,
+            hash: T::Hash,
+            result: Vec<u8>,
         ) -> DispatchResult {
+            Self::deposit_event(Event::ExecutionFinish {
+                ret_hash: hash,
+                ret_result: result,
+            });
             Ok(())
         }
 
