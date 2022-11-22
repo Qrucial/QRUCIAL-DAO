@@ -169,12 +169,12 @@ pub mod pallet {
         #[pallet::weight(Weight::from_ref_time(1000) + T::DbWeight::get().writes(1))]
         pub fn tool_exec_auto_report(
             _origin: OriginFor<T>,
-            _hash: T::Hash,
-            _result: Vec<u8>,
+            hash: T::Hash,
+            result: Vec<u8>,
         ) -> DispatchResult {
             Self::deposit_event(Event::ExecutionFinish {
-                hash: _hash,
-                result: _result,
+                hash: hash,
+                result: result,
             });
             Ok(())
         }
