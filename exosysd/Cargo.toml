@@ -13,7 +13,7 @@ hex = "0.4.3"
 jsonrpsee = {version = "0.15.1", features = ["ws-client"]}
 lazy_static = "1.4.0"
 parity-scale-codec = "3.1.5"
-substrate_parser = "0.1.0"
+substrate_parser = "0.3"
 regex = "1.5.4"
 serde_json = { version = "1.0.81", features = ["preserve_order"] }
 sp-core = { version = "6.0.0", default-features = false }
