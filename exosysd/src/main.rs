@@ -191,11 +191,11 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                                                                                                     if let Ok(url_string) = String::from_utf8(g) {
                                                                                                         url = Some(url_string);
                                                                                                     } else {
-                                                                                                        println!("Error! url is not UTF-8");
+                                                                                                        println!("Error! URL is not UTF-8");
                                                                                                     }
                                                                                                 }
                                                                                             },
-                                                                                            _ => println!("warning: unknown field in execution request event"),
+                                                                                            _ => println!("Warning: unknown field in execution request event"),
                                                                                         }
                                                                                     }
                                                                                 }
@@ -221,10 +221,11 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                                                                                                 "{:?}",
                                                                                                 arg_hash
                                                                                             );
+                                                                                            println!("{:?}", std::process::Command::new("pwd").spawn());
                                                                                             println!(
                                                                                                 "Author with ID {:?} requested to run exotool: {:?}",
                                                                                                 arg_who,
-                                                                                                std::process::Command::new("~/QRUCIAL-DAO/exotools/exotool.sh")
+                                                                                                std::process::Command::new("../../../exotools/exotool.sh")
                                                                                                     .args([arg_url, arg_full_hash])
                                                                                                     .spawn());
                                                                                         }

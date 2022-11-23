@@ -53,7 +53,9 @@ pwd
 # > DATE = Unix time, IE:
 #   > This should be used when it doesent matter if people can read it.
 
-SCRIPT_PATH=$(dirname $(realpath "${BASH_SOURCE:-$0}"))
+#SCRIPT_PATH=$(dirname $(realpath "${BASH_SOURCE:-$0}"))
+echo "[DEBUG] Development version, using /tmp for audit files"
+SCRIPT_PATH=$(pwd)
 DATE="$(date +%s)"
 DATE_READABLE=$(date +'%d-%m-%Y_%H-%M-%S')
 URL=$1
