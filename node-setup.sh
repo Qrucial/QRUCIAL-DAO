@@ -41,13 +41,15 @@ cd ../
 # Start the node in backgroundtmux
 chmod +x ./qdao-node/target/debug/qdao-node
 tmux new-session -d -s qdao-node './qdao-node/target/debug/qdao-node --dev'
-sleep 5  # Wait for node start, TBA 
+sleep 5  # Wait for node start, TBA
 
 # Start ExoSys Daemon in background/tmux
-tmux new-session -d -s qdao-exosysd './exosysd/target/debug/qdao-exosysd'
+cd exosysd/target/debug/
+tmux new-session -d -s qdao-exosysd './qdao-exosysd'
 
 # Start the QDAO API
 tmux new-session -d -s qdao-api 'python3 exotools/lar.py'
+cd ~/QRUCIAL-DAO/
 
 # Print results
 if [ -z "$(pgrep qdao)" ]
