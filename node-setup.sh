@@ -48,8 +48,9 @@ cd exosysd/target/debug/
 tmux new-session -d -s qdao-exosysd './qdao-exosysd'
 
 # Start the QDAO API
-tmux new-session -d -s qdao-api 'python3 exotools/lar.py'
 cd ~/QRUCIAL-DAO/
+tmux new-session -d -s qdao-api 'python3 exotools/lar.py'
+
 
 # Print results
 if [ -z "$(pgrep qdao)" ]
