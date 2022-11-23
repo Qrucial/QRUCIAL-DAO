@@ -100,7 +100,7 @@ def notif():
         else:
             return jsonify("Wrong API key!")
         try:
-            run( [ '/usr/bin/touch', '~/QRUCIAL-DAO/exotools/static/reports/' ] )         # TODO, Sample and debugging
+            run( [ '/usr/bin/touch', '/tmp/lar_report.log' ] )         # TODO, Sample and debugging
         except:
             logger.warning("Couldn't touch ~/QRUCIAL-DAO/exotools/static/reports/, there is an execution error probably.")
 
