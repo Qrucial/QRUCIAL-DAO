@@ -1,7 +1,6 @@
 FROM docker.io/paritytech/ci-linux:production as builder
 #FROM parity/substrate:latest
 
-
 RUN apt update 
 RUN apt-get install -y supervisor
 RUN apt-get install -y tmux
@@ -26,16 +25,19 @@ RUN if [ -d "/opt/data/QRUCIAL-DAO" ]; then \
   ( cd /opt/data/ && git clone https://github.com/Qrucial/QRUCIAL-DAO.git ); \
   fi
 
-
 RUN echo "Compiling exosys..."
 RUN if [ ! -f "/opt/data/QRUCIAL-DAO/exosysd/target/release/qdao-exosysd" ]; then \
   ( cd /opt/data/QRUCIAL-DAO/exosysd && cargo build --release ); \
   fi
-
 RUN echo "Compiling qdao-node..."
 RUN if [ ! -f "/opt/data/QRUCIAL-DAO/qdao-node/target/release/qdao-node" ]; then \
   ( cd /opt/data/QRUCIAL-DAO/qdao-node && cargo build --release ); \
   fi
+
+# TODO path sync with non-docker env and qdao user
+RUN mkdir -p ~/QRUCIAL-DAO/exotools/
+RUN cp /opt/data/QRUCIAL-DAO/exotools/exotool.sh ~/QRUCIAL-DAO/exotools/
+RUN chmod +x ~/QRUCIAL-DAO/exotools/exotool.sh
 
 #RUN ls -la /opt/data/QRUCIAL-DAO/qdao-node/target/release/qdao-node 1>&2
 #RUN ls -la /opt/data/QRUCIAL-DAO/exosysd/target/release 1>&2
