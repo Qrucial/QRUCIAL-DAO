@@ -1,0 +1,27 @@
+/*******************************
+     User Global Variables
+*******************************/
+
+@blue             : #0093ff;
+@lightBlue        : #32a8ff;
+
+@fontName          : 'Quicksand';
+
+
+
+/*-------------------
+      Borders
+--------------------*/
+
+@borderColor               : rgba(0, 147, 255, 0.22);
+@strongBorderColor         : rgba(0, 147, 255, 0.22);
+@internalBorderColor       : rgba(0, 147, 255, 0.1);
+@selectedBorderColor       : rgba(0, 147, 255, 0.35);
+@strongSelectedBorderColor : rgba(0, 147, 255, 0.5);
+@disabledBorderColor       : rgba(0, 147, 255, 0.5);
+
+@solidInternalBorderColor  : rgba(0, 147, 255, 0.1);
+@solidBorderColor          : rgba(0, 147, 255, 0.1);
+@solidSelectedBorderColor  : rgba(0, 147, 255, 0.3);
+
+@focusedFormBorderColor    : rgba(0, 147, 255, 0.35);
