@@ -1,5 +1,5 @@
-.github-fork-ribbon.right-bottom:before {
-  background-color: #666;
+#root {
+  height: 100%;
 }
 
 .ui.statistic.block_number > .value {

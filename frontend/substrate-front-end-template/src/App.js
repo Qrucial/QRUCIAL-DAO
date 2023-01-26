@@ -11,6 +11,8 @@ import 'semantic-ui-less/semantic.less'
 
 import { SubstrateContextProvider, useSubstrateState } from './substrate-lib'
 import { DeveloperConsole } from './substrate-lib/components'
+import bgImage from '/public/assets/dot_background.png'
+
 
 import AccountSelector from './AccountSelector'
 import Balances from './Balances'
@@ -58,9 +60,17 @@ function Main() {
   const contextRef = createRef()
 
   return (
-    <div ref={contextRef}>
+    <div ref={contextRef}
+      style={{
+        backgroundImage: `url(${bgImage})`,
+        backgroundRepeat:"no-repeat",
+        backgroundPosition: "center center",
+        backgroundSize: "cover",
+        backgroundAttachment: "fixed",
+        minHeight: "100%"
+      }}>
       <Sticky context={contextRef}>
-        <AccountSelector />h
+        <AccountSelector />
       </Sticky>
       <Container>
         <Grid stackable columns="equal">
