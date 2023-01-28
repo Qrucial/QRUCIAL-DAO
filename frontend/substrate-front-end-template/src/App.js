@@ -15,15 +15,8 @@ import bgImage from '/public/assets/dot_background.png'
 
 
 import AccountSelector from './AccountSelector'
-import Balances from './Balances'
-import BlockNumber from './BlockNumber'
-import Events from './Events'
-import Interactor from './Interactor'
-import Metadata from './Metadata'
-import NodeInfo from './NodeInfo'
-import TemplateModule from './TemplateModule'
-import Transfer from './Transfer'
-import Upgrade from './Upgrade'
+import Signup from './Signup'
+import UpdateProfile from './UpdateProfile'
 
 function Main() {
   const { apiState, apiError, keyringState } = useSubstrateState()
@@ -74,25 +67,11 @@ function Main() {
       </Sticky>
       <Container>
         <Grid stackable columns="equal">
-          <Grid.Row stretched>
-            <NodeInfo />
-            <Metadata />
-            <BlockNumber />
-            <BlockNumber finalized />
-          </Grid.Row>
-          <Grid.Row stretched>
-            <Balances />
+          <Grid.Row>
+            <Signup />
           </Grid.Row>
           <Grid.Row>
-            <Transfer />
-            <Upgrade />
-          </Grid.Row>
-          <Grid.Row>
-            <Interactor />
-            <Events />
-          </Grid.Row>
-          <Grid.Row>
-            <TemplateModule />
+            <UpdateProfile />
           </Grid.Row>
         </Grid>
       </Container>

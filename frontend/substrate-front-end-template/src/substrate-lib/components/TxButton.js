@@ -9,6 +9,7 @@ import utils from '../utils'
 function TxButton({
   attrs = null,
   color = 'blue',
+  size = 'medium',
   disabled = false,
   label,
   setStatus,
@@ -262,8 +263,8 @@ function TxButton({
 
   return (
     <Button
-      basic
       color={color}
+      size={size}
       style={style}
       type="submit"
       onClick={transaction}
