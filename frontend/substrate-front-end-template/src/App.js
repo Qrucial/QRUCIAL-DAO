@@ -16,7 +16,7 @@ import bgImage from '/public/assets/dot_background.png'
 
 import AccountSelector from './AccountSelector'
 import Signup from './Signup'
-import UpdateProfile from './UpdateProfile'
+import AuditorProfile from './AuditorProfile'
 
 function Main() {
   const { apiState, apiError, keyringState } = useSubstrateState()
@@ -71,7 +71,7 @@ function Main() {
             <Signup />
           </Grid.Row>
           <Grid.Row>
-            <UpdateProfile />
+            <AuditorProfile />
           </Grid.Row>
         </Grid>
       </Container>

@@ -5,15 +5,30 @@ import { useSubstrateState } from './substrate-lib'
 import { TxButton } from './substrate-lib/components'
 
 export default function AuditorButton(props) {
-  const { api } = useSubstrateState()
+  const { api, currentAccount } = useSubstrateState()
   const [status, setStatus] = useState(null)
   const [method, setMethod] = useState(null)
   const [profileHash, setProfileHash] = useState(null)
+  
+  useEffect(() => {
+    setStatus(null); 
+  }, [currentAccount]);
 
   useEffect(() => {
     if (api?.tx?.auditModule?.[props.method]) setMethod(props.method)
     else setMethod(null)
   }, [api, props.method])
+
+  function checkIfValidSHA256(str) {
+    const bites = new TextEncoder().encode(str).length
+    return bites >= 32;
+  }
+
+  const [disabled, setDisabled] = useState(null)
+  useEffect(() => {
+    const res = checkIfValidSHA256(profileHash) ? undefined : true
+    setDisabled(res) 
+  }, [profileHash]);
 
   const metaArgs = api?.tx?.auditModule?.[method]?.meta.args
   const paramName = metaArgs?.[0].name.toString()
@@ -22,10 +37,12 @@ export default function AuditorButton(props) {
   const buttonSize = props.buttonSize ? props.buttonSize : 'medium'
 
   let message = null
-  console.log("status", status)
-  if (status && status.includes('Finalized')) message = <Message positive>{status}</Message>
-  else if (status && status.includes('Failed')) message = <Message negative>{status}</Message>
-  else if (status) message = <Message warning>{status}</Message>
+  if (status && status.includes('Finalized')) 
+    message = <Message positive style={{ marginBottom: '1em' }}>{status}</Message>
+  else if (status && status.includes('Failed')) 
+    message = <Message negative style={{ marginBottom: '1em' }}>{status}</Message>
+  else if (status) 
+    message = <Message warning style={{ marginBottom: '1em' }}>{status}</Message>
 
   let buttonLabel
   if (props.method === 'signUp') buttonLabel = 'Sign Up'
@@ -39,7 +56,6 @@ export default function AuditorButton(props) {
             <Popup content='Generate your profile hash from relevant profile data'
               trigger={
               <Input
-                style={{ minWidth: '38em' }}
                 placeholder={paramType}
                 type="text"
                 label={paramName}
@@ -53,6 +69,7 @@ export default function AuditorButton(props) {
               label={buttonLabel}
               type='SIGNED-TX' 
               color='blue' 
+              disabled={disabled}
               size={buttonSize}
               setStatus={setStatus}
               attrs={{
