@@ -161,7 +161,7 @@ fn approval_of_auditor_works() {
         let auditor_data = auditor_data.as_ref().expect("Auditor data not available");
         assert_eq!(auditor_data.score, None);
         assert_eq!(auditor_data.profile_hash, hash);
-        assert_eq!(auditor_data.approved_by.contains(&approver_id), true);
+        assert!(auditor_data.approved_by.contains(&approver_id));
         assert_eq!(auditor_data.approved_by.len(), 1);
         assert_noop!(double_approval_result, Error::<Test>::AlreadyApproved);
     });
@@ -189,7 +189,7 @@ fn approval_with_low_reputation_fails() {
         let auditor_data = auditor_data.as_ref().expect("Auditor data not available");
         assert_eq!(auditor_data.score, None);
         assert_eq!(auditor_data.profile_hash, hash);
-        assert_eq!(auditor_data.approved_by.is_empty(), true);
+        assert!(auditor_data.approved_by.is_empty());
     });
 }
 
