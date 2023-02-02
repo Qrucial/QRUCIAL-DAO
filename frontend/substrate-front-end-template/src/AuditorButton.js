@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from 'react'
-import { Form, Input, Message, Popup } from 'semantic-ui-react'
+import { Form, Input, Popup } from 'semantic-ui-react'
+import toast from 'react-hot-toast'
 
 import { useSubstrateState } from './substrate-lib'
 import { TxButton } from './substrate-lib/components'
+import { toastContent } from './toastContent'
 
 export default function AuditorButton(props) {
   const { api, currentAccount } = useSubstrateState()
@@ -35,14 +37,23 @@ export default function AuditorButton(props) {
   const paramType = metaArgs?.[0].type.toString()
 
   const buttonSize = props.buttonSize ? props.buttonSize : 'medium'
+  
+  const [toastId, setToastId] = useState(null)
 
-  let message = null
-  if (status && status.includes('Finalized')) 
-    message = <Message positive style={{ marginBottom: '1em' }}>{status}</Message>
-  else if (status && status.includes('Failed')) 
-    message = <Message negative style={{ marginBottom: '1em' }}>{status}</Message>
-  else if (status) 
-    message = <Message warning style={{ marginBottom: '1em' }}>{status}</Message>
+  useEffect(() => {
+    if (status && !toastId) { 
+      const newToastId = toast((t) => toastContent(t, status));
+      setToastId(newToastId)
+    }
+    else if (status) {
+      toast(((t) => toastContent(t, status)),{ id: toastId });
+      if (status.includes('Finalized') || status.includes('Failed')) { 
+        setToastId(null) 
+        setStatus(null)
+      }
+    }
+  }, [status]);
+
 
   let buttonLabel
   if (props.method === 'signUp') buttonLabel = 'Sign Up'
@@ -82,7 +93,6 @@ export default function AuditorButton(props) {
           </Form.Field>
         </Form.Group>
       </Form>
-      {message}
     </div> 
   )
 }

@@ -1,9 +1,11 @@
 import React,  { useEffect, useState } from 'react'
 import { Grid, Segment, Header } from 'semantic-ui-react'
+import toast from 'react-hot-toast'
 
 import { useSubstrateState } from './substrate-lib'
 import AuditorButton from './AuditorButton.js'
 import CancelAccount from './CancelAccount'
+import { toastContent } from './toastContent'
 
 export default function AuditorProfile(props) {
   const { api, currentAccount } = useSubstrateState()
@@ -31,6 +33,22 @@ export default function AuditorProfile(props) {
     } 
     return () => unsub && unsub()
   }, [api, currentAccount])
+  
+  const [toastId, setToastId] = useState(null)
+
+  useEffect(() => {
+    if (cancelStatus && !toastId) { 
+      const newToastId = toast((t) => toastContent(t, cancelStatus));
+      setToastId(newToastId)
+    }
+    else if (cancelStatus) {
+      toast(((t) => toastContent(t, cancelStatus)),{ id: toastId });
+      if (cancelStatus.includes('Finalized') || cancelStatus.includes('Failed')) { 
+        setToastId(null) 
+        setCancelStatus(null)
+      }
+    }
+  }, [cancelStatus]);
 
   const score = details && JSON.parse(details).score || '-'
 
@@ -48,12 +66,11 @@ export default function AuditorProfile(props) {
               <CancelAccount status={cancelStatus} setStatus={setCancelStatus} />
             </div>
           : <div> 
-              <p>For auditors only. </p>
-              {cancelStatus &&
-                <div>
+              {cancelStatus 
+              ? <div>
                   <p>Account deleted</p>
-                  {cancelStatus}
                 </div>
+              : <p>For auditors only. </p>
               }
             </div>
         } 

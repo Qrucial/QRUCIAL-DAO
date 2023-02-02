@@ -8,6 +8,7 @@ import {
   Message,
 } from 'semantic-ui-react'
 import 'semantic-ui-less/semantic.less'
+import { Toaster } from 'react-hot-toast'
 
 import { SubstrateContextProvider, useSubstrateState } from './substrate-lib'
 import { DeveloperConsole } from './substrate-lib/components'
@@ -76,6 +77,16 @@ function Main() {
         </Grid>
       </Container>
       <DeveloperConsole />
+      <Toaster
+        position="top-right"
+        toastOptions={{
+          duration: 7000,
+          style: {
+            background: '#fbfdef',
+            color: 'rgba(0, 0, 0, 0.87)',
+          }
+        }}
+      />
     </div>
   )
 }

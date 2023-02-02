@@ -37,7 +37,6 @@ export default function CancelAccount(props) {
           />  
         </Modal.Actions>
       </Modal>
-      <p>{props.status}</p>
     </div>  
   )
 }
