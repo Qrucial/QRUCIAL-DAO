@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react'
 import PropTypes from 'prop-types'
 import { Button } from 'semantic-ui-react'
 import { web3FromSource } from '@polkadot/extension-dapp'
+import BN from 'bn.js'
+import toast from 'react-hot-toast'
 
 import { useSubstrateState } from '../'
 import utils from '../utils'
@@ -60,10 +62,13 @@ function TxButton({
     return [address, { signer: injector.signer }]
   }
 
-  const txResHandler = ({ status }) =>
+  const setStatusState = (status) => {
     status.isFinalized
       ? setStatus(`😉 Finalized. Block hash: ${status.asFinalized.toString()}`)
       : setStatus(`Current transaction status: ${status.type}`)
+  }
+
+  const txResHandler = ({ status }) => setStatusState(status)
 
   const txErrHandler = err =>
     setStatus(`😞 Transaction Failed: ${err.toString()}`)
@@ -107,7 +112,28 @@ function TxButton({
       : api.tx[palletRpc][callable]()
 
     const unsub = await txExecute
-      .signAndSend(...fromAcct, txResHandler)
+      .signAndSend(...fromAcct,
+        ({ status, dispatchError }) => {
+          setStatusState(status)
+          // as subscribed, every status change calls the callback fn
+          if (dispatchError && status.isFinalized) {
+            if (dispatchError.isModule) {
+              // We have to convert the error to the required format from the type what we get
+              // needs revision at substrate updates
+              const origError = dispatchError.asModule
+              const index = origError.index
+              const error = new BN(origError.error[0])
+              // for module errors, we have the section indexed, lookup
+              const decoded = api.registry.findMetaError({ index, error });
+              const { docs, name, section } = decoded;
+              toast.error(`${section}.${name}:\n ${docs.join(' ')}`);
+            } else {
+              // Other, CannotLookup, BadOrigin, no extra info
+              toast.error(dispatchError.toString());
+            }
+          }
+        }
+      )
       .catch(txErrHandler)
 
     setUnsub(() => unsub)

@@ -84,6 +84,15 @@ function Main() {
           style: {
             background: '#fbfdef',
             color: 'rgba(0, 0, 0, 0.87)',
+            wordBreak: 'break-word',
+          },
+          error: {
+            duration: 10000,
+            style: {
+              background: '#ffe8e6',
+              color: '#db2828',
+              boxShadow: '0 0 0 1px #db2828',
+            },
           }
         }}
       />
