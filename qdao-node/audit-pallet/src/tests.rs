@@ -80,6 +80,8 @@ fn sign_up_fails_when_balance_too_low() {
 #[test]
 fn sign_up_error_for_double_sign_up() {
     new_test_ext().execute_with(|| {
+        // Go past genesis block so events get deposited
+        System::set_block_number(1);
         // Given
         let auditor1 = RuntimeOrigin::signed(1);
         let auditor2 = RuntimeOrigin::signed(2);
@@ -101,6 +103,8 @@ fn sign_up_error_for_double_sign_up() {
             auditor_1_second_sign_up_result,
             Error::<Test>::AlreadySignedUp
         );
+        // Assert that the correct event was deposited
+        //System::assert_last_event(Event::SomethingStored { something: 42, who: 1 }.into());
     });
 }
 

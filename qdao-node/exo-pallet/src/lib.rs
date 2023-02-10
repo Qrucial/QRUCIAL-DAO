@@ -88,12 +88,13 @@ pub mod pallet {
     #[pallet::generate_deposit(pub(super) fn deposit_event)]
     pub enum Event<T: Config> {
         /// Event documentation should end with an array that provides descriptive names for event
-        /// parameters. [something, who]
+        /// parameters. [who, url, hash]
         ExecutionRequest {
             who: T::AccountId,
             url: Vec<u8>,
             hash: T::Hash,
         },
+        /// [ret_hash, ret_result]
         ExecutionFinish {
             ret_hash: T::Hash,
             ret_result: Vec<u8>,
@@ -160,6 +161,7 @@ pub mod pallet {
         }
 
         /// Cancel request due to invalid parameters
+        //#[pallet::call_index(1)]
         #[pallet::weight(Weight::from_ref_time(100) + T::DbWeight::get().writes(1))]
         pub fn tool_exec_cancel_invalid(_origin: OriginFor<T>, _hash: T::Hash) -> DispatchResult {
             Ok(())

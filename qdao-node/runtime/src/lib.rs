@@ -33,7 +33,9 @@ pub use frame_support::{
         ConstU128, ConstU32, ConstU64, ConstU8, KeyOwnerProofSystem, Randomness, StorageInfo,
     },
     weights::{
-        constants::{BlockExecutionWeight, ExtrinsicBaseWeight, RocksDbWeight, WEIGHT_PER_SECOND},
+        constants::{
+            BlockExecutionWeight, ExtrinsicBaseWeight, RocksDbWeight, WEIGHT_REF_TIME_PER_SECOND,
+        },
         ConstantMultiplier, IdentityFee, Weight,
     },
     StorageValue,
@@ -140,9 +142,12 @@ pub fn native_version() -> NativeVersion {
 /// We assume that ~10% of the block weight is consumed by `on_initialize` handlers.
 /// This is used to limit the maximal weight of a single extrinsic.
 const AVERAGE_ON_INITIALIZE_RATIO: Perbill = Perbill::from_percent(10);
+/// We allow `Normal` extrinsics to fill up the block up to 75%, the rest can be used
+/// by  Operational  extrinsics.
 const NORMAL_DISPATCH_RATIO: Perbill = Perbill::from_percent(75);
-/// We allow for 2 seconds of compute with a 6 second average block time.
-const MAXIMUM_BLOCK_WEIGHT: Weight = WEIGHT_PER_SECOND.saturating_mul(2);
+/// We allow for 2 seconds of compute with a 6 second average block time, with maximum proof size.
+const MAXIMUM_BLOCK_WEIGHT: Weight =
+    Weight::from_parts(WEIGHT_REF_TIME_PER_SECOND.saturating_mul(2), u64::MAX);
 
 parameter_types! {
     pub const BlockHashCount: BlockNumber = 2400;
@@ -562,11 +567,11 @@ impl_runtime_apis! {
 
     #[cfg(feature = "try-runtime")]
     impl frame_try_runtime::TryRuntime<Block> for Runtime {
-        fn on_runtime_upgrade() -> (Weight, Weight) {
+        fn on_runtime_upgrade(checks: frame_try_runtime::UpgradeCheckSelect) -> (Weight, Weight) {
             // NOTE: intentional unwrap: we don't want to propagate the error backwards, and want to
             // have a backtrace here. If any of the pre/post migration checks fail, we shall stop
             // right here and right now.
-            let weight = Executive::try_runtime_upgrade().unwrap();
+            let weight = Executive::try_runtime_upgrade(checks).unwrap();
             (weight, BlockWeights::get().max_block)
         }
 

@@ -172,11 +172,12 @@ pub mod pallet {
 
     #[pallet::call]
     impl<T: Config> Pallet<T> {
+        //#[pallet::call_index(0)]
         #[pallet::weight(Weight::from_ref_time(10_000) + T::DbWeight::get().writes(1))]
         /// Signs up a new Auditor, the auditor has to provide a hashed version of his auditor profile
         /// # Arguments
         ///
-        /// * `profile_hash` - a hash auf the new auditors profile of type `H256`
+        /// * `profile_hash` - a hash of the new auditors profile of type `H256`
         ///
         pub fn sign_up(origin: OriginFor<T>, profile_hash: H256) -> DispatchResult {
             // Check that the extrinsic was signed and get the signer.
@@ -225,6 +226,7 @@ pub mod pallet {
             Ok(())
         }
 
+        //#[pallet::call_index(1)]
         #[pallet::weight(Weight::from_ref_time(10_000) + T::DbWeight::get().writes(1))]
 
         /// Is called by an auditor which signed up for auditor status to cancel their
