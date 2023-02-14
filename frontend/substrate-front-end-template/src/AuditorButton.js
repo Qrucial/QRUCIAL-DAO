@@ -54,7 +54,6 @@ export default function AuditorButton(props) {
     }
   }, [status]);
 
-
   let buttonLabel
   if (props.method === 'signUp') buttonLabel = 'Sign Up'
   else if (props.method === 'updateProfile') buttonLabel = 'Update Profile'
@@ -62,36 +61,35 @@ export default function AuditorButton(props) {
   return (  
     <div>
       <Form>
-        <Form.Group inline>
-          <Form.Field>
-            <Popup content='Generate your profile hash from relevant profile data'
-              trigger={
-              <Input
-                placeholder={paramType}
-                type="text"
-                label={paramName}
-                value={profileHash ? profileHash : ''}
-                onChange={(_, { value }) => setProfileHash(value)}
-              />
-            }/>  
-          </Form.Field>
-          <Form.Field>
-            <TxButton 
-              label={buttonLabel}
-              type='SIGNED-TX' 
-              color='blue' 
-              disabled={disabled}
-              size={buttonSize}
-              setStatus={setStatus}
-              attrs={{
-                palletRpc: 'auditModule',
-                callable: method,
-                inputParams: [profileHash],
-                paramFields: [{ name: paramName, type: paramType }],
-              }} 
-            />          
-          </Form.Field>
-        </Form.Group>
+        <Form.Field>
+          <Popup content='Generate your profile hash from relevant profile data'
+            trigger={
+            <Input
+              placeholder={paramType}
+              type="text"
+              label={paramName}
+              value={profileHash}
+              onChange={(_, { value }) => setProfileHash(value)}
+            />
+          }/>  
+        </Form.Field>
+        <Form.Field style={{ textAlign: 'center' }}>
+          <TxButton 
+            label={buttonLabel}
+            type='SIGNED-TX' 
+            color='blue' 
+            disabled={disabled}
+            size={buttonSize}
+            setStatus={setStatus}
+            txOnClickHandler={() => setProfileHash('')}
+            attrs={{
+              palletRpc: 'auditModule',
+              callable: method,
+              inputParams: [profileHash],
+              paramFields: [{ name: paramName, type: paramType }],
+            }} 
+          />          
+        </Form.Field>
       </Form>
     </div> 
   )

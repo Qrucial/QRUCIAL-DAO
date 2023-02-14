@@ -63,6 +63,7 @@ export default function AuditorProfile(props) {
               </Header> 
               <p>To update, provide hash and press the button.</p>
               <AuditorButton method='updateProfile' buttonSize='small' />
+              <br/>
               <CancelAccount status={cancelStatus} setStatus={setCancelStatus} />
             </div>
           : <div> 

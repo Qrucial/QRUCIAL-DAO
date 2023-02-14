@@ -18,6 +18,7 @@ import bgImage from '/public/assets/dot_background.png'
 import AccountSelector from './AccountSelector'
 import Signup from './Signup'
 import AuditorProfile from './AuditorProfile'
+import ApproveAuditor from './ApproveAuditor'
 
 function Main() {
   const { apiState, apiError, keyringState } = useSubstrateState()
@@ -73,6 +74,7 @@ function Main() {
           </Grid.Row>
           <Grid.Row>
             <AuditorProfile />
+            <ApproveAuditor />
           </Grid.Row>
         </Grid>
       </Container>
