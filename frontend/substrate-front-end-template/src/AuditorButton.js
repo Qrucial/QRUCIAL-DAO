@@ -10,7 +10,7 @@ export default function AuditorButton(props) {
   const { api, currentAccount } = useSubstrateState()
   const [status, setStatus] = useState(null)
   const [method, setMethod] = useState(null)
-  const [profileHash, setProfileHash] = useState(null)
+  const [profileHash, setProfileHash] = useState('')
   
   useEffect(() => {
     setStatus(null); 
