@@ -172,7 +172,7 @@ pub mod pallet {
 
     #[pallet::call]
     impl<T: Config> Pallet<T> {
-        //#[pallet::call_index(0)]
+        #[pallet::call_index(0)]
         #[pallet::weight(Weight::from_ref_time(10_000) + T::DbWeight::get().writes(1))]
         /// Signs up a new Auditor, the auditor has to provide a hashed version of his auditor profile
         /// # Arguments
@@ -207,6 +207,7 @@ pub mod pallet {
             Ok(())
         }
 
+        #[pallet::call_index(1)]
         #[pallet::weight(Weight::from_ref_time(10_000) + T::DbWeight::get().writes(1))]
         /// An Auditor which signed up for auditor status can call this extrinsic to update their profile hash
         /// # Arguments
@@ -226,9 +227,8 @@ pub mod pallet {
             Ok(())
         }
 
-        //#[pallet::call_index(1)]
+        #[pallet::call_index(2)]
         #[pallet::weight(Weight::from_ref_time(10_000) + T::DbWeight::get().writes(1))]
-
         /// Is called by an auditor which signed up for auditor status to cancel their
         /// account and to unreserve the associated funds.
         ///
@@ -247,6 +247,7 @@ pub mod pallet {
             Ok(())
         }
 
+        #[pallet::call_index(3)]
         #[pallet::weight(Weight::from_ref_time(10_000) + T::DbWeight::get().writes(1))]
         /// Is called to give an approval to someone who signed up as an auditor. Can only be called by user's which are already approved auditors.
         /// # Arguments
@@ -295,8 +296,9 @@ pub mod pallet {
             Ok(())
         }
 
+        #[pallet::call_index(4)]
         #[pallet::weight(Weight::from_ref_time(10_000) + T::DbWeight::get().writes(1))]
-        /// Returns a person with the name given them
+        /// Applies a game result. This will be called by the committee voting.
         ///
         /// # Arguments
         ///
@@ -304,7 +306,6 @@ pub mod pallet {
         ///
         /// * `player1` - AccountId of player 1
         ///
-
         pub fn game_result(
             origin: OriginFor<T>,
             player0: T::AccountId,
