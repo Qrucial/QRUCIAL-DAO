@@ -1,15 +1,13 @@
 import React,  { useEffect, useState } from 'react'
 import { Grid, Segment, Header, Form, Dropdown } from 'semantic-ui-react'
-import toast from 'react-hot-toast'
 
 import { useSubstrateState } from './substrate-lib'
 import { TxButton } from './substrate-lib/components'
-import { toastContent } from './toastContent'
+import { createToast } from './toastContent'
 
 export default function ApproveAuditor(props) {
   const { api, keyring, currentAccount } = useSubstrateState()
   const [details, setDetails] = useState(null)
-  const [status, setStatus] = useState(null)
   const [dropdownValue, setDropdownValue] = useState(null)
   const [applicants, setApplicants] = useState([])
 
@@ -81,22 +79,6 @@ export default function ApproveAuditor(props) {
     setDropdownValue(dropdown.value)
   }
 
-  const [toastId, setToastId] = useState(null)
-
-  useEffect(() => {
-    if (status && !toastId) { 
-      const newToastId = toast((t) => toastContent(t, status));
-      setToastId(newToastId)
-    }
-    else if (status) {
-      toast(((t) => toastContent(t, status)),{ id: toastId });
-      if (status.includes('Finalized') || status.includes('Failed')) { 
-        setToastId(null) 
-        setStatus(null)
-      }
-    }
-  }, [status]);
-
   return (
     <Grid.Column>
       <Header as='h3'>Approve auditor</Header> 
@@ -121,7 +103,7 @@ export default function ApproveAuditor(props) {
                 label='Approve'
                 type='SIGNED-TX' 
                 color='blue' 
-                setStatus={setStatus}
+                setStatus={createToast()}
                 txOnClickHandler={() => setDropdownValue(null)}
                 attrs={{
                   palletRpc: 'auditModule',

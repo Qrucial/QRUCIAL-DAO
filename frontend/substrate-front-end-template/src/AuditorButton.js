@@ -1,20 +1,14 @@
 import React, { useEffect, useState } from 'react'
 import { Form, Input, Popup } from 'semantic-ui-react'
-import toast from 'react-hot-toast'
 
 import { useSubstrateState } from './substrate-lib'
 import { TxButton } from './substrate-lib/components'
-import { toastContent } from './toastContent'
+import { createToast } from './toastContent'
 
 export default function AuditorButton(props) {
-  const { api, currentAccount } = useSubstrateState()
-  const [status, setStatus] = useState(null)
+  const { api } = useSubstrateState()
   const [method, setMethod] = useState(null)
   const [profileHash, setProfileHash] = useState('')
-  
-  useEffect(() => {
-    setStatus(null); 
-  }, [currentAccount]);
 
   useEffect(() => {
     if (api?.tx?.auditModule?.[props.method]) setMethod(props.method)
@@ -38,22 +32,6 @@ export default function AuditorButton(props) {
 
   const buttonSize = props.buttonSize ? props.buttonSize : 'medium'
   
-  const [toastId, setToastId] = useState(null)
-
-  useEffect(() => {
-    if (status && !toastId) { 
-      const newToastId = toast((t) => toastContent(t, status));
-      setToastId(newToastId)
-    }
-    else if (status) {
-      toast(((t) => toastContent(t, status)),{ id: toastId });
-      if (status.includes('Finalized') || status.includes('Failed')) { 
-        setToastId(null) 
-        setStatus(null)
-      }
-    }
-  }, [status]);
-
   let buttonLabel
   if (props.method === 'signUp') buttonLabel = 'Sign Up'
   else if (props.method === 'updateProfile') buttonLabel = 'Update Profile'
@@ -80,7 +58,7 @@ export default function AuditorButton(props) {
             color='blue' 
             disabled={disabled}
             size={buttonSize}
-            setStatus={setStatus}
+            setStatus={createToast()}
             txOnClickHandler={() => setProfileHash('')}
             attrs={{
               palletRpc: 'auditModule',
