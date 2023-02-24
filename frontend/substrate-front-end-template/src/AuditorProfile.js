@@ -1,20 +1,14 @@
 import React,  { useEffect, useState } from 'react'
 import { Grid, Segment, Header } from 'semantic-ui-react'
-import toast from 'react-hot-toast'
 
 import { useSubstrateState } from './substrate-lib'
 import AuditorButton from './AuditorButton.js'
 import CancelAccount from './CancelAccount'
-import { toastContent } from './toastContent'
+import { createToast } from './toastContent'
 
 export default function AuditorProfile(props) {
   const { api, currentAccount } = useSubstrateState()
   const [details, setDetails] = useState(null)
-  const [cancelStatus, setCancelStatus] = useState(null)
-
-  useEffect(() => {
-    setCancelStatus(null); 
-  }, [currentAccount]);
 
   const queryResHandler = result =>
     result.isNone ? setDetails(null) : setDetails(result.toString())
@@ -34,22 +28,6 @@ export default function AuditorProfile(props) {
     return () => unsub && unsub()
   }, [api, currentAccount])
   
-  const [toastId, setToastId] = useState(null)
-
-  useEffect(() => {
-    if (cancelStatus && !toastId) { 
-      const newToastId = toast((t) => toastContent(t, cancelStatus));
-      setToastId(newToastId)
-    }
-    else if (cancelStatus) {
-      toast(((t) => toastContent(t, cancelStatus)),{ id: toastId });
-      if (cancelStatus.includes('Finalized') || cancelStatus.includes('Failed')) { 
-        setToastId(null) 
-        setCancelStatus(null)
-      }
-    }
-  }, [cancelStatus]);
-
   const score = details && JSON.parse(details).score || '-'
 
   return (
@@ -63,15 +41,11 @@ export default function AuditorProfile(props) {
               </Header> 
               <p>To update, provide hash and press the button.</p>
               <AuditorButton method='updateProfile' buttonSize='small' />
-              <CancelAccount status={cancelStatus} setStatus={setCancelStatus} />
+              <br/>
+              <CancelAccount setStatus={createToast()} />
             </div>
           : <div> 
-              {cancelStatus 
-              ? <div>
-                  <p>Account deleted</p>
-                </div>
-              : <p>For auditors only. </p>
-              }
+              <p>For auditors only. </p>
             </div>
         } 
       </Segment>

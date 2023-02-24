@@ -14,10 +14,11 @@ import { SubstrateContextProvider, useSubstrateState } from './substrate-lib'
 import { DeveloperConsole } from './substrate-lib/components'
 import bgImage from '/public/assets/dot_background.png'
 
-
 import AccountSelector from './AccountSelector'
 import Signup from './Signup'
 import AuditorProfile from './AuditorProfile'
+import ApproveAuditor from './ApproveAuditor'
+import RequestAudit from './RequestAudit'
 
 function Main() {
   const { apiState, apiError, keyringState } = useSubstrateState()
@@ -66,13 +67,17 @@ function Main() {
       <Sticky context={contextRef}>
         <AccountSelector />
       </Sticky>
-      <Container>
+      <Container style={{marginTop:'2em'}}>
         <Grid stackable columns="equal">
+          <Grid.Row>
+            <RequestAudit />
+          </Grid.Row>
           <Grid.Row>
             <Signup />
           </Grid.Row>
           <Grid.Row>
             <AuditorProfile />
+            <ApproveAuditor />
           </Grid.Row>
         </Grid>
       </Container>
