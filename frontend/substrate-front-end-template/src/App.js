@@ -17,6 +17,7 @@ import { DeveloperConsole } from './substrate-lib/components'
 import bgImage from '/public/assets/dot_background.png'
 
 import { AccountSelector } from './AccountSelector'
+import Home from './Home'
 import TopMenu from './TopMenu'
 import ApproveAuditor from './ApproveAuditor'
 
@@ -71,7 +72,7 @@ function Main() {
           </Sticky>
           <Container style={{marginTop:'2em'}}>
             <Routes>
-              <Route exact path='/' element={<div>Under construction</div> }></Route>
+              <Route exact path='/' element={<Home />}></Route>
               <Route exact path='/requestor' element={<div>Under construction</div> }></Route>
               <Route exact path='/auditor' element={<div>Under construction</div> }></Route>
               <Route exact path='/council' element={<div><ApproveAuditor /><h3>Verify challenge</h3></div> }></Route>

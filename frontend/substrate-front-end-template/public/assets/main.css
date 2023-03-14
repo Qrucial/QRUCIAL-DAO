@@ -6,7 +6,54 @@
   color: #0093ff;
 }
 
+.content-container {
+  min-height: calc(100vh - 80px);
+  padding-bottom: 20px;
+}
+
+.footer {
+  height: 80px;
+  position: relative;
+  left: 0;
+  bottom: 0;
+}
+
 .ui.statistic.block_number > .value {
   font-size: 2.4rem !important;
   line-height: 4rem !important;
+}
+
+/* Select-box */
+
+.selectBox option {
+  padding-top: 10px;
+  font-size: 1.2rem;
+  font-family: 'Quicksand'
+}
+.selectBox div {
+  border: 2px solid #ffffff00;
+}
+
+.selectBox div:hover{
+  /* background-color: #f7f7f7; */
+  cursor:pointer;
+  border: 2px solid #f7f7f7;
+  border-radius: 7px;
+  box-shadow: 3px 4px #f7f7f7;
+}
+
+.selectBox::-webkit-scrollbar {
+  width: 5px;
+}
+
+.selectBox::-webkit-scrollbar-track {
+  background: #FFFFFF; 
+}
+ 
+.selectBox::-webkit-scrollbar-thumb {
+  background: #0093ff ; 
+}
+
+.selectBox::-webkit-scrollbar-thumb:hover {
+  background: #017ed8; 
 }
