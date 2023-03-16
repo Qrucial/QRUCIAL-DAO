@@ -28,6 +28,7 @@ export default function AuditList(props) {
   const [modalOpen, setModalOpen] = useState(false)
   const [modalValue, setModalValue] = useState('')
 
+  const handleClick = props.handleClick
   function AuditElem(props) {
     const audit = props.elem;
     return (
@@ -37,6 +38,7 @@ export default function AuditList(props) {
           onClick={() => {
             setModalOpen(true);
             setModalValue({content: audit.id, header: audit.requestor });
+            handleClick && handleClick(audit);
           }}
         >{audit.requestor}
       </div>
@@ -46,14 +48,7 @@ export default function AuditList(props) {
   const list = auditData.map(a => <AuditElem elem={a} key={a.id}/>)
 
   return (
-    <div className='selectBox' 
-      style={{
-        minWidth:'37,5%', 
-        height: '227px',
-        overflow: 'auto', 
-        paddingRight: '1rem'
-      }}
-    >
+    <div className='selectBox'>
       {list}
       <BasicModal
         key="auditListModal"

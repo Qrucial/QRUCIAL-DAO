@@ -25,11 +25,25 @@
 
 /* Select-box */
 
+.selectBox {
+  max-height: 800px;
+  overflow: auto; 
+  padding-right: 1rem;
+  border: 1px solid rgba(0, 147, 255, 0.22);
+  border-radius: 10px;
+}
+
+.latestAudits .selectBox {
+  height: 227px;
+  border: none;
+}
+
 .selectBox option {
   padding-top: 10px;
   font-size: 1.2rem;
   font-family: 'Quicksand'
 }
+
 .selectBox div {
   border: 2px solid #ffffff00;
 }

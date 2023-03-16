@@ -35,7 +35,7 @@ export default function Home(props) {
           <Header as='h3' style={{fontWeight: 'normal'}}>
             Latest audits
           </Header>
-          <Segment style={{paddingRight: '0'}}>
+          <Segment className='latestAudits' style={{paddingRight: '0'}}>
             <AuditList />
           </Segment>
         </Grid.Column>
