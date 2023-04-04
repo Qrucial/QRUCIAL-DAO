@@ -1,34 +1,13 @@
-import React,  { useEffect, useState } from 'react'
+import React from 'react'
 import { Grid, Segment, Header } from 'semantic-ui-react'
 
-import { useSubstrateState } from './substrate-lib'
 import AuditorButton from './AuditorButton.js'
 import CancelAccount from './CancelAccount'
 import { createToast } from './toastContent'
 
 export default function AuditorProfile(props) {
-  const { api, currentAccount } = useSubstrateState()
-  const [details, setDetails] = useState(null)
-
-  const queryResHandler = result =>
-    result.isNone ? setDetails(null) : setDetails(result.toString())
-
-  useEffect(() => {
-    let unsub = null
-    const query = async () => {
-      const params = [currentAccount?.address]
-      unsub = await api.query.auditModule.auditorMap(
-        ...params,
-        queryResHandler
-      )
-    }
-    if (api?.query?.auditModule?.auditorMap && currentAccount) {
-      query()
-    } 
-    return () => unsub && unsub()
-  }, [api, currentAccount])
-  
-  const score = details && JSON.parse(details).score || '-'
+  const details = props.details  
+  const score = details && details.score || '-'
 
   return (
     <Grid.Column>

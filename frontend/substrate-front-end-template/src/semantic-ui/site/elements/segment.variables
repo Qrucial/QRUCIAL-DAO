@@ -1,0 +1,3 @@
+@borderWidth: 0px;
+@boxShadow: none;
+@borderRadius: 10px;
