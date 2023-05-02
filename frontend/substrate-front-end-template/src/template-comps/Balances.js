@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { Table, Grid, Button, Label } from 'semantic-ui-react'
 import { CopyToClipboard } from 'react-copy-to-clipboard'
-import { useSubstrateState } from './substrate-lib'
+import { useSubstrateState } from '../substrate-lib'
 
 export default function Main(props) {
   const { api, keyring } = useSubstrateState()

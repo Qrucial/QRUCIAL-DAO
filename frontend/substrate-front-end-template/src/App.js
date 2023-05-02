@@ -6,18 +6,21 @@ import {
   Grid,
   Sticky,
   Message,
+  Divider,
 } from 'semantic-ui-react'
 import 'semantic-ui-less/semantic.less'
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast'
 
 import { SubstrateContextProvider, useSubstrateState } from './substrate-lib'
 import { DeveloperConsole } from './substrate-lib/components'
 import bgImage from '/public/assets/dot_background.png'
 
-
-import AccountSelector from './AccountSelector'
-import Signup from './Signup'
-import AuditorProfile from './AuditorProfile'
+import { AccountSelector } from './AccountSelector'
+import AuditorsPage from './AuditorsPage'
+import Home from './Home'
+import TopMenu from './TopMenu'
+import ApproveAuditor from './ApproveAuditor'
 
 function Main() {
   const { apiState, apiError, keyringState } = useSubstrateState()
@@ -63,39 +66,65 @@ function Main() {
         backgroundAttachment: "fixed",
         minHeight: "100%"
       }}>
-      <Sticky context={contextRef}>
-        <AccountSelector />
-      </Sticky>
-      <Container>
-        <Grid stackable columns="equal">
-          <Grid.Row>
-            <Signup />
-          </Grid.Row>
-          <Grid.Row>
-            <AuditorProfile />
-          </Grid.Row>
-        </Grid>
-      </Container>
-      <DeveloperConsole />
-      <Toaster
-        position="top-right"
-        toastOptions={{
-          duration: 7000,
-          style: {
-            background: '#fbfdef',
-            color: 'rgba(0, 0, 0, 0.87)',
-            wordBreak: 'break-word',
-          },
-          error: {
-            duration: 10000,
-            style: {
-              background: '#ffe8e6',
-              color: '#db2828',
-              boxShadow: '0 0 0 1px #db2828',
-            },
-          }
-        }}
-      />
+      <div className="content-container">
+        <BrowserRouter>
+          <Sticky context={contextRef}>
+            <TopMenu />
+          </Sticky>
+          <Container style={{marginTop:'2em'}}>
+            <Routes>
+              <Route exact path='/' element={<Home />}></Route>
+              <Route exact path='/requestor' element={<div>Under construction</div> }></Route>
+              <Route exact path='/auditor' element={<AuditorsPage /> }></Route>
+              <Route exact path='/council' element={<div><ApproveAuditor /><h3>Verify challenge</h3></div> }></Route>
+            </Routes>
+          </Container>
+          <DeveloperConsole />
+          <Toaster
+            position="top-right"
+            toastOptions={{
+              duration: 7000,
+              style: {
+                background: '#fbfdef',
+                color: 'rgba(0, 0, 0, 0.87)',
+                wordBreak: 'break-word',
+              },
+              error: {
+                duration: 10000,
+                style: {
+                  background: '#ffe8e6',
+                  color: '#db2828',
+                  boxShadow: '0 0 0 1px #db2828',
+                },
+              }
+            }}
+          />
+        </BrowserRouter>
+      </div>
+      
+      <footer className="footer">
+        <Divider fitted ></Divider>
+        <Container>
+          <Grid style={{margin: 0}}> 
+            <Grid.Row>  
+              <Grid.Column width={8}>
+                <a target='blank' 
+                  href='https://github.com/Qrucial/QRUCIAL-DAO/blob/main/docs/QRUCIAL_DAO_Whitepaper.pdf'>
+                  Whitepaper
+                </a>
+                <br/>
+                <a target='blank' 
+                  href='https://github.com/Qrucial/QRUCIAL-DAO/wiki'>
+                  Wiki
+                </a>
+              </Grid.Column>
+              <Grid.Column textAlign='right' width={8}>
+                <AccountSelector />
+              </Grid.Column>
+            </Grid.Row> 
+          </Grid>
+        </Container>
+      </footer>
     </div>
   )
 }

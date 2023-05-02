@@ -50,6 +50,46 @@ function Main(props) {
   }
 
   return (
+    <div>
+      {!currentAccount ? (
+        <span>
+          Create an account with Polkadot-JS Extension (
+          <a target="_blank" rel="noreferrer" href={CHROME_EXT_URL}>
+            Chrome
+          </a>
+          ,&nbsp;
+          <a target="_blank" rel="noreferrer" href={FIREFOX_ADDON_URL}>
+            Firefox
+          </a>
+          )&nbsp;
+        </span>
+      ) : null}
+      <CopyToClipboard text={acctAddr(currentAccount)}>
+        <Button
+          basic
+          circular
+          size="large"
+          icon="user"
+          color={currentAccount ? 'green' : 'red'}
+        />
+      </CopyToClipboard>
+      <Dropdown
+        search
+        selection
+        clearable
+        placeholder="Select an account"
+        options={keyringOptions}
+        onChange={(_, dropdown) => {
+          onChange(dropdown.value)
+        }}
+        value={acctAddr(currentAccount)}
+      />
+    </div>
+  )
+}
+
+function InMenu(props) {
+  return (
     <Menu
       attached="top"
       tabular
@@ -71,47 +111,15 @@ function Main(props) {
           />
         </Menu.Menu>
         <Menu.Menu position="right" style={{ alignItems: 'center' }}>
-          {!currentAccount ? (
-            <span>
-              Create an account with Polkadot-JS Extension (
-              <a target="_blank" rel="noreferrer" href={CHROME_EXT_URL}>
-                Chrome
-              </a>
-              ,&nbsp;
-              <a target="_blank" rel="noreferrer" href={FIREFOX_ADDON_URL}>
-                Firefox
-              </a>
-              )&nbsp;
-            </span>
-          ) : null}
-          <CopyToClipboard text={acctAddr(currentAccount)}>
-            <Button
-              basic
-              circular
-              size="large"
-              icon="user"
-              color={currentAccount ? 'green' : 'red'}
-            />
-          </CopyToClipboard>
-          <Dropdown
-            search
-            selection
-            clearable
-            placeholder="Select an account"
-            options={keyringOptions}
-            onChange={(_, dropdown) => {
-              onChange(dropdown.value)
-            }}
-            value={acctAddr(currentAccount)}
-          />
-          <BalanceAnnotation />
+          <Main {...props} />
+          <BalanceAnnotation label={true} />
         </Menu.Menu>
       </Container>
     </Menu>
   )
 }
 
-function BalanceAnnotation(props) {
+export function BalanceAnnotation(props) {
   const { api, currentAccount } = useSubstrateState()
   const [accountBalance, setAccountBalance] = useState(0)
 
@@ -132,14 +140,22 @@ function BalanceAnnotation(props) {
   }, [api, currentAccount])
 
   return currentAccount ? (
+    props.label ? 
     <Label pointing="left">
       <Icon name="money" color="green" />
       {accountBalance}
     </Label>
+    :
+    <span>{accountBalance} QRD</span>
   ) : null
 }
 
-export default function AccountSelector(props) {
+export function AccountSelector(props) {
   const { api, keyring } = useSubstrateState()
   return keyring.getPairs && api.query ? <Main {...props} /> : null
+}
+
+export function AccountSelectorMenu(props) {
+  const { api, keyring } = useSubstrateState()
+  return keyring.getPairs && api.query ? <InMenu {...props} /> : null
 }

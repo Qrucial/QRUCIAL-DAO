@@ -1,0 +1,28 @@
+{
+  "demoAudits": [
+    { 
+      "requestor": "Demo Requestor",
+      "id": "Demo audit 1"
+    },    { 
+      "requestor": "Project42",
+      "id": "Demo audit 2"
+    },    { 
+      "requestor": "Contract Owner",
+      "id": "Demo audit 3"
+    },    { 
+      "requestor": "4udit",
+      "id": "Demo audit 4"
+    },    { 
+      "requestor": "Named demo",
+      "id": "Demo audit 5"
+    },    { 
+      "requestor": "Other one",
+      "id": "Demo audit 6"
+    },    { 
+      "requestor": "Someone else",
+      "id": "Demo audit 7"
+    },   { 
+      "requestor": "Eight",
+      "id": "Demo audit 8"
+    }]
+}
