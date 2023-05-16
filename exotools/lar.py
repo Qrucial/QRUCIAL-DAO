@@ -10,7 +10,7 @@ from substrateinterface import SubstrateInterface, Keypair
 from substrateinterface.exceptions import SubstrateRequestException
 import time
 import logging
-
+import sqlite3
 
 ## Logging to stdout for testing/debugging (TODO, log to files)
 class CustomFormatter(logging.Formatter):
@@ -44,6 +44,18 @@ ch.setLevel(logging.DEBUG)
 ch.setFormatter(CustomFormatter())
 logger.addHandler(ch)
 logger.debug("QDAO's lar.py is running in debug mode!")
+
+# Create temporary database for testing/development purposes
+logger.debug("Temporary database is being created with demo users")
+def init_db():
+    conn = sqlite3.connect('temp.db')
+    c = conn.cursor()
+    c.execute('CREATE TABLE IF NOT EXISTS users (username text, ID integer)')
+    c.execute("INSERT INTO users VALUES ('HaX0r', 666666)")
+    c.execute("INSERT INTO users VALUES ('in7xr', 777777)")
+    conn.commit()
+    conn.close()
+init_db()
 
 ## Interface for QDAO
 substrate=None
@@ -140,6 +152,17 @@ def serve_file_in_dir(path):
     if not os.path.isfile(os.path.join(static_file_dir, path)):
         path = os.path.join(path, 'index.html')
     return send_from_directory(static_file_dir, path) # Secure against dir trav
+
+# API routes for frontend
+
+@app.route('/users', methods=['GET'])
+def get_users():
+    conn = sqlite3.connect('users.db')
+    c = conn.cursor()
+    c.execute('SELECT * FROM users')
+    users = c.fetchall()
+    conn.close()
+    return jsonify(users)
 
 if __name__ == '__main__':
     app.run(debug=False,host='127.0.0.1', port=9999)
