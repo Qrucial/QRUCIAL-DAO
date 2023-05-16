@@ -20,4 +20,4 @@ Simply go to [qrucial.io/qrucial-dao](https://qrucial.io/wp-content/uploads/2022
 # 📚 Wiki:
 QDAO wiki [can be found here](https://github.com/Qrucial/QRUCIAL-DAO/wiki).       
 
-We have a W3F grant approved and are working on the 1st milestone: [Proposal Repository](https://github.com/smilingSix/Grants-Program)
+We have a W3F grant approved and are working on the 2nd milestone: [Proposal Repository](https://github.com/smilingSix/Grants-Program)
