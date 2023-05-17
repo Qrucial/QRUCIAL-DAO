@@ -27,7 +27,7 @@ type make >/dev/null || { echo >&2 "make is missing. Please install it." ; exit 
 cd ~
 git clone https://github.com/Qrucial/QRUCIAL-DAO
 cd QRUCIAL-DAO/qdao-node
-git checkout milestone1
+git checkout milestone2
 
 # Build the node
 cargo build
