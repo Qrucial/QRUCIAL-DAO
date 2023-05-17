@@ -12,7 +12,7 @@ import time
 import logging
 import sqlite3
 
-## Logging to stdout for testing/debugging (TODO, log to files)
+## Logging to stdout for testing/debugging
 class CustomFormatter(logging.Formatter):
     grey = "\x1b[38;20m"
     yellow = "\x1b[33;20m"
@@ -45,14 +45,23 @@ ch.setFormatter(CustomFormatter())
 logger.addHandler(ch)
 logger.debug("QDAO's lar.py is running in debug mode!")
 
+# Auditor DB:
+#     ID | ss58 addr | profile hash | name | profile pic url | web url | bio | audits (list of IDs)
+#        | str       | str          | str  | str             | str     | str | str
+
+# Audit DB:
+#     ID | requestor | url | state (progress OR done) | automated report (default is empty) | manual report (default is empty | top auditor | challenger
+#        | ss58 str  | str | string                   | str                                 | str                             | str         | str
+
 # Create temporary database for testing/development purposes
-logger.debug("Temporary database is being created with demo users")
+logger.debug("Temporary database is being created with demo auditors")
 def init_db():
     conn = sqlite3.connect('temp.db')
     c = conn.cursor()
-    c.execute('CREATE TABLE IF NOT EXISTS users (username text, ID integer)')
-    c.execute("INSERT INTO users VALUES ('HaX0r', 666666)")
-    c.execute("INSERT INTO users VALUES ('in7xr', 777777)")
+    c.execute('CREATE TABLE IF NOT EXISTS auditors (username text, ID integer)')
+    c.execute("INSERT INTO auditors VALUES ('HaX0r', 666666)")
+    c.execute("INSERT INTO auditors VALUES ('in7xr', 777777)")
+    c.execute("INSERT INTO auditors VALUES ('in7xr', 888888)")
     conn.commit()
     conn.close()
 init_db()
@@ -156,25 +165,94 @@ def serve_file_in_dir(path):
 # API routes for frontend
 
 # Get user data as json, ID: substrate address
-@app.route('/users', methods=['GET'])
-def get_users():
+@app.route('/auditors', methods=['GET'])
+def get_auditors():
     conn = sqlite3.connect('temp.db')
     c = conn.cursor()
-    c.execute('SELECT * FROM users') # Rewrite to select exact user, identified with ss58
-    users = c.fetchall()
+    c.execute('SELECT * FROM auditors') # Rewrite to select exact user, identified with ss58
+    auditors = c.fetchall()
     conn.close()
-    return jsonify(users)
+    return jsonify(auditors)
 
-# POST from user for profile update, eg. hash of user, other data, signed || called at SIGNUP & PROFILE UPDATE
+@app.route('/auditor-data', methods=['GET'])
+def get_auditordata():
+    address = request.args.get('address', default = "5Gv8YYFu8H1btvmrJy9FjjAWfb99wrhV3uhPFoNEr918utyR", type = str)
+    # TBA check and verify address -> https://docs.substrate.io/reference/address-formats/
+    conn = sqlite3.connect('temp.db')
+    c = conn.cursor()
+    c.execute('SELECT ' + address + ' FROM auditors')
+    auditor_data = c.fetchall()
+    conn.close()
+    return jsonify(auditor_Data)
+
+# Called at signup and profile update
 # Button -> open polkadotJS -> sign message -> POST to API
-# Data to db: substrate address, hash, name, profile picture link, git or website link, bio
+# Test: curl -X POST -H "Content-type: application/json" -d "{\"firstName\" : \"John\", \"lastName\" : \"Smith\"}" "127.0.0.1:9999/profile_update"
+@app.route('/profile_update', methods=['POST'])
+def profileUpdate():
+    content_type = request.headers.get('Content-Type')
+    if (content_type == 'application/json'):
+        profile_data = request.json
+        # TBA write data to DB
+        return json
+    else:
+        return 'Content-Type not supported!'
 
-# GET list of auditors address (all addresses)
+# TBA to be figured out
+@app.route('/request-audit', methods=['POST'])
+def requestAudit():
+    content_type = request.headers.get('Content-Type')
+    if (content_type == 'application/json'):
+        take_audit = request.json
+        # TBA write data to DB
+        return json
+    else:
+        return 'Content-Type not supported!'
 
-# GET list of requested audits, returns hash + ID (can "take from this list, then next POST)
+# Get user data as json, ID: substrate address
+@app.route('/audit-requests', methods=['GET'])
+def get_auditRequests():
+    conn = sqlite3.connect('temp.db')
+    c = conn.cursor()
+    c.execute('SELECT * FROM audit-requests')
+    auditRequests = c.fetchall()
+    conn.close()
+    # return hash and id
+    return jsonify(auditRequests)
 
-# POST take manual audit -> sign an extrinsics (onchain + to db -- how?)
-# POST audit done -> sign an extrinsic (onchain + to db -- how?)
+# TBA to be figured out
+@app.route('/take_audit', methods=['POST'])
+def takeAudit():
+    content_type = request.headers.get('Content-Type')
+    if (content_type == 'application/json'):
+        take_audit = request.json
+        # TBA write data to DB
+        return json
+    else:
+        return 'Content-Type not supported!'
+
+# TBA to be figured out
+@app.route('/send_report', methods=['POST'])
+def sendReport():
+    content_type = request.headers.get('Content-Type')
+    if (content_type == 'application/json'):
+        report_data = request.json
+        # TBA write data to DB
+        return json
+    else:
+        return 'Content-Type not supported!'
+
+# TBA to be fiigured out
+@app.route('/get-report', methods=['GET'])
+def get_report():
+    conn = sqlite3.connect('temp.db')
+    c = conn.cursor()
+    c.execute('SELECT * FROM audit-report')
+    auditRequests = c.fetchall()
+    conn.close()
+    # return hash and id
+    return jsonify(auditRequests)
+
 
 
 if __name__ == '__main__':

@@ -29,6 +29,17 @@ exotool.sh "<URL>" "<HASH>"
 | docker             | This folder is where the various dockerfile and docker images will be stored |
 | exotool.sh         | This script will orchistrate the audit vesrions, timestamps and docker setup |
 
+```
+/auditors ['GET'] # Returns all auditors and their data
+/auditor-data ['GET'] # Returns only 1 auditor's data
+/profile_update ['POST'] # Profile update, called at signup and profile update, takes JSON
+/request-audit ['POST'] # Adds the audit request to db, takes JSON
+/audit-requests ['GET'] # List of all audit requests
+/take_audit ['POST'] # Called when auditor wants to take an audit, takes JSON or parameter (to be decided)
+/get_report ['GET'] # Get a single audit report, takes a parameter with ID
+/send_report ['POST'] # Called when auditor send in final report, takes JSON (logic to be decided)
+```
+
 ## ExoTool Logger and Extrinsic reporter
 ExoTool sends succ/fail HTTP POST --> Logger checks it through API key --> Uses sube to send extrinsic to qdao-node
 
