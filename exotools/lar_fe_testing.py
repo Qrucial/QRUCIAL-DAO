@@ -56,12 +56,31 @@ logger.debug("QDAO's lar.py is running in debug mode!")
 # Create temporary database for testing/development purposes
 logger.debug("Temporary database is being created with demo auditors")
 def init_db():
+    try:
+        my_file = open("temp.db")
+        return #jajjdecsunyaezitt
+    except IOError:
+        pass
     conn = sqlite3.connect('temp.db')
     c = conn.cursor()
-    c.execute('CREATE TABLE IF NOT EXISTS auditors (username text, ID integer)')
-    c.execute("INSERT INTO auditors VALUES ('HaX0r', 666666)")
-    c.execute("INSERT INTO auditors VALUES ('in7xr', 777777)")
-    c.execute("INSERT INTO auditors VALUES ('in7xr', 888888)")
+    # Create inbuilt auditors
+    c.execute('CREATE TABLE IF NOT EXISTS auditors (address text, profileHash text, name text, picUrl text, webUrl text, bio text, auditsDone text)')
+    c.execute("INSERT INTO auditors VALUES ('5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY', '0x00', 'Alice', 'https://git.hsbp.org/avatars/8e4b4863a9f70ff176538149e61ce1e6?size=870', 'https://qrucial.io/', 'Bio of X user is text.', 'Feature to be added in milestone 3.')")
+    c.execute("INSERT INTO auditors VALUES ('5FHneW46xGXgs5mUiveU4sbTyGBzmstUspZC92UhjJM694ty', '0x00', 'Bob', 'https://git.hsbp.org/avatars/8e4b4863a9f70ff176538149e61ce1e6?size=870', 'https://qrucial.io/', 'Bio of Y user is text.', 'Feature to be added in milestone 3.')")
+    c.execute("INSERT INTO auditors VALUES ('5FLSigC9HGRKVhB9FiEo4Y3koPsNmBmLJbpXg2mp1hXcS59Y', '0x00', 'Charlie', 'https://git.hsbp.org/avatars/8e4b4863a9f70ff176538149e61ce1e6?size=870', 'https://qrucial.io/', 'Bio of Z user is text.', 'Feature to be added in milestone 3.')")
+    c.execute("INSERT INTO auditors VALUES ('5DAAnrj7VHTznn2AWBemMuyBwZWs6FNFjdyVXUeYum3PTXFy', '0x00', 'Dave', 'https://git.hsbp.org/avatars/8e4b4863a9f70ff176538149e61ce1e6?size=870', 'https://qrucial.io/', 'Bio of W user is text.', 'Feature to be added in milestone 3.')")
+    c.execute("INSERT INTO auditors VALUES ('5HGjWAeFDfFCWPsjFQdVV2Msvz2XtMktvgocEZcCj68kUMaw', '0x00', 'Eve', 'https://git.hsbp.org/avatars/8e4b4863a9f70ff176538149e61ce1e6?size=870', 'https://qrucial.io/', 'Bio of T user is text.', 'Feature to be added in milestone 3.')")
+    c.execute("INSERT INTO auditors VALUES ('5CiPPseXPECbkjWCa6MnjNokrgYjMqmKndv2rSnekmSK2DjL', '0x00', 'Ferdie', 'https://git.hsbp.org/avatars/8e4b4863a9f70ff176538149e61ce1e6?size=870', 'https://qrucial.io/', 'Bio of S user is text.', 'Feature to be added in milestone 3.')")
+    c.execute("INSERT INTO auditors VALUES ('5GNJqTPyNqANBkUVMN1LPPrxXnFouWXoe2wNSmmEoLctxiZY', '0x00', 'Alice//stash', 'https://git.hsbp.org/avatars/8e4b4863a9f70ff176538149e61ce1e6?size=870', 'https://qrucial.io/', 'Bio of user is text.', 'Feature to be added in milestone 3.')")
+    c.execute("INSERT INTO auditors VALUES ('5HpG9w8EBLe5XCrbczpwq5TSXvedjrBGCwqxK1iQ7qUsSWFc', '0x00', 'Bob//stash', 'https://git.hsbp.org/avatars/8e4b4863a9f70ff176538149e61ce1e6?size=870', 'https://qrucial.io/', 'Bio of user is text.', 'Feature to be added in milestone 3.')")
+    c.execute("INSERT INTO auditors VALUES ('5Ck5SLSHYac6WFt5UZRSsdJjwmpSZq85fd5TRNAdZQVzEAPT', '0x00', 'Charlie//stash', 'https://git.hsbp.org/avatars/8e4b4863a9f70ff176538149e61ce1e6?size=870', 'https://qrucial.io/', 'Bio of user is text.', 'Feature to be added in milestone 3.')")
+    c.execute("INSERT INTO auditors VALUES ('5HKPmK9GYtE1PSLsS1qiYU9xQ9Si1NcEhdeCq9sw5bqu4ns8', '0x00', 'Dave//stash', 'https://git.hsbp.org/avatars/8e4b4863a9f70ff176538149e61ce1e6?size=870', 'https://qrucial.io/', 'Bio of user is text.', 'Feature to be added in milestone 3.')")
+    c.execute("INSERT INTO auditors VALUES ('5FCfAonRZgTFrTd9HREEyeJjDpT397KMzizE6T3DvebLFE7n', '0x00', 'Eve//stash', 'https://git.hsbp.org/avatars/8e4b4863a9f70ff176538149e61ce1e6?size=870', 'https://qrucial.io/', 'Bio of user is text.', 'Feature to be added in milestone 3.')")
+    c.execute("INSERT INTO auditors VALUES ('5CRmqmsiNFExV6VbdmPJViVxrWmkaXXvBrSX8oqBT8R9vmWk', '0x00', 'Ferdie//stash', 'https://git.hsbp.org/avatars/8e4b4863a9f70ff176538149e61ce1e6?size=870', 'https://qrucial.io/', 'Bio of user is text.', 'Feature to be added in milestone 3.')")
+    # Create audit db 
+    c.execute('CREATE TABLE IF NOT EXISTS auditStates (hash text, projectUrl text, state text, autoReport text, manualReport text, topAuditor text, challenger text)')
+    c.execute("INSERT INTO auditStates VALUES('0x11', 'https://v-space.hu/s/exotestflipper.tar', 'In progress', 'Not submitted yet', 'Not submitted yet', 'Eve', 'No challenger')")
+    c.execute("INSERT INTO auditStates VALUES('0x11', 'https://v-space.hu/s/exotestflipper.tar', 'In progress', 'Not submitted yet', 'Not submitted yet', 'h4xor', 'No challenger')")
     conn.commit()
     conn.close()
 init_db()
@@ -165,6 +184,7 @@ def serve_file_in_dir(path):
 # API routes for frontend
 
 # Get user data as json, ID: substrate address
+# Example: http://127.0.0.1:9999/auditors
 @app.route('/auditors', methods=['GET'])
 def get_auditors():
     conn = sqlite3.connect('temp.db')
@@ -174,16 +194,18 @@ def get_auditors():
     conn.close()
     return jsonify(auditors)
 
+# Example: http://127.0.0.1:9999/auditor-data?address=5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY
 @app.route('/auditor-data', methods=['GET'])
 def get_auditordata():
-    address = request.args.get('address', default = "5Gv8YYFu8H1btvmrJy9FjjAWfb99wrhV3uhPFoNEr918utyR", type = str)
+    address = request.args.get('address', default = "5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY", type = str)
     # TBA check and verify address -> https://docs.substrate.io/reference/address-formats/
     conn = sqlite3.connect('temp.db')
     c = conn.cursor()
-    c.execute('SELECT ' + address + ' FROM auditors')
-    auditor_data = c.fetchall()
+    print(address)
+    c.execute('SELECT * FROM auditors WHERE address = "%s"' % address)
+    auditorData = c.fetchall()
     conn.close()
-    return jsonify(auditor_Data)
+    return jsonify(auditorData)
 
 # Called at signup and profile update
 # Button -> open polkadotJS -> sign message -> POST to API
@@ -210,11 +232,13 @@ def requestAudit():
         return 'Content-Type not supported!'
 
 # Get user data as json, ID: substrate address
+# To be selected
+# Example: 127.0.0.1:9999/audit-requests
 @app.route('/audit-requests', methods=['GET'])
 def get_auditRequests():
     conn = sqlite3.connect('temp.db')
     c = conn.cursor()
-    c.execute('SELECT * FROM audit-requests')
+    c.execute('SELECT * FROM auditStates')
     auditRequests = c.fetchall()
     conn.close()
     # return hash and id
@@ -242,18 +266,17 @@ def sendReport():
     else:
         return 'Content-Type not supported!'
 
-# TBA to be fiigured out
-@app.route('/get-report', methods=['GET'])
+# TBA to be figured out
+# Example: http://127.0.0.1:9999/get-reports
+@app.route('/get-reports', methods=['GET'])
 def get_report():
     conn = sqlite3.connect('temp.db')
     c = conn.cursor()
-    c.execute('SELECT * FROM audit-report')
+    c.execute('SELECT * FROM auditStates')
     auditRequests = c.fetchall()
     conn.close()
     # return hash and id
     return jsonify(auditRequests)
-
-
 
 if __name__ == '__main__':
     app.run(debug=False,host='127.0.0.1', port=9999)
