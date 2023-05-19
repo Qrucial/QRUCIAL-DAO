@@ -12,6 +12,9 @@ import time
 import logging
 import sqlite3
 
+## Development mode
+debugState = True
+
 ## Logging to stdout for testing/debugging
 class CustomFormatter(logging.Formatter):
     grey = "\x1b[38;20m"
@@ -43,7 +46,8 @@ ch = logging.StreamHandler()
 ch.setLevel(logging.DEBUG)
 ch.setFormatter(CustomFormatter())
 logger.addHandler(ch)
-logger.debug("QDAO's lar.py is running in debug mode!")
+if debugState == True:
+    logger.debug("QDAO's lar.py is running in debug mode!")
 
 # Auditor DB:
 #     ID | ss58 addr | profile hash | name | profile pic url | web url | bio | audits (list of IDs)
@@ -54,7 +58,7 @@ logger.debug("QDAO's lar.py is running in debug mode!")
 #        | ss58 str  | str | string                   | str                                 | str                             | str         | str
 
 # Create temporary database for testing/development purposes
-logger.debug("Temporary database is being created with demo auditors")
+logger.debug("Development database is being initialized")
 def init_db():
     try:
         my_file = open("temp.db")
@@ -86,6 +90,7 @@ def init_db():
 init_db()
 
 ## Interface for QDAO
+#logger.debug("Connecting to local QDAO node")
 #substrate=None
 #while substrate==None:
 #    try:
@@ -100,7 +105,7 @@ init_db()
 #        time.sleep(5)
 #    pass
 
-## Security keys !! TODO make them unique and stored only in mem !! and securely share with exotool.sh
+## Security keys !! TBA TODO make them unique and stored only in mem + securely share with ExoTool
 # Tip: subkey inspect-key //Alice
 # SS58 Address: 5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY
 logger.warning("We are using Alice's key!")
@@ -279,4 +284,4 @@ def get_report():
     return jsonify(auditRequests)
 
 if __name__ == '__main__':
-    app.run(debug=False,host='127.0.0.1', port=9999)
+    app.run(debug=debugState,host='127.0.0.1', port=9999)
