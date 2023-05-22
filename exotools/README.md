@@ -1,9 +1,10 @@
-# EXOTOOLS-PALLET &middot; [![GitHub license](https://img.shields.io/badge/license-GPL3%2FApache2-blue)](#LICENSE) [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](docs/CONTRIBUTING.adoc)
+# EXOTOOL SYSTEM &middot; [![GitHub license](https://img.shields.io/badge/license-GPL3%2FApache2-blue)](#LICENSE) [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](docs/CONTRIBUTING.adoc)
 
 
 # 💡 High level summary
 This set of tools, that runs in a docker container, is used to automaticaly detect and report venerabilities. as well as tools to assist in auditing programs.
 - exotool.sh Script that is called by ExoSys daemon
+- lar.py handles logging and reporting to blockchain, also includes the API for the front-end
 
 # ⚙️  Tool execution Flow
 Run 
