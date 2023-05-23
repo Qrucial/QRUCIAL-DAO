@@ -13,6 +13,7 @@ use sp_runtime::{
 
 type UncheckedExtrinsic = frame_system::mocking::MockUncheckedExtrinsic<Test>;
 type Block = frame_system::mocking::MockBlock<Test>;
+type RuntimeBalance = u64;
 
 // Configure a mock runtime to test the pallet.
 frame_support::construct_runtime!(
@@ -28,7 +29,7 @@ frame_support::construct_runtime!(
 );
 
 parameter_types! {
-    pub const ExistentialDeposit: u64 = 1;
+    pub const ExistentialDeposit: RuntimeBalance = 1;
 }
 
 impl system::Config for Test {
@@ -59,7 +60,7 @@ impl system::Config for Test {
 }
 
 impl pallet_balances::Config for Test {
-    type Balance = u64;
+    type Balance = RuntimeBalance;
     type DustRemoval = ();
     type RuntimeEvent = RuntimeEvent;
     type ExistentialDeposit = ExistentialDeposit;
@@ -72,7 +73,7 @@ impl pallet_balances::Config for Test {
 
 impl qdao_pallet_dummy::Config for Test {
     type RuntimeEvent = RuntimeEvent;
-    type Balance = u64;
+    type Balance = RuntimeBalance;
     type Currency = Balances;
     type MinAuditorStake = frame_support::traits::ConstU64<100>;
     type InitialAuditorScore = frame_support::traits::ConstU32<1000>;
