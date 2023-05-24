@@ -23,6 +23,7 @@ mod benchmarking;
 
 mod elo_comp;
 
+type Score = u32;
 type DepositBalanceOf<T> =
     <<T as Config>::Currency as Currency<<T as SystemConfig>::AccountId>>::Balance;
 
@@ -40,7 +41,7 @@ pub mod pallet {
     /// Holds the data which is associated to an auditor.
     /// # Fields
     ///
-    /// * `score` - the Auditors Eloscore of type `Option<u32>`. This is also used to keep track of the auditor's approval status.
+    /// * `score` - the Auditors Eloscore of type `Option<Score>`. This is also used to keep track of the auditor's approval status.
     ///             Unapproved auditors have a `score` of value `None`
     ///
     /// * `profile_hash` - A hash of the profile that the user submitted. Is supposed to be the hash of a markdown document which describes the user's
@@ -50,7 +51,7 @@ pub mod pallet {
     ///                   to three `AccountId`'s of approving auditors.
     ///
     pub struct AuditorData<Hash, AccountId> {
-        pub score: Option<u32>,
+        pub score: Option<Score>,
         pub profile_hash: Hash,
         pub approved_by: BoundedVec<AccountId, ConstU32<3>>,
     }
@@ -81,11 +82,11 @@ pub mod pallet {
 
         #[pallet::constant]
         /// Initial score for an auditor which signed up and received 3 approvals
-        type InitialAuditorScore: Get<u32>;
+        type InitialAuditorScore: Get<Score>;
 
         #[pallet::constant]
         /// Minimal score which allows auditors to approve other auditors
-        type MinimalApproverScore: Get<u32>;
+        type MinimalApproverScore: Get<Score>;
     }
 
     #[pallet::pallet]
@@ -334,6 +335,8 @@ pub mod pallet {
             player1: T::AccountId,
             winner: Winner,
         ) -> DispatchResult;
+
+        fn has_enough_rank(player: T::AccountId, score: Score) -> bool;
     }
 
     impl<T: Config> Game<T> for Pallet<T> {

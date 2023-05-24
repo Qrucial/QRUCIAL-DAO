@@ -24,6 +24,10 @@ mod benchmarking;
 
 pub type DepositBalanceOf<T> =
     <<T as Config>::Currency as Currency<<T as SystemConfig>::AccountId>>::Balance;
+pub type AccountId<T> = <T as SystemConfig>::AccountId;
+pub type Auditor<T> = AccountId<T>;
+/// Keccak256 of the project package (say .tar.gz) the review URL resolves to
+pub type ReviewHash<T> = <T as SystemConfig>::Hash;
 pub type Risk = u32;
 
 parameter_types! {
@@ -34,9 +38,9 @@ parameter_types! {
 
 #[derive(Clone, Encode, Decode, Eq, PartialEq, RuntimeDebug, TypeInfo, MaxEncodedLen, Default)]
 #[scale_info(skip_type_params(T))]
-///All information related to requested review
+/// All information related to requested review
 pub struct ReviewResult {
-    result: u32,
+    result: u32, // TODO
 }
 
 #[derive(Clone, Encode, Decode, Eq, PartialEq, RuntimeDebug, TypeInfo, MaxEncodedLen)]
@@ -53,9 +57,9 @@ pub struct Review<T: Config> {
     /// Remaining balance stored in "NFT"
     bounty: DepositBalanceOf<T>,
     /// Owner of request
-    requestor: <T as SystemConfig>::AccountId,
+    requestor: AccountId<T>,
     /// Request ID
-    hash: <T as SystemConfig>::Hash,
+    hash: ReviewHash<T>,
     /// Original link to reviewed package
     url: BoundedVec<u8, MaxUrlLength>,
 }
@@ -68,11 +72,6 @@ pub enum Classification {
     Escalation,
     /// Something that did not fit the variants above
     Custom(BoundedVec<u8, MaxClassificationLength>),
-}
-
-pub enum VulnerabilityState {
-    Reported,
-    Rejected,
 }
 
 #[derive(Clone, Encode, Decode, Eq, PartialEq, RuntimeDebug, TypeInfo, MaxEncodedLen)]
@@ -96,21 +95,28 @@ pub enum Tool {
     Octopus = 3,
 }
 
+/// A report a given auditor sent for a given review.
 #[derive(Clone, Encode, Decode, Eq, PartialEq, RuntimeDebug, TypeInfo, MaxEncodedLen)]
 #[scale_info(skip_type_params(T))]
-pub struct ReviewReport<T: Config> {
-    auditor: <T as SystemConfig>::AccountId,
-    tool: Tool,
-    risk: Risk,
+pub enum ReviewReport<T: Config> {
+    /// Either the project package did not match the review hash, or the package content could not be unpacked
+    Invalid,
+    Valid {
+        tool: Tool,
+        risk: Risk,
+    },
 }
 
-// pub struct Challenge<T: Config> {
-//     auditor: <T as SystemConfig>::AccountId,
-//     review_id: <T as SystemConfig>::Hash,
-//     report_id: u32,
-//     reject_vulnerabilities: Vec<u32>,
-//     add_vulnerabilities: Vec<VulnerabilityProperties>,
-// }
+#[derive(Clone, Encode, Decode, Eq, PartialEq, RuntimeDebug, TypeInfo, MaxEncodedLen)]
+#[scale_info(skip_type_params(T))]
+pub struct Challenge<T: Config> {
+    auditor: <T as SystemConfig>::AccountId,
+    review_id: <T as SystemConfig>::Hash,
+    report_id: u32,
+    reject_vulnerabilities: Vec<u32>,
+    patch_vulnerabilities: Vec<(u32, VulnerabilityPatch)>,
+    add_vulnerabilities: Vec<VulnerabilityProperties>,
+}
 
 #[frame_support::pallet]
 pub mod pallet {
@@ -153,7 +159,10 @@ pub mod pallet {
     /// All reports that were received on ongoing reviews
     pub type Reports<T: Config> = StorageNMap<
         _,
-        (NMapKey<Blake2_128Concat, T::Hash>, NMapKey<Twox128, u32>),
+        (
+            NMapKey<Blake2_128Concat, T::Hash>,
+            NMapKey<Twox128, Auditor<T>>,
+        ),
         ReviewReport<T>,
     >;
 
@@ -177,13 +186,19 @@ pub mod pallet {
         /// A new review was requested. [bounty, requestor, url, hash]
         ReviewRequest {
             bounty: DepositBalanceOf<T>,
-            requestor: <T as SystemConfig>::AccountId,
+            requestor: AccountId<T>,
             url: BoundedVec<u8, MaxUrlLength>,
-            hash: <T as SystemConfig>::Hash,
+            hash: ReviewHash<T>,
         },
-        /// [ret_hash, ret_result]
-        ExecutionFinish {
-            ret_hash: <T as SystemConfig>::Hash,
+        /// An auditor deemed the review invalid [hash, auditor]
+        ReviewInvalid {
+            hash: ReviewHash<T>,
+            auditor: AccountId<T>,
+        },
+        /// An auditor sent a report for a review [hash, auditor, ret_result]
+        ReviewReport {
+            hash: ReviewHash<T>,
+            auditor: AccountId<T>,
             ret_result: Vec<u8>,
         },
     }
@@ -191,12 +206,16 @@ pub mod pallet {
     // Errors inform users that something went wrong.
     #[pallet::error]
     pub enum Error<T> {
-        /// The hash specified does not point to an ongoing review.
-        ReviewNotFound,
         /// URL provided is longer than MaxUrlLength
         UrlTooLong,
-        /// There is already an ongoing review with the same hash.
+        /// The hash specified does not point to an ongoing review
+        ReviewNotFound,
+        /// There is already an ongoing review with the same hash
         DuplicateReviewFound,
+        /// Could not find a report from the given auditor for the given review
+        ReportNotFound,
+        /// There is already a report from an auditor for this review
+        DuplicateReportFound,
     }
 
     // Dispatchable functions allows users to interact with the pallet and invoke state changes.
@@ -210,7 +229,7 @@ pub mod pallet {
         pub fn request_review(
             origin: OriginFor<T>,
             url: Vec<u8>,
-            hash: <T as SystemConfig>::Hash,
+            hash: ReviewHash<T>,
             bounty: DepositBalanceOf<T>,
         ) -> DispatchResult {
             let requestor = ensure_signed(origin)?;
@@ -245,25 +264,33 @@ pub mod pallet {
             Ok(())
         }
 
-        /// Cancel request due to invalid parameters
+        /// An auditor checked the review request and either the review hash did not match the project package content, or the package
+        /// could not be unpacked, compiled or whatever other reason the audit itself could not even be started.
         #[pallet::call_index(1)]
         #[pallet::weight(Weight::from_ref_time(100) + T::DbWeight::get().writes(1))]
-        pub fn tool_exec_cancel_invalid(
-            _origin: OriginFor<T>,
-            _hash: <T as SystemConfig>::Hash,
-        ) -> DispatchResult {
+        pub fn review_invalid(origin: OriginFor<T>, hash: ReviewHash<T>) -> DispatchResult {
+            let auditor = ensure_signed(origin)?;
+            ensure!(
+                !Reports::<T>::contains_key((hash, auditor)),
+                Error::<T>::DuplicateReportFound
+            );
+            Self::deposit_event(Event::ReviewInvalid { auditor, hash });
             Ok(())
         }
 
         /// Record automated request processing results
         #[pallet::call_index(2)]
         #[pallet::weight(Weight::from_ref_time(1000) + T::DbWeight::get().writes(1))]
-        pub fn tool_exec_auto_report(
+        pub fn review_report(
             origin: OriginFor<T>,
-            hash: <T as SystemConfig>::Hash,
+            hash: ReviewHash<T>,
             result: Vec<u8>,
         ) -> DispatchResult {
             let auditor = ensure_signed(origin)?;
+            ensure!(
+                !Reports::<T>::contains_key((hash, auditor)),
+                Error::<T>::DuplicateReportFound
+            );
             Self::deposit_event(Event::ExecutionFinish {
                 ret_hash: hash,
                 ret_result: result,
