@@ -12,6 +12,7 @@ import time
 import logging
 import sqlite3
 import json
+from getpass import getpass
 
 ## Development mode and settings
 debugState = True
@@ -19,7 +20,7 @@ dummyMode = True
 DontHakit = "Donthakit"
 dbFile = "temp.db"
 
-## Logging to stdout for testing/debugging (TODO, log to files)
+## Logging to stdout for testing/debugging
 class CustomFormatter(logging.Formatter):
     grey = "\x1b[38;20m"
     yellow = "\x1b[33;20m"
@@ -104,12 +105,17 @@ if dummyMode == False:
 else:
     logger.warning("Dummy mode is ON, not connecting to QDAO node")
 
-## Security keys !! TODO make them unique and stored only in mem !! and securely share with exotool.sh
 # Tip: subkey inspect-key //Alice
 # SS58 Address: 5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY
-logger.warning("We are using Alice's key!")
-keypair = Keypair.create_from_seed('0xe5be9a5092b81bca64be81d212e7f2f9eba183bb7a90954f7b76361f6edb5c0a') # Alice
-api_key = 'x7roVhBsiZ18Dg3DX3iCm9pXhXdbZWx2'
+if debugState == True:
+    logger.warning("We are using Alice's key!")
+    keypair = Keypair.create_from_seed('0xe5be9a5092b81bca64be81d212e7f2f9eba183bb7a90954f7b76361f6edb5c0a') # Alice
+    api_key = 'x7roVhBsiZ18Dg3DX3iCm9pXhXdbZWx2'
+else:
+    keypair_in = getpass("Please enter the keypair to use: ")
+    keypair = Keypair.create_from_seed(keypair_in)
+    apikey_in = getpass("Please enter the API key: ")
+    api_key = apikey_in
 
 ## Flask app and routes
 app=Flask(__name__)
@@ -172,14 +178,16 @@ def notif():
         return "IP address not allowed."
     if request.method == 'POST':
         api_key_received = request.args.get('key')
-        hash_received = request.args.get('hash')        # TODO check validity, if it is keccak256
-        result_received = request.args.get('result')    # TODO be more specific + validity + dont accept req without these
+        hash_received = request.args.get('hash')
+        if check_address(hash_received): pass
+        else: return DontHakit
+        result_received = request.args.get('result')
         if api_key == api_key_received:
             pass
         else:
             return jsonify("Wrong API key!")
         try:
-            run( [ '/usr/bin/touch', '/tmp/lar_report.log' ] )         # TODO, Sample and debugging
+            run( [ '/usr/bin/touch', '/tmp/lar_report.log' ] ) # Test
         except:
             logger.warning("Couldn't touch ~/QRUCIAL-DAO/exotools/static/reports/, there is an execution error probably.")
 

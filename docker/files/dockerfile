@@ -2,16 +2,9 @@ FROM docker.io/paritytech/ci-linux:production as builder
 #FROM parity/substrate:latest
 
 RUN apt update 
-RUN apt-get install -y supervisor
-RUN apt-get install -y tmux
-RUN apt-get install -y curl
-RUN apt-get install -y wget
-RUN apt-get install -y python3
-RUN apt-get install -y python3-setuptools
+RUN apt-get install -y supervisor tmux curl wget python3 python3-setuptools
 RUN python3 -m pip install --upgrade pip setuptools wheel
-RUN pip3 install Flask
-RUN pip3 install sqlite3
-RUN pip3 install substrate-interface
+RUN pip3 install Flask substrate-interface
 RUN cargo install keccak256-cli
 
 ADD scripts/qdao_services.sh /bin/qdao_services.sh 

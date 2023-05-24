@@ -22,6 +22,10 @@ type tmux >/dev/null || { echo >&2 "tmux is missing. Please install it." ; exit 
 type keccak256 >/dev/null || { echo >&2 "keccak256 is missing. Please install it." ; exit 1;}
 type gcc >/dev/null || { echo >&2 "gcc is missing. Please install it." ; exit 1;}
 type make >/dev/null || { echo >&2 "make is missing. Please install it." ; exit 1;}
+type pip3 >/dev/null || { echo >&2 "make is missing. Please install it." ; exit 1;}
+
+# Pip
+pip3 install Flask
 
 # Get from git (later from IPFS?)
 cd ~
@@ -55,7 +59,7 @@ tmux new-session -d -s qdao-api 'python3 exotools/lar.py'
 # Print results
 if [ -z "$(pgrep qdao)" ]
   then
-      echo "There was an error runntng node setup. Please check the output above and the logs."
+      echo "There was an error running node setup. Please check the output above and the logs."
   else
       echo "Your local QDAO dev node has been prepared. Your tmux sessions:"
       tmux ls

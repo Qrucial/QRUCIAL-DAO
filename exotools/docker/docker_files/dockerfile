@@ -1,6 +1,6 @@
 FROM rust:buster
 
-RUN cargo install cargo-audit # install cargo audit
+RUN cargo install cargo-audit
 
 # This will always return success, it normally fails after update (we just need update)
 RUN cargo audit -db || : 
@@ -14,6 +14,5 @@ RUN chmod +x /usr/exotools/audit_script.sh
 # for exotools we dont really need one yet, as they get deployed and then shut down.
 # HEALTHCHECK # ping 0.0.0.0
 
-#ENTRYPOINT ["ls"]
 ENTRYPOINT ["/usr/exotools/audit_script.sh"]
 # This is a not great solution but it works
