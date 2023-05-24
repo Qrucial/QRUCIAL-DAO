@@ -3,13 +3,13 @@
 <p align="center">
   <img src="/docs/media/qrucial.gif">
 </p>
-QRUCIAL-DAO is a next generation security toolsuite for blockchain security.
+QRUCIAL DAO is a next generation security toolsuite and reputation system for web3 security.
 
 ## 💡 High Level Summary:
 Built on top of Substrate, Qrucial DAO is a system for transparent audits and certifications, issuing non-transferable NFTs to the audited systems themselves.
 
 ## ⚙️  Tool execution flow: 
-Signed extrinsic incoming &#9658; Verification &#9658; Listing in QDAO State &#9658; Event triggered (exosys reads JSON RPC) &#9658; Execution and result output &#9658; ExoSys Extrinsic &#9658; Aggregate and verify restuls &#9658; Report delivery (encrypted)
+Audit request on front-end &#9658; Validation and hash verification of project package &#9658; Listing in QDAO state &#9658; Event triggers ExoTool (automated execution started) &#9658; Manual audit by auditor &#9658; Reporting &#9658; Reports are open to be challenges
 
 ## 🌱 Philosophy:
 
