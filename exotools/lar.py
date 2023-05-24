@@ -187,10 +187,10 @@ def notif():
         logger.info("Sending extrinsic to QDAO node.")
         call = substrate.compose_call(
         call_module='ExoSys',
-        call_function='tool_exec_auto_report',
+        call_function='tool_exec_report',  # TODO TBA review_report + tool_exec_invalid -> if fail to send: hash + result
         call_params={
             'hash': str(hash_received),
-            'result': str(result_received)
+            'result': str(result_received) # TBA TODO
         })
 
         # Create the extrinsic itself
