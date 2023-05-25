@@ -238,8 +238,15 @@ def get_auditors():
     c = conn.cursor()
     c.execute('SELECT * FROM auditors')
     auditors = c.fetchall()
+    column_names = [description[0] for description in c.description]
+    print(column_names)
+    dict_rows = [dict(zip(column_names, row)) for row in auditors]
+    json_data = json.dumps(dict_rows)
+    print(json_data)
+    print(json.dumps(auditors))
     conn.close()
-    return json.dumps(auditors)
+    #return json.dumps(auditors)
+    return json_data
 
 # Example: http://127.0.0.1:9999/auditor-data?address=5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY
 @app.route('/auditor-data', methods=['GET'])
