@@ -239,7 +239,7 @@ def get_auditors():
     c.execute('SELECT * FROM auditors')
     auditors = c.fetchall()
     conn.close()
-    return jsonify(auditors)
+    return json.dumps(auditors)
 
 # Example: http://127.0.0.1:9999/auditor-data?address=5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY
 @app.route('/auditor-data', methods=['GET'])
@@ -254,7 +254,7 @@ def get_auditordata():
     c.execute('SELECT * FROM auditors WHERE address = "%s"' % address)
     auditorData = c.fetchall()
     conn.close()
-    return jsonify(auditorData)
+    return json.dumps(auditorData)
 
 # Called at signup and profile update
 # Button -> open polkadotJS -> sign message -> POST to API
@@ -290,7 +290,7 @@ def profileUpdate():
         c.execute('UPDATE auditors SET profileHash = "{}", name = "{}", picUrl = "{}", webUrl = "{}", bio = "{}" WHERE address = "{}"'.format(profile_data['profileHash'], profile_data['name'], profile_data['picUrl'], profile_data['webUrl'], profile_data['bio'], profile_data['address']))
         conn.commit()
         conn.close()
-        return profile_data
+        return json.dumps(profile_data)
     else:
         return 'Content-Type not supported!'
 
@@ -316,7 +316,7 @@ def get_auditRequests():
     auditRequests = c.fetchall()
     conn.close()
     # return hash and id
-    return jsonify(auditRequests)
+    return json.dumps(auditRequests)
 
 # TBA to be figured out
 @app.route('/take_audit', methods=['POST'])
@@ -350,7 +350,7 @@ def get_report():
     auditRequests = c.fetchall()
     conn.close()
     # return hash and id
-    return jsonify(auditRequests)
+    return json.dumps(auditRequests)
 
 if __name__ == '__main__':
     app.run(debug=debugState,host='127.0.0.1', port=9999)
