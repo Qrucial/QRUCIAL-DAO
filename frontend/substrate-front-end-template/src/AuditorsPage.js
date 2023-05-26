@@ -33,7 +33,7 @@ function AuditorTabs(props) {
     { menuItem: 'Profile', 
       render: () => (
         <Tab.Pane style={{minHeight: '300px'}}>
-          <AuditorProfile details={props.details} />
+          <AuditorProfile details={props.details} auditorData={props.auditorData} />
         </Tab.Pane>
       )
     },
@@ -46,19 +46,18 @@ function AuditorTabs(props) {
 
 function AuditorsPage(props) {
   const { api, currentAccount } = useSubstrateState()
-  const [auditorDetails, setAuditorDetails] = useState('')
+  const [onChainDetails, setOnChainDetails] = useState('')
 
-  const queryResHandler = result => {
-    const details = result.isNone ? '' : JSON.parse(result.toString())
-    setAuditorDetails(details)
-  }
   useEffect(() => {
     let unsub = null
     const query = async () => {
       const params = [currentAccount?.address]
       unsub = await api.query.auditModule.auditorMap(
         ...params,
-        queryResHandler
+        result => {
+          const details = result.isNone ? '' : JSON.parse(result.toString())
+          setOnChainDetails(details)
+        }
       )
     }
     if (api?.query?.auditModule?.auditorMap && currentAccount) {
@@ -67,10 +66,40 @@ function AuditorsPage(props) {
     return () => unsub && unsub()
   }, [api, currentAccount])
   
-  const isAuditor = auditorDetails ? true : false
-  const isApproved = auditorDetails?.score !== null ? true : false
-  const approversCount = auditorDetails?.approvedBy?.length
-  const name = currentAccount?.meta?.name
+  const [auditorData, setAuditorData] = useState('')
+  
+  const address = currentAccount?.address
+  const getData= async()=>{
+    await fetch('/auditor-data?' + new URLSearchParams({ address }), {
+      headers : { 
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+       }
+    }).then(response => {
+      return response.json()
+    }
+    ).then(data =>{
+      setAuditorData(data[0])
+    }).catch((err) => {
+      console.log(err.message)
+    })
+  }
+  
+  useEffect(()=>{
+    getData()
+  },[currentAccount])
+
+  useEffect(()=>{
+    setTimeout(() => {
+      getData()
+    }, 1000); 
+  },[onChainDetails])
+  
+  const isAuditor = onChainDetails ? true : false
+  const isApproved = onChainDetails?.score !== null ? true : false
+  const approversCount = onChainDetails?.approvedBy?.length
+  const accountName = currentAccount?.meta?.name
+  const name = auditorData?.name || accountName
 
   return (
     <Container>
@@ -92,7 +121,7 @@ function AuditorsPage(props) {
             { isApproved ? 
               <span>your current score:&nbsp;
                 <span style={{fontWeight:'bold'}}>
-                  {auditorDetails?.score}
+                  {onChainDetails?.score}
                 </span>
               </span>
               : 
@@ -101,10 +130,10 @@ function AuditorsPage(props) {
               </span>
             }
           </Header>
-          <AuditorTabs details={auditorDetails}/>
+          <AuditorTabs details={onChainDetails} auditorData={auditorData}/>
         </>
         :
-        <Signup />
+        <Signup address={currentAccount?.address}/>
       }
     </Container>
   )
