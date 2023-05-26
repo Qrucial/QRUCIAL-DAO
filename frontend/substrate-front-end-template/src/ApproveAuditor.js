@@ -6,74 +6,81 @@ import { TxButton } from './substrate-lib/components'
 import { createToast } from './toastContent'
 
 export default function ApproveAuditor(props) {
-  const { api, keyring, currentAccount } = useSubstrateState()
-  const [details, setDetails] = useState(null)
+  const { api, currentAccount } = useSubstrateState()
   const [dropdownValue, setDropdownValue] = useState(null)
   const [applicants, setApplicants] = useState([])
-
+  
+  const details = props.details
   const metaArgs = api?.tx?.auditModule?.approveAuditor?.meta.args
   const paramName = metaArgs?.[0].name.toString()
   const paramType = metaArgs?.[0].type.toString()
 
+  const [minScore, setMinScore] = useState([])
+
   useEffect(() => {
-    let unsub = null  
-    const query = async () => {
-      unsub = await api.query.auditModule.auditorMap(
-        currentAccount.address,
-        result => result.isNone ? setDetails(null) : setDetails(result.toString())
-      )
-    }
-    if (api?.query?.auditModule?.auditorMap && currentAccount) {
-      query()
-    } 
-    return () => unsub && unsub()
-  }, [api, currentAccount])
+    const minScore = api?.consts?.auditModule?.minimalApproverScore
+    setMinScore(minScore.toJSON())
+  }, [api])
 
   const score = details && JSON.parse(details).score
-  const isAuditor = score > 0 ? true : false 
+  const isAllowed = score >= minScore ? true : false 
+  
+  const approvee = currentAccount?.address
+  const unsubAll = []
+  let signedUps = []
 
-  // ************ FOR DEMO ONLY ***************
-  useEffect(() => {  
-    const keyringOptions = keyring.getPairs().map(account => ({
-      key: account.address,
-      value: account.address,
-      text: account.meta.name,
-    }))
-    const approvee = currentAccount?.address
-    let signedUps = []
-    let unsub
-    const unsubAll = []
-    keyringOptions.forEach(option => {
-      const query = async (address) => {
-        unsub = await api.query.auditModule.auditorMap(
-          address,
-          (result) => {
-            if (result.isNone || !result.value.score.eq(null)) return 
-            if (!result.value.approvedBy.includes(approvee)) {
-              if (!signedUps.find(e => e.value === option.value)) {
-                signedUps.push(option)
+  const getData= async()=>{
+    await fetch('/auditors', {
+      headers : { 
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+        }
+    }).then(response => {
+      return response.json()
+    }).then(data => {
+      data.forEach(auditor => {
+        const query = async (address) => {
+          await api.query.auditModule.auditorMap(
+            address,
+            (result) => {
+              const option = {
+                key: auditor.address,
+                value: auditor.address,
+                text: auditor.name,
               }
-            }
-            else if (result.value.approvedBy.includes(approvee) 
-              && signedUps.find(e => e.value === option.value)) {
-                signedUps = signedUps.filter(elem => elem.value !== option.value)
-            }
-            setApplicants(signedUps)
-          }    
-        )
-        unsubAll.push(unsub)
-      }
-      query(option.value)
-    }) 
+              if (result.isNone) return 
+              if (!result.value.score.eq(null)) {
+                if (result.value.approvedBy.includes(approvee)) {
+                  signedUps = signedUps.filter(elem => elem.key !== auditor.address)
+                } else return }
+              if (!result.value.approvedBy.includes(approvee) && 
+                !signedUps.find(elem => elem.key === auditor.address)) {
+                  signedUps.push(option)
+              }
+              else if (result.value.approvedBy.includes(approvee)) {
+                signedUps = signedUps.filter(elem => elem.key !== auditor.address)
+              }
+              setApplicants(signedUps.slice())
+            }    
+          ).then(unsub => unsubAll.push(unsub))
+        }
+        query(auditor.address)
+      })
+    }).catch((err) => {
+      console.log(err.message)
+    //TODO
+    })
+  }
+  
+  useEffect(()=>{
+    getData()
     setDropdownValue(null)
-    
     return () => { 
       for (let i = 0; i < unsubAll.length; i++) {
         unsubAll[i]();
       }
     }
-  }, [keyring, currentAccount])
-  // *********************************************
+  },[currentAccount])
 
   const onChange = (e, dropdown) => {
     setDropdownValue(dropdown.value)
@@ -84,7 +91,9 @@ export default function ApproveAuditor(props) {
       <Header as='h3'>Approve auditor</Header> 
       <Segment style={{background: '#f7f7f7'}}>
         <p>Those who signed up to be an auditor need to be recommended by three other auditors.</p>
-        {isAuditor && <div> 
+        <p>The minimal score which allows auditors to approve other auditors: {minScore}. 
+        Your score is {score || 0}.</p>
+        {isAllowed && <div> 
             <p>Select from the applicants' list to approve a new auditor</p>
           <Form>
             <Form.Field>
