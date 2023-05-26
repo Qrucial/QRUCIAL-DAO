@@ -23,19 +23,23 @@ export default function AuditorPool(props) {
           await api.query.auditModule.auditorMap(
             address,
             (result) => {                
-              const auditorClone = auditor.slice()
-              if (!result.isNone) {
-                auditorClone.push(JSON.parse(result.toString()).score)
-                auditorClone.push(result.value.approvedBy.length)
+              const auditorClone = {...auditor}
+              if (result.isNone) {
+                // TBA handle auditor data in db not existing onchain
+              } else {
+                const score = (JSON.parse(result.toString()).score);
+                const approvedByCount = result.value.approvedBy.length
+                Object.assign(auditorClone, { score, approvedByCount })
+                const existingIndex = auditorsData.findIndex((elem) => 
+                  Object.values(elem).includes(address))
+                if (existingIndex > -1) auditorsData[existingIndex] = auditorClone
+                else auditorsData.push(auditorClone)
               }
-              const existingIndex = auditorsData.findIndex((elem) => elem.includes(address))
-              if (existingIndex > -1) auditorsData[existingIndex] = auditorClone
-              else auditorsData.push(auditorClone)
               setAuditors(auditorsData.slice())
             } 
           ).then(unsub => unsubAll.push(unsub))
         }
-        query(auditor[0])
+        query(auditor.address)
       })
     }).catch((err) => {
       console.log(err.message)
@@ -51,26 +55,23 @@ export default function AuditorPool(props) {
       }
     }
   },[])
-
-  // [0] address, 1 profileHash, 2 name, 3 picUrl, 4 webUrl, 5 bio,
-  // 6 auditsDone; 7 score, 8 approvedBy.length
   
   return (         
     <Card.Group itemsPerRow={4} stackable style={{minHeight: '255px'}} >
       {auditors.map((auditor) => (
-        <Card style={{boxShadow: 'none', textAlign:'center'}} key={auditor[0]}>
+        <Card style={{boxShadow: 'none', textAlign:'center'}} key={auditor.address}>
           <div style={{display:'flex', justifyContent: 'center'}}>
-            {auditor[3] ?
+            {auditor.picUrl ?
               <Image circular 
                 style={{width: '80%'}}
                 alt='avatar'
-                src={auditor[3]}/>
+                src={auditor.picUrl}/>
               :
               <Icon name='user' size='huge' color='blue'/>
             }
           </div>
-          <Card.Description>{auditor[2] || 'no name'}</Card.Description>
-          <Card.Meta>{auditor[7]}</Card.Meta>
+          <Card.Description>{auditor.name || 'no name'}</Card.Description>
+          <Card.Meta>{auditor.score}</Card.Meta>
         </Card>
       ))}
     </Card.Group>

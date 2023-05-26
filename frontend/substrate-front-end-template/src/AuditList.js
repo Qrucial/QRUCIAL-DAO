@@ -25,13 +25,11 @@ export default function AuditList(props) {
     getData()
   },[])
 
-  // 0 requestor | 1 url | 2 state (progress OR done) | 3 automated report (default is empty) |
-  // 4 manual report (default is empty | 5 top auditor | 6 challenger
-
   const [modalOpen, setModalOpen] = useState(false)
   const [modalValue, setModalValue] = useState('')
 
   const handleClick = props.handleClick
+  
   function AuditElem(props) {
     const audit = props.elem;
     return (
@@ -41,20 +39,12 @@ export default function AuditList(props) {
           onClick={() => {
             setModalOpen(true);
             setModalValue({
-              content: { 
-                requestor: audit[0], 
-                url: audit[1],
-                state: audit[2],
-                autoReport: audit[3],
-                manualReport: audit[4],
-                auditor: audit[5],
-                challenger: audit[6]
-              }, 
-              header: audit[1] 
+              content: audit,
+              header: audit.projectUrl 
             });
             handleClick && handleClick(audit);
           }}
-        >{audit[1]}
+        >{audit.projectUrl}
       </div>
     )
   }
