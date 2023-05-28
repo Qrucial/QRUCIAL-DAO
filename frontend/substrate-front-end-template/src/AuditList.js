@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 
 import BasicModal from './BasicModal'
 
@@ -21,9 +21,17 @@ export default function AuditList(props) {
     })
   }
 
+  const initialRender = useRef(true);
   useEffect(()=>{
-    getData()
-  },[])
+    if (initialRender.current) {
+      getData()
+      initialRender.current = false;
+    } else {
+      setTimeout(() => {
+        getData()
+      }, 1000)
+    }
+  },[props.auditsChange])
 
   const [modalOpen, setModalOpen] = useState(false)
   const [modalValue, setModalValue] = useState('')

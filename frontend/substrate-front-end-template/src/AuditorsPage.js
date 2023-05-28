@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { Container, Header, Tab } from 'semantic-ui-react'
 
 import { useSubstrateState } from './substrate-lib'
@@ -89,10 +89,15 @@ function AuditorsPage(props) {
     getData()
   },[currentAccount])
 
+  const initialRender = useRef(true);
   useEffect(()=>{
-    setTimeout(() => {
-      getData()
-    }, 1000); 
+    if (initialRender.current) {
+      initialRender.current = false;
+    } else {
+      setTimeout(() => {
+        getData()
+      }, 1000)
+    }
   },[onChainDetails])
   
   const isAuditor = onChainDetails ? true : false
