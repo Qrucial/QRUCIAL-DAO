@@ -7,11 +7,11 @@ import useTxAndPost from './hooks/useTxAndPost'
 import { useSubstrateState } from './substrate-lib'
 
 export default function AuditorForm(props) {
+  const { currentAccount } = useSubstrateState()
   const auditorData = props.auditorData
-  const auditorFields = {...auditorData}
+  const auditorFields = auditorData ? {...auditorData} : { name:'', picUrl: '', webUrl: '', bio: '', address: currentAccount?.address }
   delete auditorFields.profileHash
   const [formState, setFormState] = useState(auditorFields) 
-  const { currentAccount } = useSubstrateState()
 
   const postAttrs = { postUrl: '/profile_update' }
   const txAttrs = { palletRpc: 'auditModule', callable: props.method, finishEvent: props.finishEvent }

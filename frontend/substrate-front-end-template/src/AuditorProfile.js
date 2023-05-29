@@ -1,18 +1,30 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Grid, Segment, Header, Table, Button } from 'semantic-ui-react'
 
+import { useSubstrateState } from './substrate-lib'
 import AuditorForm from './AuditorForm.js'
 import CancelAccount from './CancelAccount'
 import { createToast } from './toastContent'
 
 export default function AuditorProfile(props) {
+  const { currentAccount } = useSubstrateState()
   const auditorData = props.auditorData 
   const details = props.details
   const score = details && details.score || '-'
   const [editing, setEditing] = useState(false)
 
+  useEffect(() => {
+    setEditing(false)
+ }, [currentAccount])
+
   function AuditorTable(props) {
-    const rows = Object.entries(auditorData).map(([key, value]) => (
+    let rows
+    if (!auditorData) rows = (
+      <Table.Row>
+       <Table.Cell>Please update your profile!</Table.Cell> 
+      </Table.Row>
+    )
+    else rows = Object.entries(auditorData).map(([key, value]) => (
       <Table.Row key={key}>
         <Table.Cell>{key}</Table.Cell>
         <Table.Cell style={{ wordBreak: 'break-word' }}>
