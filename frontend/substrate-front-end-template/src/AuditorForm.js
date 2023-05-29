@@ -71,7 +71,8 @@ function FieldsFromList(props) {
     props.onChange(event.target);
   }
   const fields = Object.entries(props.auditorFields).map(([key, value]) => {
-    if (key === 'address' || key === 'profileHash') return null
+    const nonModFields = ['address', 'profileHash', 'auditsDone']
+    if (nonModFields.includes(key)) return null
     else return (
       <Form.Field key={key}>
         <Input

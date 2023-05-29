@@ -22,8 +22,11 @@ export default function useTxAndPost(txAttrs, postAttrs) {
       return response.json()
     }
     ).then(data =>{
+      if (data.Error || data[0]?.Error || 
+        (typeof data === 'string' && data.startsWith('Error'))) 
+        toast.error('Error: save failed')
+      else toast.success('Data saved')
       resCallback && typeof resCallback === 'function' && resCallback(data)
-      toast.success('Data saved')
     }).catch((err) => {
       toast.error("ERROR" + err.message)
     })
