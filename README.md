@@ -21,3 +21,12 @@ Simply go to [qrucial.io/qrucial-dao](https://qrucial.io/wp-content/uploads/2022
 QDAO wiki [can be found here](https://github.com/Qrucial/QRUCIAL-DAO/wiki).       
 
 We have a W3F grant approved and are working on the 2nd milestone: [Proposal Repository](https://github.com/smilingSix/Grants-Program)
+
+# Milestones and deliveries
+
+[QRUCIAL DAO - Grant request](https://github.com/w3f/Grants-Program/blob/master/applications/QRUCIAL_DAO.md)
+
+[Milestone 1](https://github.com/w3f/Grant-Milestone-Delivery/blob/master/deliveries/qrucial_dao_milestone_1.md)
+
+[Milestone 2 - TBA](https://qrucial.io/)
+
