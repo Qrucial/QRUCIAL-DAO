@@ -4,7 +4,6 @@ import { Grid, Segment, Header, Table, Button } from 'semantic-ui-react'
 import { useSubstrateState } from './substrate-lib'
 import AuditorForm from './AuditorForm.js'
 import CancelAccount from './CancelAccount'
-import { createToast } from './toastContent'
 
 export default function AuditorProfile(props) {
   const { currentAccount } = useSubstrateState()
@@ -69,7 +68,7 @@ export default function AuditorProfile(props) {
                 />
               }
               <br/>
-              <CancelAccount setStatus={createToast()} />
+              <CancelAccount auditorData={auditorData} />
             </div>
           : <div> 
               <p>For auditors only. </p>
