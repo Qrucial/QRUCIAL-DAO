@@ -70,10 +70,10 @@ def init_db():
     c.execute("INSERT INTO auditors VALUES ('5FHneW46xGXgs5mUiveU4sbTyGBzmstUspZC92UhjJM694ty', '0x00', 'Bob', 'https://git.hsbp.org/avatars/8e4b4863a9f70ff176538149e61ce1e6?size=870', 'https://qrucial.io/', 'Bio of Y user is text.', 'Feature to be added in milestone 3.')")
     c.execute("INSERT INTO auditors VALUES ('5FLSigC9HGRKVhB9FiEo4Y3koPsNmBmLJbpXg2mp1hXcS59Y', '0x00', 'Charlie', 'https://git.hsbp.org/avatars/8e4b4863a9f70ff176538149e61ce1e6?size=870', 'https://qrucial.io/', 'Bio of Z user is text.', 'Feature to be added in milestone 3.')")
     # Create audit db 
-    c.execute('CREATE TABLE IF NOT EXISTS auditStates (hash text, projectUrl text, state text, autoReport text, manualReport text, topAuditor text, challenger text)')
-    c.execute("INSERT INTO auditStates VALUES('0xa03f6ba3eb8141f0f8daee4ea016d4144f44fc4cba9e7477a4c1f041aaeb6c38', 'https://v-space.hu/s/exotestflipper.tar', 'In progress', 'Not submitted yet', 'Not submitted yet', 'Bob', 'No challenger')")
-    c.execute("INSERT INTO auditStates VALUES('0x3e2d46f07bb14bab9d623e426246ee8115f2669fa04745e51a00e18446e47df7', 'https://v-space.hu/s/exotest.tar', 'Finished', 'Submitted', 'Submitted', 'Charlie', 'No challenger')")
-    c.execute("INSERT INTO auditStates VALUES('0x3e2d46f07bb14bab9d623e426246ee8115f2669fa04745e51a00e18446e47df7', 'https://v-space.hu/s/exosol.tar', 'Finished', 'Submitted', 'Submitted', 'Charlie', 'No challenger')")
+    c.execute('CREATE TABLE IF NOT EXISTS auditStates (requestor, hash text, projectUrl text, state text, autoReport text, manualReport text, topAuditor text, challenger text)')
+    c.execute("INSERT INTO auditStates VALUES('','0xa03f6ba3eb8141f0f8daee4ea016d4144f44fc4cba9e7477a4c1f041aaeb6c38', 'https://v-space.hu/s/exotestflipper.tar', 'In progress', 'Not submitted yet', 'Not submitted yet', 'Bob', 'No challenger')")
+    c.execute("INSERT INTO auditStates VALUES('','0x3e2d46f07bb14bab9d623e426246ee8115f2669fa04745e51a00e18446e47df7', 'https://v-space.hu/s/exotest.tar', 'Finished', 'Submitted', 'Submitted', 'Charlie', 'No challenger')")
+    c.execute("INSERT INTO auditStates VALUES('','0x3e2d46f07bb14bab9d623e426246ee8115f2669fa04745e51a00e18446e47df7', 'https://v-space.hu/s/exosol.tar', 'Finished', 'Submitted', 'Submitted', 'Charlie', 'No challenger')")
     conn.commit()
     conn.close()
 init_db()
@@ -220,10 +220,10 @@ def serve_file_in_dir(path):
         path = os.path.join(path, 'index.html')
     return send_from_directory(static_file_dir, path) # Secure against dir trav
 
-# API routes for frontend
+## API routes for frontend
 
 # Get user data as json, ID: substrate address
-# Example: http://127.0.0.1:9999/auditors
+# http://127.0.0.1:9999/auditors
 @app.route('/auditors', methods=['GET'])
 def get_auditors():
     conn = sqlite3.connect(dbFile)
@@ -235,7 +235,8 @@ def get_auditors():
     conn.close()
     return json.dumps(dict_rows)
 
-# Example: http://127.0.0.1:9999/auditor-data?address=5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY
+# Get auditor data based on address
+# http://127.0.0.1:9999/auditor-data?address=5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY
 @app.route('/auditor-data', methods=['GET'])
 def get_auditordata():
     address = request.args.get('address', default = "5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY", type = str)
@@ -250,9 +251,8 @@ def get_auditordata():
     conn.close()
     return json.dumps(auditorData)
 
-# Called at signup and profile update
-# Button -> open polkadotJS -> sign message -> POST to API
-# !!! TBA!! Check signature of the message and it must be POST ss58 address == ss58 signer !!! in dev we accept everything, but this needs to be changes in prod
+# Called at signup and profile update: Button click -> open polkadotJS -> sign message -> POST to API
+# VCN, verify from chain needed - eg. must be POST ss58 address == ss58 signer - needs to be changed in prod
 # Test: curl -X POST -H "Content-type: application/json" -d "{\"address\" : \"5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY\", \"profileHash\" : \"0x001x1x0\", \"name\" : \"n4me\", \"picUrl\" : \"userx.me/a.ng\", \"webUrl\" : \"nmexxa.org\", \"bio\" : \"Teh Bio of user aX\"}" "127.0.0.1:9999/profile_update" 
 @app.route('/profile_update', methods=['POST'])
 def profileUpdate():
@@ -288,20 +288,8 @@ def profileUpdate():
     else:
         return 'Content-Type not supported!'
 
-# TBA to be figured out, this needs to check blockchain data because we only want to save those entries that are valid/paid
-@app.route('/request-audit', methods=['POST'])
-def requestAudit():
-    content_type = request.headers.get('Content-Type')
-    if (content_type == 'application/json'):
-        take_audit = request.json
-        # TBA write data to DB
-        return json
-    else:
-        return 'Content-Type not supported!'
-
-# Get user data as json, ID: substrate address
-# To be selected
-# Example: 127.0.0.1:9999/audit-requests
+# List all audit requests from API DB
+# 127.0.0.1:9999/audit-requests
 @app.route('/audit-requests', methods=['GET'])
 def get_auditRequests():
     conn = sqlite3.connect(dbFile)
@@ -309,8 +297,31 @@ def get_auditRequests():
     c.execute('SELECT * FROM auditStates')
     auditRequests = c.fetchall()
     conn.close()
-    # return hash and id
     return json.dumps(auditRequests)
+
+# List all audit requests from API DB
+# Accepted in dev, but this needs to check blockchain data because we only want to save those entries that are valid/paid, eg VCN
+# requestor, hash text, projectUrl text, state text, autoReport text, manualReport text, topAuditor text, challenger text
+@app.route('/request-audit', methods=['POST'])
+def requestAudit():
+    content_type = request.headers.get('Content-Type')
+    if (content_type == 'application/json'):
+        req_audit = request.json
+        
+        # Check input
+        if check_address(profile_data['address']): pass
+        else: return DontHakit
+
+        
+        conn = sqlite3.connect(dbFile)
+        c = conn.cursor()
+        c.execute("INSERT INTO auditStates VALUES('0xa03f6ba3eb8141f0f8daee4ea016d4144f44fc4cba9e7477a4c1f041aaeb6c38', 'https://v-space.hu/s/exotestflipper.tar', 'In progress', 'Not submitted yet', 'Not submitted yet', 'Bob', 'No challenger')")
+        
+        auditRequests = c.fetchall()
+        conn.close()
+        return json
+    else:
+        return 'Content-Type not supported!'
 
 # TBA to be figured out
 @app.route('/take_audit', methods=['POST'])
