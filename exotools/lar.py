@@ -17,7 +17,7 @@ from getpass import getpass
 ## Development mode and settings
 debugState = True
 dummyMode = True
-DontHakit = json.dumps("Error: Donthakit")
+DontHakit = json.dumps([{'Error':'Donthakit'}])
 dbFile = "temp.db"
 
 ## Logging to stdout for testing/debugging
@@ -71,9 +71,9 @@ def init_db():
     c.execute("INSERT INTO auditors VALUES ('5FLSigC9HGRKVhB9FiEo4Y3koPsNmBmLJbpXg2mp1hXcS59Y', '0x00', 'Charlie', 'https://git.hsbp.org/avatars/8e4b4863a9f70ff176538149e61ce1e6?size=870', 'https://qrucial.io/', 'Bio of Z user is text.', 'Feature to be added in milestone 3.')")
     # Create audit db 
     c.execute('CREATE TABLE IF NOT EXISTS auditStates (requestor, hash text, projectUrl text, state text, autoReport text, manualReport text, topAuditor text, challenger text)')
-    c.execute("INSERT INTO auditStates VALUES('','0xa03f6ba3eb8141f0f8daee4ea016d4144f44fc4cba9e7477a4c1f041aaeb6c38', 'https://v-space.hu/s/exotestflipper.tar', 'In progress', 'Not submitted yet', 'Not submitted yet', 'Bob', 'No challenger')")
-    c.execute("INSERT INTO auditStates VALUES('','0x3e2d46f07bb14bab9d623e426246ee8115f2669fa04745e51a00e18446e47df7', 'https://v-space.hu/s/exotest.tar', 'Finished', 'Submitted', 'Submitted', 'Charlie', 'No challenger')")
-    c.execute("INSERT INTO auditStates VALUES('','0x3e2d46f07bb14bab9d623e426246ee8115f2669fa04745e51a00e18446e47df7', 'https://v-space.hu/s/exosol.tar', 'Finished', 'Submitted', 'Submitted', 'Charlie', 'No challenger')")
+    c.execute("INSERT INTO auditStates VALUES('5DAAnrj7VHTznn2AWBemMuyBwZWs6FNFjdyVXUeYum3PTXFy','0xa03f6ba3eb8141f0f8daee4ea016d4144f44fc4cba9e7477a4c1f041aaeb6c38', 'https://v-space.hu/s/exotestflipper.tar', 'In progress', 'Not submitted yet', 'Not submitted yet', 'Bob', 'No challenger')")
+    c.execute("INSERT INTO auditStates VALUES('5HGjWAeFDfFCWPsjFQdVV2Msvz2XtMktvgocEZcCj68kUMaw','0x3e2d46f07bb14bab9d623e426246ee8115f2669fa04745e51a00e18446e47df7', 'https://v-space.hu/s/exotest.tar', 'Finished', 'Submitted', 'Submitted', 'Charlie', 'No challenger')")
+    c.execute("INSERT INTO auditStates VALUES('5HGjWAeFDfFCWPsjFQdVV2Msvz2XtMktvgocEZcCj68kUMaw','0x3e2d46f07bb14bab9d623e426246ee8115f2669fa04745e51a00e18446e47df7', 'https://v-space.hu/s/exosol.tar', 'Finished', 'Submitted', 'Submitted', 'Charlie', 'No challenger')")
     conn.commit()
     conn.close()
 init_db()
