@@ -24,7 +24,7 @@ export default function RequestAudit(props) {
 
   const onClick = async (event, data) => {
     const txData = [url, hash, stake]
-    const postData = { requestor, projectUrl: formState.url };
+    const postData = { requestor, hash, projectUrl: formState.url };
     txAndPost(txData, postData)
   }
 
