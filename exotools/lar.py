@@ -54,6 +54,8 @@ logger.addHandler(ch)
 if debugState == True:
     logger.debug("QDAO's lar.py is running in debug mode!")
 
+## Preparing the API system
+
 # Create temporary database for testing/development purposes
 logger.debug("Development database is being initialized")
 def init_db():
@@ -71,7 +73,7 @@ def init_db():
     c.execute("INSERT INTO auditors VALUES ('5FLSigC9HGRKVhB9FiEo4Y3koPsNmBmLJbpXg2mp1hXcS59Y', '0x00', 'Charlie', 'https://git.hsbp.org/avatars/8e4b4863a9f70ff176538149e61ce1e6?size=870', 'https://qrucial.io/', 'Bio of Z user is text.', 'Feature to be added in milestone 3.')")
     # Create audit db 
     c.execute('CREATE TABLE IF NOT EXISTS auditStates (requestor, hash text, projectUrl text, state text, autoReport text, manualReport text, topAuditor text, challenger text)')
-    c.execute("INSERT INTO auditStates VALUES('5DAAnrj7VHTznn2AWBemMuyBwZWs6FNFjdyVXUeYum3PTXFy','0xa03f6ba3eb8141f0f8daee4ea016d4144f44fc4cba9e7477a4c1f041aaeb6c38', 'https://v-space.hu/s/exotestflipper.tar', 'In progress', 'Not submitted yet', 'Not submitted yet', 'Bob', 'No challenger')")
+    c.execute("INSERT INTO auditStates VALUES('5DAAnrj7VHTznn2AWBemMuyBwZWs6FNFjdyVXUeYum3PTXFy','0xa03f6ba3eb8141f0f8daee4ea016d4144f44fc4cba9e7477a4c1f041aaeb6c38', 'https://v-space.hu/s/exotestflipper.tar', 'In progress', 'NA', 'NA', 'NA', 'No challenger')")
     c.execute("INSERT INTO auditStates VALUES('5HGjWAeFDfFCWPsjFQdVV2Msvz2XtMktvgocEZcCj68kUMaw','0x3e2d46f07bb14bab9d623e426246ee8115f2669fa04745e51a00e18446e47df7', 'https://v-space.hu/s/exotest.tar', 'Finished', 'Submitted', 'Submitted', 'Charlie', 'No challenger')")
     c.execute("INSERT INTO auditStates VALUES('5HGjWAeFDfFCWPsjFQdVV2Msvz2XtMktvgocEZcCj68kUMaw','0x3e2d46f07bb14bab9d623e426246ee8115f2669fa04745e51a00e18446e47df7', 'https://v-space.hu/s/exosol.tar', 'Finished', 'Submitted', 'Submitted', 'Charlie', 'No challenger')")
     conn.commit()
@@ -261,23 +263,21 @@ def profileUpdate():
         profile_data = request.json
         
         # Check input
-        if check_address(profile_data['address']): pass
-        else: return DontHakit
-
-        if check_text(profile_data['profileHash']): pass
-        else: return DontHakit        
-
-        if check_text(profile_data['name']): pass
-        else: return DontHakit
-
-        if check_text(profile_data['picUrl']): pass
-        else: return DontHakit
-
-        if check_text(profile_data['webUrl']): pass
-        else: return DontHakit
-
-        if check_text(profile_data['bio']): pass
-        else: return DontHakit
+        try:
+            if check_address(profile_data['address']): pass
+            else: return DontHakit
+            if check_text(profile_data['profileHash']): pass
+            else: return DontHakit        
+            if check_text(profile_data['name']): pass
+            else: return DontHakit
+            if check_text(profile_data['picUrl']): pass
+            else: return DontHakit
+            if check_text(profile_data['webUrl']): pass
+            else: return DontHakit
+            if check_text(profile_data['bio']): pass
+            else: return DontHakit
+        except:
+            return DontHakit
 
         conn = sqlite3.connect(dbFile)
         c = conn.cursor()
@@ -299,31 +299,37 @@ def get_auditRequests():
     conn.close()
     return json.dumps(auditRequests)
 
-# List all audit requests from API DB
+# Request audit to be saved to DB
 # Accepted in dev, but this needs to check blockchain data because we only want to save those entries that are valid/paid, eg VCN
-# requestor, hash text, projectUrl text, state text, autoReport text, manualReport text, topAuditor text, challenger text
+# Test: curl -X POST -H "Content-type: application/json" -d "{\"requestor\" : \"5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY\", \"hash\" : \"0x001x1x0\", \"projectUrl\"user aX\"}" "127.0.0.1:9999/profile_update" 
 @app.route('/request-audit', methods=['POST'])
 def requestAudit():
     content_type = request.headers.get('Content-Type')
     if (content_type == 'application/json'):
         req_audit = request.json
-        
-        # Check input
-        if check_address(profile_data['address']): pass
-        else: return DontHakit
 
+        # Check input
+        try:
+            if check_address(req_audit['requestor']): pass
+            else: return DontHakit
+            if check_text(req_audit['hash']): pass
+            else: return DontHakit
+            if check_text(req_audit['projectUrl']): pass
+            else: return DontHakit
+        except:
+            return DontHakit
         
         conn = sqlite3.connect(dbFile)
         c = conn.cursor()
-        c.execute("INSERT INTO auditStates VALUES('0xa03f6ba3eb8141f0f8daee4ea016d4144f44fc4cba9e7477a4c1f041aaeb6c38', 'https://v-space.hu/s/exotestflipper.tar', 'In progress', 'Not submitted yet', 'Not submitted yet', 'Bob', 'No challenger')")
-        
+        c.execute('UPDATE auditStates SET requestor = "{}", hash = "{}", projectUrl = "{}", state = "In progress", autoReport = "NA", manualReport = "NA", topAuditor = "NA", challenger = "No challenger"'.format(req_audit['requestor'], req_audit['hash'], req_audit['projectUrl']))
         auditRequests = c.fetchall()
         conn.close()
-        return json
+        return auditRequests
     else:
         return 'Content-Type not supported!'
 
-# TBA to be figured out
+# Take an audit
+# http://127.0.0.1:9999/take_audit
 @app.route('/take_audit', methods=['POST'])
 def takeAudit():
     content_type = request.headers.get('Content-Type')
@@ -334,7 +340,8 @@ def takeAudit():
     else:
         return 'Content-Type not supported!'
 
-# TBA to be figured out
+# Send report (1 audit can have multiple reports sent)
+# http://127.0.0.1:9999/send_report
 @app.route('/send_report', methods=['POST'])
 def sendReport():
     content_type = request.headers.get('Content-Type')
@@ -345,8 +352,8 @@ def sendReport():
     else:
         return 'Content-Type not supported!'
 
-# TBA to be figured out
-# Example: http://127.0.0.1:9999/get-reports
+# Get reports
+# http://127.0.0.1:9999/get-reports
 @app.route('/get-reports', methods=['GET'])
 def get_report():
     conn = sqlite3.connect(dbFile)
