@@ -25,6 +25,7 @@ export default function TopMenu() {
           </NavLink>
         </Menu.Menu>
           <Menu.Menu position="right" style={{ alignItems: 'center' }}>
+          <Menu.Item as={NavLink} to='/about' content='About' />
           <Menu.Item as={NavLink} to='/auditor' content='Auditor' />
           <Menu.Item as={NavLink} to='/council' content='Council' />
           <Menu.Item as={NavLink} to='/requestor' content='Requestor' />
