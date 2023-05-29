@@ -17,7 +17,7 @@ from getpass import getpass
 ## Development mode and settings
 debugState = True
 dummyMode = True
-DontHakit = "Donthakit"
+DontHakit = json.dumps("Error: Donthakit")
 dbFile = "temp.db"
 
 ## Logging to stdout for testing/debugging
@@ -69,19 +69,11 @@ def init_db():
     c.execute("INSERT INTO auditors VALUES ('5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY', '0x00', 'Alice', 'https://git.hsbp.org/avatars/8e4b4863a9f70ff176538149e61ce1e6?size=870', 'https://qrucial.io/', 'Bio of X user is text.', 'Feature to be added in milestone 3.')")
     c.execute("INSERT INTO auditors VALUES ('5FHneW46xGXgs5mUiveU4sbTyGBzmstUspZC92UhjJM694ty', '0x00', 'Bob', 'https://git.hsbp.org/avatars/8e4b4863a9f70ff176538149e61ce1e6?size=870', 'https://qrucial.io/', 'Bio of Y user is text.', 'Feature to be added in milestone 3.')")
     c.execute("INSERT INTO auditors VALUES ('5FLSigC9HGRKVhB9FiEo4Y3koPsNmBmLJbpXg2mp1hXcS59Y', '0x00', 'Charlie', 'https://git.hsbp.org/avatars/8e4b4863a9f70ff176538149e61ce1e6?size=870', 'https://qrucial.io/', 'Bio of Z user is text.', 'Feature to be added in milestone 3.')")
-    c.execute("INSERT INTO auditors VALUES ('5DAAnrj7VHTznn2AWBemMuyBwZWs6FNFjdyVXUeYum3PTXFy', '0x00', 'Dave', 'https://git.hsbp.org/avatars/8e4b4863a9f70ff176538149e61ce1e6?size=870', 'https://qrucial.io/', 'Bio of W user is text.', 'Feature to be added in milestone 3.')")
-    c.execute("INSERT INTO auditors VALUES ('5HGjWAeFDfFCWPsjFQdVV2Msvz2XtMktvgocEZcCj68kUMaw', '0x00', 'Eve', 'https://git.hsbp.org/avatars/8e4b4863a9f70ff176538149e61ce1e6?size=870', 'https://qrucial.io/', 'Bio of T user is text.', 'Feature to be added in milestone 3.')")
-    c.execute("INSERT INTO auditors VALUES ('5CiPPseXPECbkjWCa6MnjNokrgYjMqmKndv2rSnekmSK2DjL', '0x00', 'Ferdie', 'https://git.hsbp.org/avatars/8e4b4863a9f70ff176538149e61ce1e6?size=870', 'https://qrucial.io/', 'Bio of S user is text.', 'Feature to be added in milestone 3.')")
-    c.execute("INSERT INTO auditors VALUES ('5GNJqTPyNqANBkUVMN1LPPrxXnFouWXoe2wNSmmEoLctxiZY', '0x00', 'Alice//stash', 'https://git.hsbp.org/avatars/8e4b4863a9f70ff176538149e61ce1e6?size=870', 'https://qrucial.io/', 'Bio of user is text.', 'Feature to be added in milestone 3.')")
-    c.execute("INSERT INTO auditors VALUES ('5HpG9w8EBLe5XCrbczpwq5TSXvedjrBGCwqxK1iQ7qUsSWFc', '0x00', 'Bob//stash', 'https://git.hsbp.org/avatars/8e4b4863a9f70ff176538149e61ce1e6?size=870', 'https://qrucial.io/', 'Bio of user is text.', 'Feature to be added in milestone 3.')")
-    c.execute("INSERT INTO auditors VALUES ('5Ck5SLSHYac6WFt5UZRSsdJjwmpSZq85fd5TRNAdZQVzEAPT', '0x00', 'Charlie//stash', 'https://git.hsbp.org/avatars/8e4b4863a9f70ff176538149e61ce1e6?size=870', 'https://qrucial.io/', 'Bio of user is text.', 'Feature to be added in milestone 3.')")
-    c.execute("INSERT INTO auditors VALUES ('5HKPmK9GYtE1PSLsS1qiYU9xQ9Si1NcEhdeCq9sw5bqu4ns8', '0x00', 'Dave//stash', 'https://git.hsbp.org/avatars/8e4b4863a9f70ff176538149e61ce1e6?size=870', 'https://qrucial.io/', 'Bio of user is text.', 'Feature to be added in milestone 3.')")
-    c.execute("INSERT INTO auditors VALUES ('5FCfAonRZgTFrTd9HREEyeJjDpT397KMzizE6T3DvebLFE7n', '0x00', 'Eve//stash', 'https://git.hsbp.org/avatars/8e4b4863a9f70ff176538149e61ce1e6?size=870', 'https://qrucial.io/', 'Bio of user is text.', 'Feature to be added in milestone 3.')")
-    c.execute("INSERT INTO auditors VALUES ('5CRmqmsiNFExV6VbdmPJViVxrWmkaXXvBrSX8oqBT8R9vmWk', '0x00', 'Ferdie//stash', 'https://git.hsbp.org/avatars/8e4b4863a9f70ff176538149e61ce1e6?size=870', 'https://qrucial.io/', 'Bio of user is text.', 'Feature to be added in milestone 3.')")
     # Create audit db 
     c.execute('CREATE TABLE IF NOT EXISTS auditStates (hash text, projectUrl text, state text, autoReport text, manualReport text, topAuditor text, challenger text)')
-    c.execute("INSERT INTO auditStates VALUES('0x11', 'https://v-space.hu/s/exotestflipper.tar', 'In progress', 'Not submitted yet', 'Not submitted yet', 'Eve', 'No challenger')")
-    c.execute("INSERT INTO auditStates VALUES('0x11', 'https://v-space.hu/s/exotestflipper.tar', 'In progress', 'Not submitted yet', 'Not submitted yet', 'h4xor', 'No challenger')")
+    c.execute("INSERT INTO auditStates VALUES('0xa03f6ba3eb8141f0f8daee4ea016d4144f44fc4cba9e7477a4c1f041aaeb6c38', 'https://v-space.hu/s/exotestflipper.tar', 'In progress', 'Not submitted yet', 'Not submitted yet', 'Bob', 'No challenger')")
+    c.execute("INSERT INTO auditStates VALUES('0x3e2d46f07bb14bab9d623e426246ee8115f2669fa04745e51a00e18446e47df7', 'https://v-space.hu/s/exotest.tar', 'Finished', 'Submitted', 'Submitted', 'Charlie', 'No challenger')")
+    c.execute("INSERT INTO auditStates VALUES('0x3e2d46f07bb14bab9d623e426246ee8115f2669fa04745e51a00e18446e47df7', 'https://v-space.hu/s/exosol.tar', 'Finished', 'Submitted', 'Submitted', 'Charlie', 'No challenger')")
     conn.commit()
     conn.close()
 init_db()
@@ -239,14 +231,9 @@ def get_auditors():
     c.execute('SELECT * FROM auditors')
     auditors = c.fetchall()
     column_names = [description[0] for description in c.description]
-    print(column_names)
     dict_rows = [dict(zip(column_names, row)) for row in auditors]
-    json_data = json.dumps(dict_rows)
-    print(json_data)
-    print(json.dumps(auditors))
     conn.close()
-    #return json.dumps(auditors)
-    return json_data
+    return json.dumps(dict_rows)
 
 # Example: http://127.0.0.1:9999/auditor-data?address=5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY
 @app.route('/auditor-data', methods=['GET'])
