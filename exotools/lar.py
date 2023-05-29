@@ -301,7 +301,7 @@ def get_auditRequests():
 
 # Request audit to be saved to DB
 # Accepted in dev, but this needs to check blockchain data because we only want to save those entries that are valid/paid, eg VCN
-# Test: curl -X POST -H "Content-type: application/json" -d "{\"requestor\" : \"5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY\", \"hash\" : \"0x001x1x0\", \"projectUrl\"user aX\"}" "127.0.0.1:9999/profile_update" 
+# Test: curl -X POST -H "Content-type: application/json" -d "{\"requestor\" : \"5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY\", \"hash\" : \"0x001x1x0\", \"projectUrl\" : \"urleraX\"}" 127.0.0.1:9999/request-audit
 @app.route('/request-audit', methods=['POST'])
 def requestAudit():
     content_type = request.headers.get('Content-Type')
@@ -321,34 +321,68 @@ def requestAudit():
         
         conn = sqlite3.connect(dbFile)
         c = conn.cursor()
-        c.execute('UPDATE auditStates SET requestor = "{}", hash = "{}", projectUrl = "{}", state = "In progress", autoReport = "NA", manualReport = "NA", topAuditor = "NA", challenger = "No challenger"'.format(req_audit['requestor'], req_audit['hash'], req_audit['projectUrl']))
+        c.execute('INSERT INTO auditStates VALUES("{}", "{}", "{}", "In progress", "NA", "NA", "NA", "NA")'.format(req_audit['requestor'], req_audit['hash'], req_audit['projectUrl']))
+        conn.commit()
+        c.execute('SELECT * FROM auditStates')
         auditRequests = c.fetchall()
         conn.close()
-        return auditRequests
+        return json.dumps(auditRequests)
     else:
         return 'Content-Type not supported!'
 
 # Take an audit
-# http://127.0.0.1:9999/take_audit
+# Test: curl -X POST -H "Content-type: application/json" -d "{\"audit_taker\" : \"5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY\",\"audit_hash\" : \"0x001x1x0\"}" 127.0.0.1:9999/take_audit
 @app.route('/take_audit', methods=['POST'])
 def takeAudit():
     content_type = request.headers.get('Content-Type')
     if (content_type == 'application/json'):
         take_audit = request.json
-        # TBA write data to DB
-        return json
+
+        # Check input
+        try:
+            if check_address(take_audit['audit_taker']): pass
+            else: return DontHakit
+            if check_address(take_audit['audit_hash']): pass
+            else: return DontHakit
+        except:
+            return DontHakit
+
+        conn = sqlite3.connect(dbFile)
+        c = conn.cursor()
+        c.execute('UPDATE auditStates SET manualReport = "In progress", topAuditor = "{}" WHERE hash = "{}"'.format(take_audit['audit_taker'],take_audit['audit_hash']))
+        conn.commit()
+        c.execute('SELECT * FROM auditStates')
+        auditRequests = c.fetchall()
+        conn.close()
+        return json.dumps(auditRequests)
     else:
         return 'Content-Type not supported!'
 
 # Send report (1 audit can have multiple reports sent)
-# http://127.0.0.1:9999/send_report
+# Test: curl -X POST -H "Content-type: application/json" -d "{\"reportUrl\" : \"urlx\",\"audit_hash\" : \"0x001x1x0\"}" 127.0.0.1:9999/send_report
 @app.route('/send_report', methods=['POST'])
 def sendReport():
     content_type = request.headers.get('Content-Type')
     if (content_type == 'application/json'):
-        report_data = request.json
-        # TBA write data to DB
-        return json
+        take_audit = request.json
+
+        # Check input
+        try:
+            if check_address(take_audit['reportUrl']): pass
+            else: return DontHakit
+            if check_address(take_audit['audit_hash']): pass
+            else: return DontHakit            
+        except:
+            return DontHakit
+
+        conn = sqlite3.connect(dbFile)
+        c = conn.cursor()
+        c.execute('UPDATE auditStates SET manualReport = "{}" WHERE hash = "{}"'.format(take_audit['reportUrl'],take_audit['audit_hash']))
+        conn.commit()
+        c.execute('SELECT * FROM auditStates')
+        auditRequests = c.fetchall()
+        conn.close()
+        return json.dumps(auditRequests)
     else:
         return 'Content-Type not supported!'
 
@@ -361,7 +395,6 @@ def get_report():
     c.execute('SELECT * FROM auditStates')
     auditRequests = c.fetchall()
     conn.close()
-    # return hash and id
     return json.dumps(auditRequests)
 
 if __name__ == '__main__':
