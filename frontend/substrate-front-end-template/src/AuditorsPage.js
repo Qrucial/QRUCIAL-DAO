@@ -5,6 +5,7 @@ import { useSubstrateState } from './substrate-lib'
 import Signup from './Signup'
 import AuditorProfile from './AuditorProfile'
 import AuditRequests from './AuditRequests'
+import Reports from './Reports'
 
 function AuditorTabs(props) {
   const isApproved = props.details?.score !== null ? true : false
@@ -24,7 +25,7 @@ function AuditorTabs(props) {
       render: () => (
         <Tab.Pane style={{minHeight: '300px'}}>
           { isApproved ? 
-            <AuditRequests reports={true} />
+            <Reports />
            : 'Waiting to be approved'
           }
         </Tab.Pane>
