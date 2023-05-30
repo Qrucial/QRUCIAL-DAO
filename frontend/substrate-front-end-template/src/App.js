@@ -36,10 +36,10 @@ function Main() {
     <Grid centered columns={2} padded>
       <Grid.Column>
         <Message
-          negative
+          color="blue"
           compact
           floating
-          header="Error Connecting to Substrate"
+          header="Waiting for connection"
           content={`Connection to websocket '${errObj.target.url}' failed.`}
         />
       </Grid.Column>

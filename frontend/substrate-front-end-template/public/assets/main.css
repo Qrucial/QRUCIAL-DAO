@@ -71,3 +71,8 @@
 .selectBox::-webkit-scrollbar-thumb:hover {
   background: #017ed8; 
 }
+
+/* Hide react errors */
+body > iframe {
+  display: none;
+}
