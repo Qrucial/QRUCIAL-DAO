@@ -1,38 +1,8 @@
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useState } from 'react'
 
 import BasicModal from './BasicModal'
 
 export default function AuditList(props) {
-  const [auditData, setAuditData] = useState([])
-
-  const getData=()=>{
-    fetch('/audit-requests', {
-      headers : { 
-        'Content-Type': 'application/json',
-        'Accept': 'application/json'
-       }
-    }).then(response => {
-      return response.json()
-    }
-    ).then(data =>{
-      setAuditData(data)
-    }).catch((err) => {
-      console.log(err.message)
-    })
-  }
-
-  const initialRender = useRef(true);
-  useEffect(()=>{
-    if (initialRender.current) {
-      getData()
-      initialRender.current = false;
-    } else {
-      setTimeout(() => {
-        getData()
-      }, 1000)
-    }
-  },[props.auditsChange])
-
   const [modalOpen, setModalOpen] = useState(false)
   const [modalValue, setModalValue] = useState('')
 
@@ -57,7 +27,7 @@ export default function AuditList(props) {
     )
   }
 
-  const list = auditData.map((a, i) => <AuditElem elem={a} key={i}/>)
+  const list = props.auditData.map((a, i) => <AuditElem elem={a} key={i}/>)
 
   return (
     <div className='selectBox'>
