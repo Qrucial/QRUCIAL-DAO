@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 
 import BasicModal from './BasicModal'
 
@@ -6,7 +6,7 @@ export default function AuditList(props) {
   const [auditData, setAuditData] = useState([])
 
   const getData=()=>{
-    fetch('./demoData.json', {
+    fetch('/audit-requests', {
       headers : { 
         'Content-Type': 'application/json',
         'Accept': 'application/json'
@@ -15,20 +15,29 @@ export default function AuditList(props) {
       return response.json()
     }
     ).then(data =>{
-      setAuditData(data.demoAudits)
+      setAuditData(data)
     }).catch((err) => {
       console.log(err.message)
     })
   }
 
+  const initialRender = useRef(true);
   useEffect(()=>{
-    getData()
-  },[])
+    if (initialRender.current) {
+      getData()
+      initialRender.current = false;
+    } else {
+      setTimeout(() => {
+        getData()
+      }, 1000)
+    }
+  },[props.auditsChange])
 
   const [modalOpen, setModalOpen] = useState(false)
   const [modalValue, setModalValue] = useState('')
 
   const handleClick = props.handleClick
+  
   function AuditElem(props) {
     const audit = props.elem;
     return (
@@ -37,15 +46,18 @@ export default function AuditList(props) {
           style={{padding: '5px', cursor: 'pointer'}}
           onClick={() => {
             setModalOpen(true);
-            setModalValue({content: audit.id, header: audit.requestor });
+            setModalValue({
+              content: audit,
+              header: audit.projectUrl 
+            });
             handleClick && handleClick(audit);
           }}
-        >{audit.requestor}
+        >{audit.projectUrl}
       </div>
     )
   }
 
-  const list = auditData.map(a => <AuditElem elem={a} key={a.id}/>)
+  const list = auditData.map((a, i) => <AuditElem elem={a} key={i}/>)
 
   return (
     <div className='selectBox'>

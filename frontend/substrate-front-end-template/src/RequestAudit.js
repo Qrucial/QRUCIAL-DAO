@@ -1,8 +1,8 @@
 import React,  { useState } from 'react'
-import { Grid, Segment, Header, Form, Input, Popup } from 'semantic-ui-react'
+import { Grid, Segment, Header, Form, Input, Popup, Button } from 'semantic-ui-react'
 
-import { TxButton } from './substrate-lib/components'
-import { createToast } from './toastContent'
+import { useSubstrateState } from './substrate-lib'
+import useTxAndPost from './hooks/useTxAndPost'
 import useFormValidation from './hooks/useFormValidation'
 
 const DEFAULT_STAKE = 500
@@ -10,6 +10,23 @@ const DEFAULT_STAKE = 500
 export default function RequestAudit(props) {
   const [formState, setFormState] = useState({ url: '', hash: '', stake: DEFAULT_STAKE })
   const { url, hash, stake } = formState
+  const { currentAccount } = useSubstrateState()
+
+  const requestor = currentAccount?.address
+  const finishEvent = () => { 
+    props.changeList(url)
+    setFormState({ url: '', hash: '', stake: DEFAULT_STAKE })
+  }
+
+  const postAttrs = { postUrl: '/request-audit' }
+  const txAttrs = { palletRpc: 'exoSys', callable: 'toolExecReq', finishEvent }
+  const { txAndPost } = useTxAndPost(txAttrs, postAttrs)
+
+  const onClick = async (event, data) => {
+    const txData = [url, hash, stake]
+    const postData = { requestor, projectUrl: formState.url };
+    txAndPost(txData, postData)
+  }
 
   const onChange = (_, data) => { 
     setFormState(prev => ({ ...prev, [data.label]: data.value }))
@@ -62,24 +79,14 @@ export default function RequestAudit(props) {
               <ErrorLabel field='hash' text='Needs to be a keccak-256 hash (256 bits)'/>
             </Form.Field>
             <Form.Field style={{ textAlign: 'center' }}>
-              <TxButton 
-                label='Submit'
-                type='SIGNED-TX' 
-                color='blue' 
+              <Button 
+                primary
+                type="submit"
+                onClick={onClick}
                 disabled={disabled}
-                setStatus={createToast()}
-                txOnClickHandler={() => setFormState({ url: '', hash: '', stake: DEFAULT_STAKE })}
-                attrs={{
-                  palletRpc: 'exoSys',
-                  callable: 'toolExecReq',
-                  inputParams: [url, hash, stake],
-                  paramFields: [
-                    { name: 'url' },
-                    { name: 'hash' },
-                    { name: 'stake' },
-                  ],
-                }} 
-              /> 
+              >
+                Submit
+              </Button>
             </Form.Field>
           </Form>
         </div>

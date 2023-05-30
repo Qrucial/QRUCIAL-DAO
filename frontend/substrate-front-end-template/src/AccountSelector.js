@@ -122,6 +122,7 @@ function InMenu(props) {
 export function BalanceAnnotation(props) {
   const { api, currentAccount } = useSubstrateState()
   const [accountBalance, setAccountBalance] = useState(0)
+  const [balanceString, setBalanceString] = useState(0)
 
   // When account address changes, update subscriptions
   useEffect(() => {
@@ -130,14 +131,17 @@ export function BalanceAnnotation(props) {
     // If the user has selected an address, create a new subscription
     currentAccount &&
       api.query.system
-        .account(acctAddr(currentAccount), balance =>
+        .account(acctAddr(currentAccount), balance => {
           setAccountBalance(balance.data.free.toHuman())
-        )
+          setBalanceString(balance.data.free.toString())
+        })
         .then(unsub => (unsubscribe = unsub))
         .catch(console.error)
 
     return () => unsubscribe && unsubscribe()
   }, [api, currentAccount])
+
+  const mUnitBalance = (+(+balanceString / 100000).toFixed()).toLocaleString('en-US')
 
   return currentAccount ? (
     props.label ? 
@@ -146,7 +150,7 @@ export function BalanceAnnotation(props) {
       {accountBalance}
     </Label>
     :
-    <span>{accountBalance} QRD</span>
+    <span title={accountBalance + ' QRD'}>{mUnitBalance} mQRD</span>
   ) : null
 }
 

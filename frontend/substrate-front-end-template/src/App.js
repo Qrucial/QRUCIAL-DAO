@@ -20,7 +20,8 @@ import { AccountSelector } from './AccountSelector'
 import AuditorsPage from './AuditorsPage'
 import Home from './Home'
 import TopMenu from './TopMenu'
-import ApproveAuditor from './ApproveAuditor'
+import CouncilPage from './CouncilPage'
+import About from './About'
 
 function Main() {
   const { apiState, apiError, keyringState } = useSubstrateState()
@@ -74,9 +75,10 @@ function Main() {
           <Container style={{marginTop:'2em'}}>
             <Routes>
               <Route exact path='/' element={<Home />}></Route>
+              <Route exact path='/about' element={<About />}></Route>
               <Route exact path='/requestor' element={<div>Under construction</div> }></Route>
               <Route exact path='/auditor' element={<AuditorsPage /> }></Route>
-              <Route exact path='/council' element={<div><ApproveAuditor /><h3>Verify challenge</h3></div> }></Route>
+              <Route exact path='/council' element={<CouncilPage /> }></Route>
             </Routes>
           </Container>
           <DeveloperConsole />
