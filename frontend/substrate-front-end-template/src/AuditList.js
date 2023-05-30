@@ -1,19 +1,22 @@
 import React, { useState } from 'react'
 
 import BasicModal from './BasicModal'
+import { SendReportButton } from './ReportButton.js'
 
 export default function AuditList(props) {
   const [modalOpen, setModalOpen] = useState(false)
   const [modalValue, setModalValue] = useState('')
 
   const handleClick = props.handleClick
-  
+  const setState = props.setState
+
   function AuditElem(props) {
     const audit = props.elem;
     return (
-      <div
+      <>
+        <div
           className='auditorDiv'
-          style={{padding: '5px', cursor: 'pointer'}}
+          style={{padding: '5px', cursor: 'pointer', wordBreak: 'break-word'}}
           onClick={() => {
             setModalOpen(true);
             setModalValue({
@@ -22,12 +25,17 @@ export default function AuditList(props) {
             });
             handleClick && handleClick(audit);
           }}
-        >{audit.projectUrl}
-      </div>
+          >
+          {audit.projectUrl}
+        </div>
+        {props.reportButton && 
+          <SendReportButton audit={audit} setState={setState}/>
+        }
+      </>
     )
   }
 
-  const list = props.auditData.map((a, i) => <AuditElem elem={a} key={i}/>)
+  const list = props.auditData.map((a, i) => <AuditElem elem={a} key={i} reportButton={props.reportButton}/>)
 
   return (
     <div className='selectBox'>

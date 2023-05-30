@@ -89,37 +89,45 @@ export default function AuditRequests(props) {
 
   return (
     <Grid>
-      <Grid.Column width={8} className='auditorColumn'>
-        <AuditList 
-          auditData={nonTakenAudits}
-          handleClick={handleChange} 
-          auditsChange={auditsChange}
-          />
-        {myAudits?.length > 0 && <>
-          <Header as='h3' style={{fontWeight: 'normal'}}>
-            Your audits
-          </Header>
+      <Grid.Row>
+        <Grid.Column width={8} className='auditorColumn'>
           <AuditList 
-            auditData={myAudits}
+            auditData={nonTakenAudits}
+            handleClick={handleChange} 
             auditsChange={auditsChange}
-            />
-        </>}
-      </Grid.Column>
-      <Grid.Column width={8}>
-        <p>You can view the details of the audit by clicking on the item.
-          Also by clicking on it {description}
-        </p>
-        <div style={{textAlign:'center'}}>
-          <Input value={selected.projectUrl} onChange={() => setSelected({})}></Input>
-          <br/>
-          <Button 
-            style={{margin:'10px'}} 
-            primary
-            onClick={onClick}>
-            {buttonText}
-          </Button>
-        </div>
-      </Grid.Column>
+          />
+        </Grid.Column>
+        <Grid.Column width={8}>
+          <p>You can view the details of the audit by clicking on the item.
+            Also by clicking on it {description}
+          </p>
+          <div style={{textAlign:'center'}}>
+            <Input value={selected.projectUrl} onChange={() => setSelected({})}></Input>
+            <br/>
+            <Button 
+              style={{margin:'10px'}} 
+              primary
+              onClick={onClick}>
+              {buttonText}
+            </Button>
+          </div>
+        </Grid.Column>
+      </Grid.Row>
+      <Grid.Row>
+        {myAudits?.length > 0 &&
+          <Grid.Column>
+            <Header as='h3' style={{fontWeight: 'normal'}}>
+              Your audits
+            </Header>
+            <AuditList 
+              auditData={myAudits}
+              auditsChange={auditsChange}
+              reportButton={true}
+              setState={setAuditsChange}
+              />
+          </Grid.Column>
+        }
+      </Grid.Row>
     </Grid>
   )
 }

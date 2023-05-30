@@ -8,22 +8,22 @@ import useFormValidation from './hooks/useFormValidation'
 const DEFAULT_STAKE = 500
 
 export default function RequestAudit(props) {
-  const [formState, setFormState] = useState({ url: '', hash: '', stake: DEFAULT_STAKE })
-  const { url, hash, stake } = formState
+  const [formState, setFormState] = useState({ url: '', hash: '', bounty: DEFAULT_STAKE, minAuditorScore: DEFAULT_STAKE })
+  const { url, hash, bounty, minAuditorScore } = formState
   const { currentAccount } = useSubstrateState()
 
   const requestor = currentAccount?.address
   const finishEvent = () => { 
     props.changeList(url)
-    setFormState({ url: '', hash: '', stake: DEFAULT_STAKE })
+    setFormState({ url: '', hash: '', bounty: DEFAULT_STAKE, minAuditorScore: DEFAULT_STAKE })
   }
 
   const postAttrs = { postUrl: '/request-audit' }
-  const txAttrs = { palletRpc: 'exoSys', callable: 'toolExecReq', finishEvent }
+  const txAttrs = { palletRpc: 'exoSys', callable: 'requestReview', finishEvent }
   const { txAndPost } = useTxAndPost(txAttrs, postAttrs)
 
   const onClick = async (event, data) => {
-    const txData = [url, hash, stake]
+    const txData = [url, hash, bounty, minAuditorScore]
     const postData = { requestor, hash, projectUrl: formState.url };
     txAndPost(txData, postData)
   }
