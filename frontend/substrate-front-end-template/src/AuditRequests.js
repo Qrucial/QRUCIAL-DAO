@@ -23,7 +23,7 @@ export default function AuditRequests(props) {
           Also by clicking on it {description}
         </p>
         <div style={{textAlign:'center'}}>
-          <Input value={selected[1]} onChange={() => setSelected([])}></Input>
+          <Input value={selected.projectUrl} onChange={() => setSelected([])}></Input>
           <br/>
           <Button style={{margin:'10px'}} color='blue'>
             {buttonText}

@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { Grid, Header, Segment } from 'semantic-ui-react'
 
 import RequestAudit from './RequestAudit'
@@ -7,18 +7,20 @@ import AuditorPool from './AuditorPool'
 import AuditList from './AuditList'
 
 export default function Home(props) {  
+  const [auditsChange, setAuditsChange] = useState('')
+  const changeList = (latest) => setAuditsChange(latest)
 
   return (
     <Grid centered>
       <Grid.Row>
         <Grid.Column>
-          <RequestAudit />
+          <RequestAudit changeList={changeList}/>
         </Grid.Column>
       </Grid.Row>
       <Grid.Row>
         <Segment>
           <Header as='h3' style={{fontWeight: 'normal'}}>
-            <BalanceAnnotation />
+            Balance: <BalanceAnnotation />
           </Header>
         </Segment>
       </Grid.Row>
@@ -36,7 +38,7 @@ export default function Home(props) {
             Latest audits
           </Header>
           <Segment className='latestAudits' style={{paddingRight: '0'}}>
-            <AuditList />
+            <AuditList auditsChange={auditsChange}/>
           </Segment>
         </Grid.Column>
       </Grid.Row>

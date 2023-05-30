@@ -78,8 +78,6 @@ function exec_audit {
     exit 1
   fi
 
-
-
   # If lock is not found
   if [[ ! $LOCK_FILE ]]; then
     echo "generate Lockfile: $(dirname $TOML_FILE))"
@@ -91,10 +89,10 @@ function exec_audit {
     LOCK_FILE="$(find "$EXTRACT_PATH" -name Cargo.lock)"
   fi
 
-
   touch "$REPORT_PATH"report.json
 
   ( cd $(dirname $LOCK_FILE) && cargo audit --json > "$REPORT_PATH""report.json" )
+  ( cd $(dirname $LOCK_FILE) && cargo clippy &> "$REPORT_PATH""clippy.out" )
   # cargo audit --json > "$REPORT_PATH""report.json" # better save method. (?)
 
   # cp or symlink, whatever is better

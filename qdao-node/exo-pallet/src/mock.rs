@@ -77,16 +77,23 @@ impl qdao_exo_pallet::Config for Test {
     type Currency = Balances;
     type ApproveChallengeOrigin = EnsureRoot<<Self as system::Config>::AccountId>;
     type RejectChallengeOrigin = EnsureRoot<<Self as system::Config>::AccountId>;
+    type RemoveChallengeOrigin = EnsureRoot<<Self as system::Config>::AccountId>;
     type Game = Self;
 }
 
 impl qdao_audit_pallet::Game<Test> for Test {
     fn apply_result(
-        _player0: <Self as system::Config>::AccountId,
-        _player1: <Self as system::Config>::AccountId,
+        _player0: &<Self as system::Config>::AccountId,
+        _player1: &<Self as system::Config>::AccountId,
         _winner: qdao_audit_pallet::Winner,
     ) -> frame_support::pallet_prelude::DispatchResult {
         Ok(())
+    }
+    fn has_enough_rank(
+        _player: &<Self as system::Config>::AccountId,
+        _score: qdao_audit_pallet::Score,
+    ) -> bool {
+        true
     }
 }
 
