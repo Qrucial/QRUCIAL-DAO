@@ -22,6 +22,7 @@ import Home from './Home'
 import TopMenu from './TopMenu'
 import CouncilPage from './CouncilPage'
 import About from './About'
+import Requestor from './Requestor'
 
 function Main() {
   const { apiState, apiError, keyringState } = useSubstrateState()
@@ -76,7 +77,7 @@ function Main() {
             <Routes>
               <Route exact path='/' element={<Home />}></Route>
               <Route exact path='/about' element={<About />}></Route>
-              <Route exact path='/requestor' element={<div>Under construction</div> }></Route>
+              <Route exact path='/requestor' element={<Requestor /> }></Route>
               <Route exact path='/auditor' element={<AuditorsPage /> }></Route>
               <Route exact path='/council' element={<CouncilPage /> }></Route>
             </Routes>
