@@ -340,6 +340,10 @@ impl qdao_exo_pallet::Config for Runtime {
         EnsureRoot<AccountId>,
         pallet_collective::EnsureProportionMoreThan<AccountId, ChallengeCollective, 1, 2>,
     >;
+    type RemoveChallengeOrigin = EitherOfDiverse<
+        EnsureRoot<AccountId>,
+        pallet_collective::EnsureProportionMoreThan<AccountId, ChallengeCollective, 1, 2>,
+    >;
     type Game = qdao_audit_pallet::Pallet<Runtime>;
 }
 
