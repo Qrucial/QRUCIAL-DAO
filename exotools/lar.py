@@ -75,7 +75,7 @@ def init_db():
     c.execute('CREATE TABLE IF NOT EXISTS auditStates (requestor, hash text, projectUrl text, state text, autoReport text, manualReport text, topAuditor text, challenger text)')
     c.execute("INSERT INTO auditStates VALUES('5DAAnrj7VHTznn2AWBemMuyBwZWs6FNFjdyVXUeYum3PTXFy','0xa03f6ba3eb8141f0f8daee4ea016d4144f44fc4cba9e7477a4c1f041aaeb6c38', 'https://v-space.hu/s/exotestflipper.tar', 'In progress', 'NA', 'NA', 'NA', 'No challenger')")
     c.execute("INSERT INTO auditStates VALUES('5HGjWAeFDfFCWPsjFQdVV2Msvz2XtMktvgocEZcCj68kUMaw','0x3e2d46f07bb14bab9d623e426246ee8115f2669fa04745e51a00e18446e47df7', 'https://v-space.hu/s/exotest.tar', 'Finished', 'Submitted', 'Submitted', 'Charlie', 'No challenger')")
-    c.execute("INSERT INTO auditStates VALUES('5HGjWAeFDfFCWPsjFQdVV2Msvz2XtMktvgocEZcCj68kUMaw','0x3e2d46f07bb14bab9d623e426246ee8115f2669fa04745e51a00e18446e47df7', 'https://v-space.hu/s/exosol.tar', 'Finished', 'Submitted', 'Submitted', 'Charlie', 'No challenger')")
+    c.execute("INSERT INTO auditStates VALUES('5HGjWAeFDfFCWPsjFQdVV2Msvz2XtMktvgocEZcCj68kUMaw','0xxx2d46f07bb14bab9d623e426246ee8115f2669fa04745e51a00e18446e47dxx', 'https://v-space.hu/s/exosol.tar', 'Finished', 'Submitted', 'Submitted', 'Charlie', 'No challenger')")
     conn.commit()
     conn.close()
 init_db()
@@ -250,8 +250,10 @@ def get_auditordata():
     c = conn.cursor()
     c.execute('SELECT * FROM auditors WHERE address = "%s"' % address)
     auditorData = c.fetchall()
+    column_names = [description[0] for description in c.description]
+    dict_rows = [dict(zip(column_names, row)) for row in auditorData]
     conn.close()
-    return json.dumps(auditorData)
+    return json.dumps(dict_rows)
 
 # Called at signup and profile update: Button click -> open polkadotJS -> sign message -> POST to API
 # VCN, verify from chain needed - eg. must be POST ss58 address == ss58 signer - needs to be changed in prod
@@ -281,6 +283,8 @@ def profileUpdate():
 
         conn = sqlite3.connect(dbFile)
         c = conn.cursor()
+        #TBA fix this awful double quickfix
+        c.execute("INSERT INTO auditors VALUES ('{}', 'x', 'x', 'x', 'x', 'x', 'x')".format(profile_data['address']))
         c.execute('UPDATE auditors SET profileHash = "{}", name = "{}", picUrl = "{}", webUrl = "{}", bio = "{}" WHERE address = "{}"'.format(profile_data['profileHash'], profile_data['name'], profile_data['picUrl'], profile_data['webUrl'], profile_data['bio'], profile_data['address']))
         conn.commit()
         conn.close()
@@ -296,8 +300,10 @@ def get_auditRequests():
     c = conn.cursor()
     c.execute('SELECT * FROM auditStates')
     auditRequests = c.fetchall()
+    column_names = [description[0] for description in c.description]
+    dict_rows = [dict(zip(column_names, row)) for row in auditRequests]
     conn.close()
-    return json.dumps(auditRequests)
+    return json.dumps(dict_rows)
 
 # Request audit to be saved to DB
 # Accepted in dev, but this needs to check blockchain data because we only want to save those entries that are valid/paid, eg VCN
