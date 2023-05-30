@@ -35,7 +35,7 @@ fn sign_up_update_profile_works() {
         // When
         // Sign up a new auditor, read the auditor_data from Storage
         let sign_up_result = AuditRepModule::sign_up(RuntimeOrigin::signed(1), hash);
-        let auditor_data_before_update = AuditorMap::<Test>::try_get(sender);
+        let auditor_data_before_update = AuditorMap::<Test>::try_get(&sender);
         let update_profile_result =
             AuditRepModule::update_profile(RuntimeOrigin::signed(1), hash_for_update);
         let auditor_data_after_update = AuditorMap::<Test>::try_get(sender);
@@ -118,7 +118,7 @@ fn sign_up_cancellation_works() {
         // When
         // Sign up a new auditor, read the auditor_data from Storage
         let sign_up_result = AuditRepModule::sign_up(RuntimeOrigin::signed(1), hash);
-        let auditor_data_before_cancellation = AuditorMap::<Test>::try_get(sender);
+        let auditor_data_before_cancellation = AuditorMap::<Test>::try_get(&sender);
         let cancellation_result = AuditRepModule::cancel_account(RuntimeOrigin::signed(1));
         let auditor_data_after_cancellation = AuditorMap::<Test>::try_get(sender);
         let cancellation_of_cancelled_account =

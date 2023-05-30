@@ -5,6 +5,17 @@ import PropTypes from "prop-types";
 export default function BasicModal(props) {
   const { modalValue, modalOpen, handleClose } = props
 
+	const renderObject = function() {
+    if (!modalValue?.content) return <p>No content yet</p>
+		return Object.entries(modalValue?.content).map(([key, value], i) => {
+			return (
+				<p key={key}>
+					{key}: {value}
+				</p>
+			)
+		})
+	}
+
   return (
     <Modal
       open={modalOpen}
@@ -20,7 +31,7 @@ export default function BasicModal(props) {
         content={modalValue.header} 
       />
       <Modal.Content>
-        <p>Content of {modalValue.content}</p>
+        {renderObject()}
       </Modal.Content>
       <Modal.Actions>
         <Button color="blue" onClick={handleClose}>

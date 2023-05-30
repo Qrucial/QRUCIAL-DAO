@@ -25,6 +25,7 @@ mod elo_comp;
 
 type DepositBalanceOf<T> =
     <<T as Config>::Currency as Currency<<T as SystemConfig>::AccountId>>::Balance;
+pub type Score = u32;
 
 #[frame_support::pallet]
 pub mod pallet {
@@ -38,19 +39,16 @@ pub mod pallet {
     #[derive(Encode, Decode, Default, Clone, Debug, PartialEq, Eq, TypeInfo, MaxEncodedLen)]
     #[cfg_attr(feature = "std", derive(serde::Serialize, serde::Deserialize))]
     /// Holds the data which is associated to an auditor.
+    ///
     /// # Fields
-    ///
-    /// * `score` - the Auditors Eloscore of type `Option<u32>`. This is also used to keep track of the auditor's approval status.
+    /// * `score` - the Auditors Eloscore of type `Option<Score>`. This is also used to keep track of the auditor's approval status.
     ///             Unapproved auditors have a `score` of value `None`
-    ///
     /// * `profile_hash` - A hash of the profile that the user submitted. Is supposed to be the hash of a markdown document which describes the user's
     ///                    background and qualification of being an auditor.
-    ///
     /// * `approved_by` - A user needs three approval's from already approved auditor's.Therefore this `BoundedVec<AccountId, ConstU32<3>>` can hold up
     ///                   to three `AccountId`'s of approving auditors.
-    ///
     pub struct AuditorData<Hash, AccountId> {
-        pub score: Option<u32>,
+        pub score: Option<Score>,
         pub profile_hash: Hash,
         pub approved_by: BoundedVec<AccountId, ConstU32<3>>,
     }
@@ -81,11 +79,11 @@ pub mod pallet {
 
         #[pallet::constant]
         /// Initial score for an auditor which signed up and received 3 approvals
-        type InitialAuditorScore: Get<u32>;
+        type InitialAuditorScore: Get<Score>;
 
         #[pallet::constant]
         /// Minimal score which allows auditors to approve other auditors
-        type MinimalApproverScore: Get<u32>;
+        type MinimalApproverScore: Get<Score>;
     }
 
     #[pallet::pallet]
@@ -99,22 +97,17 @@ pub mod pallet {
     pub(super) type AuditorMap<T: Config> =
         StorageMap<_, Blake2_128Concat, T::AccountId, AuditorData<sp_core::H256, T::AccountId>>;
 
-    type AuditorMapData<T> = (
-        <T as frame_system::Config>::AccountId,
-        AuditorData<sp_core::H256, <T as frame_system::Config>::AccountId>,
-    );
-
     #[pallet::genesis_config]
     /// Allows a Genesis config with pre-assigned Auditors
     pub struct GenesisConfig<T: Config> {
-        pub auditor_map: Vec<AuditorMapData<T>>,
+        pub auditor_map: Vec<(T::AccountId, AuditorData<sp_core::H256, T::AccountId>)>,
     }
 
     #[cfg(feature = "std")]
     impl<T: Config> Default for GenesisConfig<T> {
         fn default() -> Self {
             Self {
-                auditor_map: Default::default(),
+                auditor_map: Default::default(), // TODO
             }
         }
     }
@@ -234,13 +227,21 @@ pub mod pallet {
         ///
         pub fn cancel_account(origin: OriginFor<T>) -> DispatchResult {
             let sender = ensure_signed(origin)?;
-
-            ensure!(
-                <AuditorMap<T>>::contains_key(&sender),
-                Error::<T>::UnknownAuditor
-            );
+            let account =
+                <AuditorMap<T>>::try_get(&sender).map_err(|_| Error::<T>::UnknownAuditor)?;
 
             T::Currency::unreserve(&sender, T::MinAuditorStake::get());
+
+            if let Some(score) = account.score {
+                if score < T::InitialAuditorScore::get() {
+                    let _burnt = T::Currency::withdraw(
+                        &sender,
+                        T::MinAuditorStake::get(),
+                        frame_support::traits::WithdrawReasons::FEE,
+                        frame_support::traits::ExistenceRequirement::AllowDeath,
+                    )?;
+                }
+            }
 
             <AuditorMap<T>>::remove(sender);
 
@@ -314,7 +315,7 @@ pub mod pallet {
         ) -> DispatchResult {
             ensure_root(origin)?;
 
-            <Self as Game<_>>::apply_result(player0, player1, winner)?;
+            <Self as Game<_>>::apply_result(&player0, &player1, winner)?;
 
             Ok(())
         }
@@ -324,16 +325,20 @@ pub mod pallet {
         /// Is called after a auditor was challenged to transmit the result of the challenge
         ///
         /// * `player0` - ``T::AccountId`` of player 0
-        ///
         /// * `player1` - ``T::AccountId`` of player 1
-        ///
         /// * `winner` - ``Winner`` the enum that indicates who won the challenge
-        ///
         fn apply_result(
-            player0: T::AccountId,
-            player1: T::AccountId,
+            player0: &T::AccountId,
+            player1: &T::AccountId,
             winner: Winner,
         ) -> DispatchResult;
+
+        /// True if the given address belongs to a player and that player is ranked at least
+        /// the given score.
+        ///
+        /// * `player` - `T::AccountId` of the player to query
+        /// * `score` - the threshold `Score` above which `true` is returned
+        fn has_enough_rank(player: &T::AccountId, score: Score) -> bool;
     }
 
     impl<T: Config> Game<T> for Pallet<T> {
@@ -341,57 +346,73 @@ pub mod pallet {
         /// of both players accordingly.
         ///
         /// * `player0` - ``T::AccountId`` of player 0
-        ///
         /// * `player1` - ``T::AccountId`` of player 1
-        ///
         /// * `winner` - ``Winner`` the enum that indicates who won the challenge
-        ///
-
         fn apply_result(
-            player0: T::AccountId,
-            player1: T::AccountId,
+            player0: &T::AccountId,
+            player1: &T::AccountId,
             winner: Winner,
         ) -> DispatchResult {
             // Get data and particularly scores of both players
             let mut player0_data =
-                <AuditorMap<T>>::try_get(&player0).map_err(|_| Error::<T>::UnknownAuditor)?;
+                <AuditorMap<T>>::try_get(player0).map_err(|_| Error::<T>::UnknownAuditor)?;
             let player0_score = player0_data.score.ok_or(Error::<T>::UnapprovedAuditor)?;
             let mut player1_data =
-                <AuditorMap<T>>::try_get(&player1).map_err(|_| Error::<T>::UnknownAuditor)?;
+                <AuditorMap<T>>::try_get(player1).map_err(|_| Error::<T>::UnknownAuditor)?;
             let player1_score = player1_data.score.ok_or(Error::<T>::UnapprovedAuditor)?;
 
-            // Map winner and looser scores accordingly
-            let (winner_score, looser_score) = match winner {
-                Winner::Player0 => (player0_score, player1_score),
-                Winner::Player1 => (player1_score, player0_score),
-                _ => return Ok(()),
+            let inner = || -> Result<(), Error<T>> {
+                // Map winner and looser scores accordingly
+                let (winner_score, looser_score) = match winner {
+                    Winner::Player0 => (player0_score, player1_score),
+                    Winner::Player1 => (player1_score, player0_score),
+                    Winner::Draw => return Ok(()),
+                };
+
+                // Instantiate EloRank, compute new scores
+                let elo = EloRank { k: 32 };
+                let (winner_new, looser_new) = elo
+                    .calculate(winner_score, looser_score)
+                    .map_err(|_| Error::<T>::UnexpectedEloOverflow)?;
+
+                // Map score results accordingly
+                (player0_data.score, player1_data.score) = match winner {
+                    Winner::Player0 => (Some(winner_new), Some(looser_new)),
+                    Winner::Player1 => (Some(looser_new), Some(winner_new)),
+                    Winner::Draw => unreachable!("A previous match guarded off this value."),
+                };
+
+                // Write update of player data to runtime storage
+                <AuditorMap<T>>::insert(player0, player0_data);
+                <AuditorMap<T>>::insert(player1, player1_data);
+                Ok(())
             };
 
-            // Instantiate EloRank, compute new scores
-            let elo = EloRank { k: 32 };
-            let (winner_new, looser_new) = elo
-                .calculate(winner_score, looser_score)
-                .map_err(|_| Error::<T>::UnexpectedEloOverflow)?;
-
-            // Map score results accordingly
-            (player0_data.score, player1_data.score) = match winner {
-                Winner::Player0 => (Some(winner_new), Some(looser_new)),
-                Winner::Player1 => (Some(looser_new), Some(winner_new)),
-                _ => return Ok(()),
-            };
-
-            // Write update of player data to runtime storage
-            <AuditorMap<T>>::insert(&player0, player0_data);
-            <AuditorMap<T>>::insert(&player1, player1_data);
+            inner()?;
 
             // Emit GameResult event
             Self::deposit_event(Event::GameResult {
-                player0,
-                player1,
+                player0: player0.clone(),
+                player1: player1.clone(),
                 winner,
             });
 
             Ok(())
+        }
+
+        /// True if the given address belongs to a player and that player is ranked at least
+        /// the given score.
+        ///
+        /// * `player` - `T::AccountId` of the player to query
+        /// * `score` - the threshold `Score` above which `true` is returned
+        fn has_enough_rank(player: &T::AccountId, score: Score) -> bool {
+            match <AuditorMap<T>>::get(player) {
+                None => false,
+                Some(d) => match d.score {
+                    None => false,
+                    Some(s) => s >= score,
+                },
+            }
         }
     }
 }

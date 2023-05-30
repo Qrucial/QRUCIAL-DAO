@@ -4,7 +4,7 @@ import { Grid, Input, Button } from 'semantic-ui-react'
 import AuditList from './AuditList'
 
 export default function AuditRequests(props) {
-  const [selected, setSelected] = useState({requestor:'', id:''})
+  const [selected, setSelected] = useState([])
 
   const handleChange = audit => setSelected(audit)
 
@@ -23,7 +23,7 @@ export default function AuditRequests(props) {
           Also by clicking on it {description}
         </p>
         <div style={{textAlign:'center'}}>
-          <Input value={selected.requestor}></Input>
+          <Input value={selected.projectUrl} onChange={() => setSelected([])}></Input>
           <br/>
           <Button style={{margin:'10px'}} color='blue'>
             {buttonText}

@@ -11,8 +11,16 @@ from substrateinterface.exceptions import SubstrateRequestException
 import time
 import logging
 import sqlite3
+import json
+from getpass import getpass
 
-## Logging to stdout for testing/debugging (TODO, log to files)
+## Development mode and settings
+debugState = True
+dummyMode = True
+DontHakit = json.dumps([{'Error':'Donthakit'}])
+dbFile = "temp.db"
+
+## Logging to stdout for testing/debugging
 class CustomFormatter(logging.Formatter):
     grey = "\x1b[38;20m"
     yellow = "\x1b[33;20m"
@@ -43,44 +51,103 @@ ch = logging.StreamHandler()
 ch.setLevel(logging.DEBUG)
 ch.setFormatter(CustomFormatter())
 logger.addHandler(ch)
-logger.debug("QDAO's lar.py is running in debug mode!")
+if debugState == True:
+    logger.debug("QDAO's lar.py is running in debug mode!")
+
+## Preparing the API system
 
 # Create temporary database for testing/development purposes
-logger.debug("Temporary database is being created with demo users")
+logger.debug("Development database is being initialized")
 def init_db():
-    conn = sqlite3.connect('temp.db')
+    try:
+        my_file = open("temp.db")
+        return #jajjdecsunyaezitt
+    except IOError:
+        pass
+    conn = sqlite3.connect(dbFile)
     c = conn.cursor()
-    c.execute('CREATE TABLE IF NOT EXISTS users (username text, ID integer)')
-    c.execute("INSERT INTO users VALUES ('HaX0r', 666666)")
-    c.execute("INSERT INTO users VALUES ('in7xr', 777777)")
+    # Create inbuilt auditors
+    c.execute('CREATE TABLE IF NOT EXISTS auditors (address text, profileHash text, name text, picUrl text, webUrl text, bio text, auditsDone text)')
+    c.execute("INSERT INTO auditors VALUES ('5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY', '0x00', 'Alice', 'https://git.hsbp.org/avatars/8e4b4863a9f70ff176538149e61ce1e6?size=870', 'https://qrucial.io/', 'Bio of X user is text.', 'Feature to be added in milestone 3.')")
+    c.execute("INSERT INTO auditors VALUES ('5FHneW46xGXgs5mUiveU4sbTyGBzmstUspZC92UhjJM694ty', '0x00', 'Bob', 'https://git.hsbp.org/avatars/8e4b4863a9f70ff176538149e61ce1e6?size=870', 'https://qrucial.io/', 'Bio of Y user is text.', 'Feature to be added in milestone 3.')")
+    c.execute("INSERT INTO auditors VALUES ('5FLSigC9HGRKVhB9FiEo4Y3koPsNmBmLJbpXg2mp1hXcS59Y', '0x00', 'Charlie', 'https://git.hsbp.org/avatars/8e4b4863a9f70ff176538149e61ce1e6?size=870', 'https://qrucial.io/', 'Bio of Z user is text.', 'Feature to be added in milestone 3.')")
+    # Create audit db 
+    c.execute('CREATE TABLE IF NOT EXISTS auditStates (requestor, hash text, projectUrl text, state text, autoReport text, manualReport text, topAuditor text, challenger text)')
+    c.execute("INSERT INTO auditStates VALUES('5DAAnrj7VHTznn2AWBemMuyBwZWs6FNFjdyVXUeYum3PTXFy','0xa03f6ba3eb8141f0f8daee4ea016d4144f44fc4cba9e7477a4c1f041aaeb6c38', 'https://v-space.hu/s/exotestflipper.tar', 'In progress', 'NA', 'NA', 'NA', 'No challenger')")
+    c.execute("INSERT INTO auditStates VALUES('5HGjWAeFDfFCWPsjFQdVV2Msvz2XtMktvgocEZcCj68kUMaw','0x3e2d46f07bb14bab9d623e426246ee8115f2669fa04745e51a00e18446e47df7', 'https://v-space.hu/s/exotest.tar', 'Finished', 'Submitted', 'Submitted', 'Charlie', 'No challenger')")
+    c.execute("INSERT INTO auditStates VALUES('5HGjWAeFDfFCWPsjFQdVV2Msvz2XtMktvgocEZcCj68kUMaw','0x3e2d46f07bb14bab9d623e426246ee8115f2669fa04745e51a00e18446e47df7', 'https://v-space.hu/s/exosol.tar', 'Finished', 'Submitted', 'Submitted', 'Charlie', 'No challenger')")
     conn.commit()
     conn.close()
 init_db()
 
 ## Interface for QDAO
 substrate=None
-while substrate==None:
-    try:
-        substrate = SubstrateInterface(
-            url="ws://127.0.0.1:9944",
-            ss58_format=42,
-            type_registry_preset='kusama'
-        )
-        logger.info("Successfullly connected to QDAO chain!")
-    except Exception as e:
-        logger.info("Couldn't connect to QDAO's WebSocket. Trying again in 5 seconds.")
-        time.sleep(5)
-    pass
+if dummyMode == False:
+    logger.debug("Connecting to local QDAO node")
+    while substrate==None:
+        try:
+            substrate = SubstrateInterface(
+                url="ws://127.0.0.1:9944",
+                ss58_format=42,
+                type_registry_preset='kusama'
+            )
+            logger.info("Successfullly connected to QDAO chain!")
+        except Exception as e:
+            logger.info("Couldn't connect to QDAO's WebSocket. Trying again in 5 seconds.")
+            time.sleep(5)
+        pass
+else:
+    logger.warning("Dummy mode is ON, not connecting to QDAO node")
 
-## Security keys !! TODO make them unique and stored only in mem !! and securely share with exotool.sh
 # Tip: subkey inspect-key //Alice
 # SS58 Address: 5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY
-logger.warning("We are using Alice's key!")
-keypair = Keypair.create_from_seed('0xe5be9a5092b81bca64be81d212e7f2f9eba183bb7a90954f7b76361f6edb5c0a') # Alice
-api_key = 'x7roVhBsiZ18Dg3DX3iCm9pXhXdbZWx2'
+if debugState == True:
+    logger.warning("We are using Alice's key!")
+    keypair = Keypair.create_from_seed('0xe5be9a5092b81bca64be81d212e7f2f9eba183bb7a90954f7b76361f6edb5c0a') # Alice
+    api_key = 'x7roVhBsiZ18Dg3DX3iCm9pXhXdbZWx2'
+else:
+    keypair_in = getpass("Please enter the keypair to use: ")
+    keypair = Keypair.create_from_seed(keypair_in)
+    apikey_in = getpass("Please enter the API key: ")
+    api_key = apikey_in
 
-## Flask app and route
+## Flask app and routes
 app=Flask(__name__)
+
+# Only allow whitelisted characters in the database
+address_whitelist = [
+'a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z',
+'A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z',
+'1','2','3','4','5','6','7','8','9','0']
+text_whitelist = [
+'a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z',
+'A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z',
+'1','2','3','4','5','6','7','8','9','0',
+'-',':','.',',','/','?','_','&','#', '=', ' ']
+
+def check_address(_address):
+    counter = 0
+    for char in _address:
+        counter = counter + 1
+        if counter > 256:
+            return False
+        if char in address_whitelist:
+            pass
+        else:
+            return False
+    return True
+
+def check_text(_text):
+    counter = 0
+    for char in _text:
+        counter = counter + 1
+        if counter > 256:
+            return False
+        if char in text_whitelist:
+            pass
+        else:
+            return False
+    return True
 
 # Route used for testing that the service is running
 @app.route("/",methods=['GET'])
@@ -105,14 +172,16 @@ def notif():
         return "IP address not allowed."
     if request.method == 'POST':
         api_key_received = request.args.get('key')
-        hash_received = request.args.get('hash')        # TODO check validity, if it is keccak256
-        result_received = request.args.get('result')    # TODO be more specific + validity + dont accept req without these
+        hash_received = request.args.get('hash')
+        if check_address(hash_received): pass
+        else: return DontHakit
+        result_received = request.args.get('result')
         if api_key == api_key_received:
             pass
         else:
             return jsonify("Wrong API key!")
         try:
-            run( [ '/usr/bin/touch', '/tmp/lar_report.log' ] )         # TODO, Sample and debugging
+            run( [ '/usr/bin/touch', '/tmp/lar_report.log' ] ) # Test
         except:
             logger.warning("Couldn't touch ~/QRUCIAL-DAO/exotools/static/reports/, there is an execution error probably.")
 
@@ -153,16 +222,180 @@ def serve_file_in_dir(path):
         path = os.path.join(path, 'index.html')
     return send_from_directory(static_file_dir, path) # Secure against dir trav
 
-# API routes for frontend
+## API routes for frontend
 
-@app.route('/users', methods=['GET'])
-def get_users():
-    conn = sqlite3.connect('users.db')
+# Get user data as json, ID: substrate address
+# http://127.0.0.1:9999/auditors
+@app.route('/auditors', methods=['GET'])
+def get_auditors():
+    conn = sqlite3.connect(dbFile)
     c = conn.cursor()
-    c.execute('SELECT * FROM users')
-    users = c.fetchall()
+    c.execute('SELECT * FROM auditors')
+    auditors = c.fetchall()
+    column_names = [description[0] for description in c.description]
+    dict_rows = [dict(zip(column_names, row)) for row in auditors]
     conn.close()
-    return jsonify(users)
+    return json.dumps(dict_rows)
+
+# Get auditor data based on address
+# http://127.0.0.1:9999/auditor-data?address=5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY
+@app.route('/auditor-data', methods=['GET'])
+def get_auditordata():
+    address = request.args.get('address', default = "5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY", type = str)
+    
+    if check_address(address): pass
+    else: return DontHakit
+
+    conn = sqlite3.connect(dbFile)
+    c = conn.cursor()
+    c.execute('SELECT * FROM auditors WHERE address = "%s"' % address)
+    auditorData = c.fetchall()
+    conn.close()
+    return json.dumps(auditorData)
+
+# Called at signup and profile update: Button click -> open polkadotJS -> sign message -> POST to API
+# VCN, verify from chain needed - eg. must be POST ss58 address == ss58 signer - needs to be changed in prod
+# Test: curl -X POST -H "Content-type: application/json" -d "{\"address\" : \"5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY\", \"profileHash\" : \"0x001x1x0\", \"name\" : \"n4me\", \"picUrl\" : \"userx.me/a.ng\", \"webUrl\" : \"nmexxa.org\", \"bio\" : \"Teh Bio of user aX\"}" "127.0.0.1:9999/profile_update" 
+@app.route('/profile_update', methods=['POST'])
+def profileUpdate():
+    content_type = request.headers.get('Content-Type')
+    if (content_type == 'application/json'):
+        profile_data = request.json
+        
+        # Check input
+        try:
+            if check_address(profile_data['address']): pass
+            else: return DontHakit
+            if check_text(profile_data['profileHash']): pass
+            else: return DontHakit        
+            if check_text(profile_data['name']): pass
+            else: return DontHakit
+            if check_text(profile_data['picUrl']): pass
+            else: return DontHakit
+            if check_text(profile_data['webUrl']): pass
+            else: return DontHakit
+            if check_text(profile_data['bio']): pass
+            else: return DontHakit
+        except:
+            return DontHakit
+
+        conn = sqlite3.connect(dbFile)
+        c = conn.cursor()
+        c.execute('UPDATE auditors SET profileHash = "{}", name = "{}", picUrl = "{}", webUrl = "{}", bio = "{}" WHERE address = "{}"'.format(profile_data['profileHash'], profile_data['name'], profile_data['picUrl'], profile_data['webUrl'], profile_data['bio'], profile_data['address']))
+        conn.commit()
+        conn.close()
+        return json.dumps(profile_data)
+    else:
+        return 'Content-Type not supported!'
+
+# List all audit requests from API DB
+# 127.0.0.1:9999/audit-requests
+@app.route('/audit-requests', methods=['GET'])
+def get_auditRequests():
+    conn = sqlite3.connect(dbFile)
+    c = conn.cursor()
+    c.execute('SELECT * FROM auditStates')
+    auditRequests = c.fetchall()
+    conn.close()
+    return json.dumps(auditRequests)
+
+# Request audit to be saved to DB
+# Accepted in dev, but this needs to check blockchain data because we only want to save those entries that are valid/paid, eg VCN
+# Test: curl -X POST -H "Content-type: application/json" -d "{\"requestor\" : \"5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY\", \"hash\" : \"0x001x1x0\", \"projectUrl\" : \"urleraX\"}" 127.0.0.1:9999/request-audit
+@app.route('/request-audit', methods=['POST'])
+def requestAudit():
+    content_type = request.headers.get('Content-Type')
+    if (content_type == 'application/json'):
+        req_audit = request.json
+
+        # Check input
+        try:
+            if check_address(req_audit['requestor']): pass
+            else: return DontHakit
+            if check_text(req_audit['hash']): pass
+            else: return DontHakit
+            if check_text(req_audit['projectUrl']): pass
+            else: return DontHakit
+        except:
+            return DontHakit
+        
+        conn = sqlite3.connect(dbFile)
+        c = conn.cursor()
+        c.execute('INSERT INTO auditStates VALUES("{}", "{}", "{}", "In progress", "NA", "NA", "NA", "NA")'.format(req_audit['requestor'], req_audit['hash'], req_audit['projectUrl']))
+        conn.commit()
+        c.execute('SELECT * FROM auditStates')
+        auditRequests = c.fetchall()
+        conn.close()
+        return json.dumps(auditRequests)
+    else:
+        return 'Content-Type not supported!'
+
+# Take an audit
+# Test: curl -X POST -H "Content-type: application/json" -d "{\"audit_taker\" : \"5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY\",\"audit_hash\" : \"0x001x1x0\"}" 127.0.0.1:9999/take_audit
+@app.route('/take_audit', methods=['POST'])
+def takeAudit():
+    content_type = request.headers.get('Content-Type')
+    if (content_type == 'application/json'):
+        take_audit = request.json
+
+        # Check input
+        try:
+            if check_address(take_audit['audit_taker']): pass
+            else: return DontHakit
+            if check_address(take_audit['audit_hash']): pass
+            else: return DontHakit
+        except:
+            return DontHakit
+
+        conn = sqlite3.connect(dbFile)
+        c = conn.cursor()
+        c.execute('UPDATE auditStates SET manualReport = "In progress", topAuditor = "{}" WHERE hash = "{}"'.format(take_audit['audit_taker'],take_audit['audit_hash']))
+        conn.commit()
+        c.execute('SELECT * FROM auditStates')
+        auditRequests = c.fetchall()
+        conn.close()
+        return json.dumps(auditRequests)
+    else:
+        return 'Content-Type not supported!'
+
+# Send report (1 audit can have multiple reports sent)
+# Test: curl -X POST -H "Content-type: application/json" -d "{\"reportUrl\" : \"urlx\",\"audit_hash\" : \"0x001x1x0\"}" 127.0.0.1:9999/send_report
+@app.route('/send_report', methods=['POST'])
+def sendReport():
+    content_type = request.headers.get('Content-Type')
+    if (content_type == 'application/json'):
+        take_audit = request.json
+
+        # Check input
+        try:
+            if check_address(take_audit['reportUrl']): pass
+            else: return DontHakit
+            if check_address(take_audit['audit_hash']): pass
+            else: return DontHakit            
+        except:
+            return DontHakit
+
+        conn = sqlite3.connect(dbFile)
+        c = conn.cursor()
+        c.execute('UPDATE auditStates SET manualReport = "{}" WHERE hash = "{}"'.format(take_audit['reportUrl'],take_audit['audit_hash']))
+        conn.commit()
+        c.execute('SELECT * FROM auditStates')
+        auditRequests = c.fetchall()
+        conn.close()
+        return json.dumps(auditRequests)
+    else:
+        return 'Content-Type not supported!'
+
+# Get reports
+# http://127.0.0.1:9999/get-reports
+@app.route('/get-reports', methods=['GET'])
+def get_report():
+    conn = sqlite3.connect(dbFile)
+    c = conn.cursor()
+    c.execute('SELECT * FROM auditStates')
+    auditRequests = c.fetchall()
+    conn.close()
+    return json.dumps(auditRequests)
 
 if __name__ == '__main__':
-    app.run(debug=False,host='127.0.0.1', port=9999)
+    app.run(debug=debugState,host='127.0.0.1', port=9999)
