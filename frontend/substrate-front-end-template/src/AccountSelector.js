@@ -150,7 +150,9 @@ export function BalanceAnnotation(props) {
       {accountBalance}
     </Label>
     :
-    <span title={accountBalance + ' QRD'}>{mUnitBalance} mQRD</span>
+    <span title={accountBalance + ' QRD'}>
+      {mUnitBalance} <span className='blue'>M</span>QRD
+    </span>
   ) : null
 }
 

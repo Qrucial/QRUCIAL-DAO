@@ -1,11 +1,18 @@
 import React, { useState, useEffect } from 'react'
 
-function useFormValidation(formState) {
+function useFormValidation(formState, setDisabledState) {
   const initialState = {}
   Object.keys(formState).forEach(key => initialState[key] = false)
   const [errors, setErrors] = useState(initialState)
   const [touched, setTouched] = useState(initialState)
   const [disabled, setDisabled] = useState(true)
+
+  function allowedChars(str) {
+    if (str === '') return true
+    else if (!str) return false
+    const regex = /^[A-Za-z0-9\s-:.,/?_&#=]*$/
+    return regex.test(str)
+  }
 
   function validate(formState) {
     const entries = Object.entries(formState)
@@ -22,6 +29,7 @@ function useFormValidation(formState) {
           errors.hash = value.length === 64 ? false : true
           break
         default:
+          errors[key] = allowedChars(value) ? false : true
           break
       }
     }
@@ -30,7 +38,9 @@ function useFormValidation(formState) {
 
   useEffect(() => {
     const errors = validate(formState)
-    setDisabled(Object.values(errors).some(v => v))
+    const isDisabled = Object.values(errors).some(v => v)
+    setDisabled(isDisabled)
+    setDisabledState && setDisabledState(isDisabled)
     setErrors(errors)
   }, [formState])
 

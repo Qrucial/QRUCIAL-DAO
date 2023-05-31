@@ -5,6 +5,7 @@ import toast from 'react-hot-toast'
 
 import useTxAndPost from './hooks/useTxAndPost'
 import { useSubstrateState } from './substrate-lib'
+import useFormValidation from './hooks/useFormValidation'
 
 export default function AuditorForm(props) {
   const { currentAccount } = useSubstrateState()
@@ -12,6 +13,7 @@ export default function AuditorForm(props) {
   const auditorFields = auditorData ? {...auditorData} : { name:'', picUrl: '', webUrl: '', bio: '', address: currentAccount?.address }
   delete auditorFields.profileHash
   const [formState, setFormState] = useState(auditorFields) 
+  const [disabled, setDisabled] = useState(false) 
 
   const postAttrs = { postUrl: '/profile_update' }
   const txAttrs = { palletRpc: 'auditModule', callable: props.method, finishEvent: props.finishEvent }
@@ -41,7 +43,11 @@ export default function AuditorForm(props) {
   return (  
     <div>
       <Form>
-        <FieldsFromList auditorFields={auditorFields} onChange={onChange} state={formState}/>
+        <FieldsFromList 
+          auditorFields={auditorFields} 
+          onChange={onChange} 
+          state={formState}
+          setDisabled={setDisabled}/>
         <Form.Field style={{ textAlign: 'right' }}>  
           { props.method === 'updateProfile' &&
             <Button 
@@ -55,6 +61,7 @@ export default function AuditorForm(props) {
           <Button 
             color='blue' 
             type="submit"
+            disabled={disabled}
             onClick={onClick}
             >
             {buttonLabel}
@@ -70,18 +77,28 @@ function FieldsFromList(props) {
   function onFieldChange(event) {
     props.onChange(event.target);
   }
+  
+  const {
+    handleBlur,
+    showError,
+    ErrorLabel,
+  } = useFormValidation(props.state, props.setDisabled)
+
   const fields = Object.entries(props.auditorFields).map(([key, value]) => {
-    if (key === 'address' || key === 'profileHash') return null
+    const nonModFields = ['address', 'profileHash', 'auditsDone']
+    if (nonModFields.includes(key)) return null
     else return (
-      <Form.Field key={key}>
+      <Form.Field key={key} error={showError(key)}>
         <Input
           placeholder={value}
           type="text"
           label={key}
           name={key}
           value={props.state[key]}
-          onChange={onFieldChange}          
+          onChange={onFieldChange}
+          onBlur={handleBlur(key)}         
         />
+        <ErrorLabel field={key} text='Some special characters are not allowed'/>
       </Form.Field>
     )
   })
