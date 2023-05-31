@@ -141,7 +141,7 @@ export function BalanceAnnotation(props) {
     return () => unsubscribe && unsubscribe()
   }, [api, currentAccount])
 
-  const mUnitBalance = (+(+balanceString / 100000).toFixed()).toLocaleString('en-US')
+  const mUnitBalance = (+(+balanceString / 1000000).toFixed()).toLocaleString('en-US')
 
   return currentAccount ? (
     props.label ? 
