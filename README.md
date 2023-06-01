@@ -18,8 +18,11 @@ Audit request on front-end &#9658; Validation and hash verification of project p
 
 We believe that audits should be transparent and trustless.
 
-## 📄 Litepaper:
-Simply go to [qrucial.io/qrucial-dao](https://qrucial.io/wp-content/uploads/2022/06/QRUCIAL-DAO-Litepaper-2022.pdf)                                                                                              
+## 📄 Litepaper and whitepaper:
+[Litepaper link /to be actualized/](https://raw.githubusercontent.com/Qrucial/QRUCIAL-DAO/main/docs/QRUCIAL%20DAO%20Litepaper%202022.pdf)
+
+[Whitepaper link /to be actualized/](https://raw.githubusercontent.com/Qrucial/QRUCIAL-DAO/main/docs/QRUCIAL_DAO_Whitepaper.pdf)
+
 # 📚 Wiki:
 QDAO wiki [can be found here](https://github.com/Qrucial/QRUCIAL-DAO/wiki).       
 
