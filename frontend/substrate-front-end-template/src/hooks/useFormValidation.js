@@ -26,7 +26,7 @@ function useFormValidation(formState, setDisabledState) {
           }
           break
         case 'hash':
-          errors.hash = value.length === 64 ? false : true
+          errors.hash = value.length > 63 ? false : true
           break
         default:
           errors[key] = allowedChars(value) ? false : true
