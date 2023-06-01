@@ -82,7 +82,7 @@ function AuditorsPage(props) {
   
   const address = currentAccount?.address
   const getData= async()=>{
-    await fetch('/auditor-data?' + new URLSearchParams({ address }), {
+    await fetch('/lar/auditor-data?' + new URLSearchParams({ address }), {
       headers : { 
         'Content-Type': 'application/json',
         'Accept': 'application/json'

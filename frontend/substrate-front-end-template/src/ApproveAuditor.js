@@ -30,7 +30,7 @@ export default function ApproveAuditor(props) {
   let signedUps = []
 
   const getData= async()=>{
-    await fetch('/auditors', {
+    await fetch('/lar/auditors', {
       headers : { 
         'Content-Type': 'application/json',
         'Accept': 'application/json'

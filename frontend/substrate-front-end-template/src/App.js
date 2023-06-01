@@ -76,11 +76,10 @@ function Main() {
           <Container style={{marginTop:'2em'}}>
             <Routes>
               <Route exact path='/' element={<Home />}></Route>
-              <Route exact path='/lar' element={<Home />}></Route>
-              <Route exact path='/lar/about' element={<About />}></Route>
-              <Route exact path='/lar/requestor' element={<Requestor /> }></Route>
-              <Route exact path='/lar/auditor' element={<AuditorsPage /> }></Route>
-              <Route exact path='/lar/council' element={<CouncilPage /> }></Route>
+              <Route exact path='/about' element={<About />}></Route>
+              <Route exact path='/requestor' element={<Requestor /> }></Route>
+              <Route exact path='/auditor' element={<AuditorsPage /> }></Route>
+              <Route exact path='/council' element={<CouncilPage /> }></Route>
             </Routes>
           </Container>
           <DeveloperConsole />

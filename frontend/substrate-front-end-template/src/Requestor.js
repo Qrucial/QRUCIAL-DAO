@@ -13,7 +13,7 @@ export default function Requestor(props) {
     const changeList = (latest) => setAuditsChange(latest)
 
     const getData=()=>{
-      fetch('/audit-requests', {
+      fetch('/lar/audit-requests', {
         headers : { 
           'Content-Type': 'application/json',
           'Accept': 'application/json'

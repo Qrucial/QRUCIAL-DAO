@@ -16,7 +16,7 @@ export default function Reports(props) {
   const auditDetails = []
 
   const getData=()=>{
-    fetch('/audit-requests', {
+    fetch('/lar/audit-requests', {
       headers : { 
         'Content-Type': 'application/json',
         'Accept': 'application/json'

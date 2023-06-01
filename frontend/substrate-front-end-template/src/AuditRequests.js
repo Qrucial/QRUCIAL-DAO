@@ -13,7 +13,7 @@ export default function AuditRequests(props) {
   const [auditsChange, setAuditsChange] = useState('')
 
   const getData=()=>{
-    fetch('/audit-requests', {
+    fetch('/lar/audit-requests', {
       headers : { 
         'Content-Type': 'application/json',
         'Accept': 'application/json'
@@ -43,7 +43,7 @@ export default function AuditRequests(props) {
   const handleChange = audit => setSelected(audit)
 
   const sendData= async(postData)=>{
-    await fetch('/take_audit', {
+    await fetch('/lar/take_audit', {
       method: 'POST',
       body: JSON.stringify(postData),
       headers : { 

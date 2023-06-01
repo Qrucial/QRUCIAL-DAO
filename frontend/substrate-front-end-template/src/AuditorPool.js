@@ -12,7 +12,7 @@ export default function AuditorPool(props) {
   const unsubAll = []
   const getData= async()=>{
     const auditorsData = []
-    await fetch('/auditors', {
+    await fetch('/lar/auditors', {
       headers : { 
         'Content-Type': 'application/json',
         'Accept': 'application/json'

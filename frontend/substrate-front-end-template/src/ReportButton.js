@@ -12,7 +12,7 @@ export function SendReportButton(props) {
   }
 
   const sendData= async()=>{
-    await fetch('/send_report', {
+    await fetch('/lar/send_report', {
       method: 'POST',
       body: JSON.stringify({ audit_hash: props.audit.hash, reportUrl: formState.reportUrl }),
       headers : { 
