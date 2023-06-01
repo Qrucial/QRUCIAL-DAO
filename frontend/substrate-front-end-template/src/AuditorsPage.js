@@ -5,6 +5,7 @@ import { useSubstrateState } from './substrate-lib'
 import Signup from './Signup'
 import AuditorProfile from './AuditorProfile'
 import AuditRequests from './AuditRequests'
+import ApproveAuditor from './ApproveAuditor'
 import Reports from './Reports'
 
 function AuditorTabs(props) {
@@ -31,6 +32,16 @@ function AuditorTabs(props) {
         </Tab.Pane>
       ) 
     },
+    { menuItem: 'Approve auditor', 
+    render: () => (
+      <Tab.Pane style={{minHeight: '300px'}}>
+        { isApproved ? 
+          <ApproveAuditor details={props.details}/>
+         : 'Waiting to be approved'
+        }
+      </Tab.Pane>
+    ) 
+  },
     { menuItem: 'Profile', 
       render: () => (
         <Tab.Pane style={{minHeight: '300px'}}>

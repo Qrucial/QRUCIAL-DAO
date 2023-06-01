@@ -25,10 +25,10 @@ export default function TopMenu() {
           </NavLink>
         </Menu.Menu>
           <Menu.Menu position="right" style={{ alignItems: 'center' }}>
-          <Menu.Item as={NavLink} to='/about' content='About' />
-          <Menu.Item as={NavLink} to='/auditor' content='Auditor' />
-          <Menu.Item as={NavLink} to='/council' content='Council' />
-          <Menu.Item as={NavLink} to='/requestor' content='Requestor' />
+          <Menu.Item as={NavLink} to='/about' content='Get started' />
+          <Menu.Item as={NavLink} to='/requestor' content='Start audit' />
+          <Menu.Item as={NavLink} to='/auditor' content='Audits' />
+          <Menu.Item as={NavLink} to='/council' content='Council' />  
         </Menu.Menu>
       </Menu>
     </Container>

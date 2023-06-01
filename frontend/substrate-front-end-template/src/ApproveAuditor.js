@@ -22,7 +22,7 @@ export default function ApproveAuditor(props) {
     setMinScore(minScore.toJSON())
   }, [api])
 
-  const score = details && JSON.parse(details).score
+  const score = details && details.score
   const isAllowed = score >= minScore ? true : false 
   
   const approvee = currentAccount?.address

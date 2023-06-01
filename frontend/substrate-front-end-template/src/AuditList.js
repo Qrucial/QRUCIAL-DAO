@@ -12,19 +12,22 @@ export default function AuditList(props) {
 
   function AuditElem(props) {
     const audit = props.elem;
+    const onClick = props.onClick ||
+      function(audit) {
+        setModalOpen(true);
+        setModalValue({
+          content: audit,
+          header: audit.projectUrl 
+        });
+        handleClick && handleClick(audit);
+      }
+
     return (
       <>
         <div
           className='auditorDiv'
           style={{padding: '5px', cursor: 'pointer', wordBreak: 'break-word'}}
-          onClick={() => {
-            setModalOpen(true);
-            setModalValue({
-              content: audit,
-              header: audit.projectUrl 
-            });
-            handleClick && handleClick(audit);
-          }}
+          onClick={() => onClick(audit)}
           >
           {audit.projectUrl}
         </div>
@@ -35,7 +38,14 @@ export default function AuditList(props) {
     )
   }
 
-  const list = props.auditData.map((a, i) => <AuditElem elem={a} key={i} reportButton={props.reportButton}/>)
+  const list = props.auditData.map((a, i) => (
+    <AuditElem 
+      elem={a} 
+      key={i} 
+      reportButton={props.reportButton}
+      onClick={props.onClick}
+      />)
+  )
 
   return (
     <div className='selectBox'>
