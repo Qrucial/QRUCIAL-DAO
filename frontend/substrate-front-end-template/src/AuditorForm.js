@@ -15,7 +15,7 @@ export default function AuditorForm(props) {
   const [formState, setFormState] = useState(auditorFields) 
   const [disabled, setDisabled] = useState(false) 
 
-  const postAttrs = { postUrl: '/profile_update' }
+  const postAttrs = { postUrl: '/lar/profile_update' }
   const txAttrs = { palletRpc: 'auditModule', callable: props.method, finishEvent: props.finishEvent }
 
   const { txAndPost } = useTxAndPost(txAttrs, postAttrs)

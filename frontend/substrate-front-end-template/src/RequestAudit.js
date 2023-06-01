@@ -18,7 +18,7 @@ export default function RequestAudit(props) {
     setFormState({ url: '', hash: '', bounty: DEFAULT_STAKE, minAuditorScore: DEFAULT_STAKE })
   }
 
-  const postAttrs = { postUrl: '/request-audit' }
+  const postAttrs = { postUrl: '/lar/request-audit' }
   const txAttrs = { palletRpc: 'exoSys', callable: 'requestReview', finishEvent }
   const { txAndPost } = useTxAndPost(txAttrs, postAttrs)
 
