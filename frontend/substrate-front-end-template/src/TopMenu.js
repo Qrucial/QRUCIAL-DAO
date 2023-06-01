@@ -17,7 +17,7 @@ export default function TopMenu() {
         }}
       >
         <Menu.Menu>
-          <NavLink to="/lar">
+          <NavLink to="/">
             <Image
               src={`${process.env.PUBLIC_URL}/assets/logo.png`}
               style={{ height: '50px' }}
@@ -25,10 +25,10 @@ export default function TopMenu() {
           </NavLink>
         </Menu.Menu>
           <Menu.Menu position="right" style={{ alignItems: 'center' }}>
-          <Menu.Item as={NavLink} to='/lar/about' content='Get started' />
-          <Menu.Item as={NavLink} to='/lar/requestor' content='Start audit' />
-          <Menu.Item as={NavLink} to='/lar/auditor' content='Audits' />
-          <Menu.Item as={NavLink} to='/lar/council' content='Council' />  
+          <Menu.Item as={NavLink} to='/about' content='Get started' />
+          <Menu.Item as={NavLink} to='/requestor' content='Start audit' />
+          <Menu.Item as={NavLink} to='/auditor' content='Audits' />
+          <Menu.Item as={NavLink} to='/council' content='Council' />  
         </Menu.Menu>
       </Menu>
     </Container>
