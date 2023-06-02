@@ -53,24 +53,26 @@ export default function Reports(props) {
   }
 
 const setReportData = (auditData) => {
+  let totalReports = []
   auditData.forEach((audit => { 
-    const completeAudit = {...audit}
-    let totalReports = []
-    completeAudit.reports.forEach((report, reportId) => {
+    let auditsReports = []
+    audit.reports.forEach((report, i) => {
       const query2 = async (auditHash, reportId) => {
         await api.query.exoSys.vulnerabilities(
           auditHash, reportId,
-          (result) => {                
-            if (!result.isNone) {
-              const vulns = result.toHuman();
-              const completeReport = Object.assign({}, report, { vulnerabilities: vulns })
-              totalReports[reportId] = completeReport
-              setReports({[audit.hash] : totalReports.slice()})
-            }
+          (result) => {  
+            const vulns = result.isNone ? null : result.toHuman()
+            auditsReports[reportId] = Object.assign({}, report, { reportId, vulnerabilities: vulns })
+            const auditReportsRecord = { auditHash: auditHash, reports : auditsReports }
+            const existingIndex = totalReports.findIndex((elem) => 
+              Object.values(elem).includes(auditHash))
+            if (existingIndex > -1) totalReports[existingIndex] = auditReportsRecord
+            else totalReports.push(auditReportsRecord)
+            setReports(totalReports.slice())
           } 
         )
       }
-      query2(audit.hash, reportId)
+      query2(audit.hash, i)
     })
   }))
 }  
@@ -105,6 +107,9 @@ const setReportData = (auditData) => {
   }
 
   const auditHash = showAudit?.hash
+  const reportsOfAudit = auditHash ? 
+    reports.find(elem => elem.auditHash === auditHash)?.reports
+    : []
 
   return (
     <Grid>
@@ -154,7 +159,7 @@ const setReportData = (auditData) => {
               </Table>
 
             <Header color='blue' as='h4'>Reports</Header> 
-            { reports[auditHash].map((rep, index) => 
+            { reportsOfAudit?.map((rep, index) => 
               <Table style={{ wordBreak: 'break-word' }} key={index}>  
                 <Table.Body>
                   <Table.Row>
@@ -169,11 +174,12 @@ const setReportData = (auditData) => {
                       {rep.kind}
                     </Table.Cell>
                   </Table.Row>
+                { rep.vulnerabilities &&
                   <Table.Row>
                     <Table.Cell colSpan='3'>vulnerabilities</Table.Cell>
                   </Table.Row>
-
-                { rep.vulnerabilities.map((vuln,i) => 
+                }
+                { rep.vulnerabilities?.map((vuln,i) => 
                   <Table.Row key={i}>
                     <Table.Cell>{i}</Table.Cell>
                     <Table.Cell colSpan='2'>                      
@@ -214,15 +220,17 @@ const setReportData = (auditData) => {
                     </Table.Cell>
                   </Table.Row>
                 )}
+                {rep.auditor !== currentAccount.address && 
                   <Table.Row>
                     <Table.Cell colSpan='3' textAlign='right' >
                       <ChallengeReportButton 
                         auditHash={auditHash} 
                         report={rep} 
-                        reportId={index}
+                        reportId={rep.reportId}
                       />
                     </Table.Cell>
                   </Table.Row>
+                }
                 </Table.Body>
               </Table>
               )}
