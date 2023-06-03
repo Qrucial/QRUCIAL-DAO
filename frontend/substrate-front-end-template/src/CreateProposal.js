@@ -1,12 +1,12 @@
-import React, { useState } from 'react'
-import { Segment, Header, Form, Input, Dropdown, Button } from 'semantic-ui-react'
+import React, { useState, useEffect } from 'react'
+import { Segment, Header, Form, Dropdown, Button } from 'semantic-ui-react'
 import { web3FromSource } from '@polkadot/extension-dapp'
 import BN from 'bn.js'
 import toast from 'react-hot-toast'
 
 import { useSubstrateState } from './substrate-lib'
-import useFormValidation from './hooks/useFormValidation'
 import { createToast } from './toastContent'
+import Events from './template-comps/Events.js'
 
 export default function CreateProposal(props) {
   const { api, currentAccount } = useSubstrateState()
@@ -18,8 +18,19 @@ export default function CreateProposal(props) {
     challengeId: '',
     lengthBound: 5000,
   }
-  const [formState, setFormState] = useState(initial) 
+  const formState = props.formState
+  const setFormState = props.setFormState 
   const [unsub, setUnsub] = useState(null)
+
+  const [eventFeed, setEventFeed] = useState([])
+  const [showEvent, setShowEvent] = useState()
+  const setStatus = createToast()
+
+  useEffect(() => {
+    const events = eventFeed.map((e, i) => 
+      <span key={i}><br></br>{e.summary}</span>)
+    if (events.length) setStatus(events)
+  }, [showEvent])
 
   const getFromAcct = async () => {
     const {
@@ -32,7 +43,6 @@ export default function CreateProposal(props) {
     const injector = await web3FromSource(source)
     return [address, { signer: injector.signer }]
   }
-  const setStatus = createToast()
   const showStatus = (status) => {
     status.isFinalized
       ? setStatus(`😉 Finalized. Block hash: ${status.asFinalized.toString()}`)
@@ -53,6 +63,7 @@ export default function CreateProposal(props) {
           // as subscribed, every status change calls the callback fn
           if (!dispatchError && status.isInBlock) { 
             setFormState(initial)
+            setShowEvent([formState.hash, formState.reportId, formState.challengeId])
           }
           if (dispatchError && status.isFinalized) {
             if (dispatchError.isModule) {
@@ -99,19 +110,19 @@ export default function CreateProposal(props) {
     setFormState(prev => ({ ...prev, [data.name]: data.value }))
   }
 
-  const {
-    disabled,
+/*   const {
+   // disabled,
     handleBlur,
     showError,
     ErrorLabel,
-  } = useFormValidation(formState)
+  } = useFormValidation(formState) */
 
   return (
     <div>
       <Segment style={{background: '#f7f7f7'}}>
         <Header color="blue" as='h4'>Create proposal</Header> 
         <Form>              
-            <Form.Field error={showError('text')}> 
+{/*             <Form.Field error={showError('text')}> 
               <Input 
                 placeholder={1}
                 type="number"
@@ -133,9 +144,10 @@ export default function CreateProposal(props) {
                 onBlur={handleBlur('hash')}         
                 /> 
               <ErrorLabel field={'hash'} text='Needs to be a keccak-256 hash format'/>
-            </Form.Field>
+            </Form.Field> */}
             <Form.Field>
               <Dropdown
+                placeholder='Select action'
                 fluid
                 selection
                 options={extOptions}
@@ -144,7 +156,7 @@ export default function CreateProposal(props) {
                 name='proposal'
               />
             </Form.Field>
-            <Form.Field error={showError('text')}> 
+{/*             <Form.Field error={showError('text')}> 
               <Input 
                 placeholder={0}
                 type="number"
@@ -179,16 +191,17 @@ export default function CreateProposal(props) {
                 /> 
               <ErrorLabel field={'lengthBound'} text='Some special characters are not allowed'/>
             </Form.Field>
-            <Button 
+ */}        <Button 
               color='blue' 
               type="submit"
-              disabled={disabled}
+              disabled={!formState.proposal}
               onClick={onClick}
             >
             Propose         
           </Button>
         </Form>
-      </Segment>
+      </Segment> 
+      <Events setEventFeed={setEventFeed} />
     </div>
   )
 }

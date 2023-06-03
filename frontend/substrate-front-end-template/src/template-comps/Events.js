@@ -1,6 +1,5 @@
-import React, { useEffect, useState } from 'react'
-import { Feed, Grid, Button } from 'semantic-ui-react'
-
+import React, { useEffect, /* useState */ } from 'react'
+import { /* Feed, */ Grid, /* Button */ } from 'semantic-ui-react'
 import { useSubstrateState } from '../substrate-lib'
 
 // Events to be filtered from feed
@@ -13,7 +12,9 @@ const eventParams = ev => JSON.stringify(ev.data)
 
 function Main(props) {
   const { api } = useSubstrateState()
-  const [eventFeed, setEventFeed] = useState([])
+/*   const [eventFeed, setEventFeed] = useState([])
+ */
+  const setEventFeed = props.setEventFeed
 
   useEffect(() => {
     let unsub = null
@@ -52,12 +53,12 @@ function Main(props) {
     return () => unsub && unsub()
   }, [api.query.system])
 
-  const { feedMaxHeight = 250 } = props
-
+  /*   const { feedMaxHeight = 250 } = props
+ */ 
   return (
     <Grid.Column width={8}>
-      <h1 style={{ float: 'left' }}>Events</h1>
-      <Button
+      {/* <h1 style={{ float: 'left' }}>Events</h1>
+       <Button
         basic
         circular
         size="mini"
@@ -69,7 +70,7 @@ function Main(props) {
       <Feed
         style={{ clear: 'both', overflow: 'auto', maxHeight: feedMaxHeight }}
         events={eventFeed}
-      />
+      /> */}
     </Grid.Column>
   )
 }

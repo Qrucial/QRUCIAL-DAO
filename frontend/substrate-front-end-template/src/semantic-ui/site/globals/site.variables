@@ -25,3 +25,6 @@
 @solidSelectedBorderColor  : rgba(0, 147, 255, 0.3);
 
 @focusedFormBorderColor    : rgba(0, 147, 255, 0.35);
+
+@linkColor           : #017ed8;
+@linkHoverColor      : lighten( @linkColor, 5);
