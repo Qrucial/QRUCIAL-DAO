@@ -48,14 +48,16 @@ export default function Requestor(props) {
 
   return (
     <Grid.Column>
+      <RequestAudit changeList={changeList}/>
+      {(myAudits.length > 0) &&
       <Segment>
         <Header as='h3' color='blue'>My requests</Header>
         <AuditList 
-              auditData={myAudits}
-              auditsChange={auditsChange}
-              />
+          auditData={myAudits}
+          auditsChange={auditsChange}
+        />
       </Segment>
-      <RequestAudit changeList={changeList}/>
+      }
     </Grid.Column>
   )
 }

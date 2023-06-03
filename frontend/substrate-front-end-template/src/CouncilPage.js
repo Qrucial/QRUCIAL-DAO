@@ -2,12 +2,12 @@ import React,  { useEffect, useState } from 'react'
 import { Segment, Header } from 'semantic-ui-react'
 
 import { useSubstrateState } from './substrate-lib'
-import CreateProposal from './CreateProposal'
+import Challenges from './Challenges'
 
 export default function CouncilPage(props) {
   const { api, currentAccount } = useSubstrateState()
   const [details, setDetails] = useState(null)
-  
+
   useEffect(() => {
     let unsub = null  
     const query = async () => {
@@ -33,9 +33,9 @@ export default function CouncilPage(props) {
       }
       {isCouncil && (
         <div>
-          <Segment>
+          <Segment style={{ backgroundColor: '#f7f7f7'}}>
             <Header as='h3'>Verify Challenge</Header> 
-            <CreateProposal details={details}/>
+            <Challenges details={details}/>
           </Segment>
         </div>
       )}

@@ -20,7 +20,7 @@ export function createToast() {
   function showToast(status) {
     if (toastId) {
       toast(((t) => toastContent(t, status)),{ id: toastId });
-      if (status.includes('Finalized') || status.includes('Failed')) { 
+      if (status?.includes('Finalized') || status?.includes('Failed')) { 
         toastId = null
       }
     } else {

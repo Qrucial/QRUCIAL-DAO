@@ -5,7 +5,7 @@ import useTxAndPost from './hooks/useTxAndPost'
 export default function CancelAccount(props) {
   const [open, setOpen] = useState(false)
   
-  const postAttrs = { postUrl: '/profile_update' }
+  const postAttrs = { postUrl: '/lar/profile_update' }
   const txAttrs = { palletRpc: 'auditModule', callable: 'cancelAccount', finishEvent: props.finishEvent }
 
   const { txAndPost } = useTxAndPost(txAttrs, postAttrs)

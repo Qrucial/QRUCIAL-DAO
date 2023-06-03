@@ -91,11 +91,13 @@ export default function AuditRequests(props) {
     <Grid>
       <Grid.Row>
         <Grid.Column width={8} className='auditorColumn'>
+          {nonTakenAudits.length > 0 &&
           <AuditList 
             auditData={nonTakenAudits}
             handleClick={handleChange} 
             auditsChange={auditsChange}
           />
+          }
         </Grid.Column>
         <Grid.Column width={8}>
           <p>You can view the details of the audit by clicking on the item.

@@ -18,13 +18,14 @@ export default function RequestAudit(props) {
     setFormState({ url: '', hash: '', bounty: DEFAULT_STAKE, minAuditorScore: DEFAULT_STAKE })
   }
 
-  const postAttrs = { postUrl: '/request-audit' }
+  const postAttrs = { postUrl: '/lar/request-audit' }
   const txAttrs = { palletRpc: 'exoSys', callable: 'requestReview', finishEvent }
   const { txAndPost } = useTxAndPost(txAttrs, postAttrs)
 
   const onClick = async (event, data) => {
-    const txData = [url, hash, bounty, minAuditorScore]
-    const postData = { requestor, hash, projectUrl: formState.url };
+    const h256Hash = hash.startsWith('0x') ? hash : '0x' + hash
+    const txData = [url, h256Hash, bounty, minAuditorScore]
+    const postData = { requestor, hash: h256Hash, projectUrl: formState.url };
     txAndPost(txData, postData)
   }
 
