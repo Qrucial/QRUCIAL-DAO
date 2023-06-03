@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import { Grid, Header, List } from 'semantic-ui-react'
 import CreateProposal from './CreateProposal'
 
@@ -12,6 +12,28 @@ export default function ViewChallenge(props) {
   const auditUrl = props.auditState.find(a => 
     a.hash === challenge.auditHash)?.projectUrl
 
+  const getData = async(address, setState )=>{
+    await fetch('/lar/auditor-data?' + new URLSearchParams({ address }), {
+      headers : { 
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      }
+    }).then(response => {
+      return response.json()
+    }).then(data =>{
+      setState(data[0])
+    }).catch((err) => {
+      console.log(err.message)
+    })
+  }
+  
+  const [reportAuditor, setReportAuditor] = useState('')
+  const [challengeAuditor, setChallengeAuditor] = useState('')
+  useEffect(() => {
+    getData(report.auditor, setReportAuditor)
+    getData(challenge.auditor, setChallengeAuditor)
+  },[])
+
   return (
     <div>
       {report &&
@@ -20,10 +42,10 @@ export default function ViewChallenge(props) {
         <Header as='h4'>Report</Header> 
         <List>
           <List.Item>
-            <span className='blue'>audit url: </span>{auditUrl}
+            <span className='blue'>audit url: </span><a href={auditUrl}>{auditUrl}</a>
           </List.Item>
           <List.Item>
-            <span className='blue'>auditor: </span>{report.auditor}
+            <span className='blue'>auditor: </span>{reportAuditor?.name || report.auditor}
           </List.Item>
           <List.Item>
             <span className='blue'>report kind: </span>{report.kind}
@@ -64,10 +86,10 @@ export default function ViewChallenge(props) {
         <Header as='h4'>Challenge</Header> 
         <List>
           <List.Item>
-            <span className='blue'>audit url: </span>{auditUrl}
+            <span className='blue'>audit url: </span><a href={auditUrl}>{auditUrl}</a>
           </List.Item>
           <List.Item>
-            <span className='blue'>auditor: </span>{challenge.auditor}
+            <span className='blue'>auditor: </span>{challengeAuditor?.name || challenge.auditor}
           </List.Item>
           <List.Item>
             <span className='blue'>state: </span>{challenge.state}

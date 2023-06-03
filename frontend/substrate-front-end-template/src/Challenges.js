@@ -126,14 +126,38 @@ export default function Challenges(props) {
     setChallenge(ch)
   }
 
+  const [auditorNames, setAuditorNames] = useState([])
+  useEffect(() => {
+    challengesState.map((ch, i) => {
+      const getData = async()=>{
+        await fetch('/lar/auditor-data?' + new URLSearchParams({ address: ch.auditor }), {
+          headers : { 
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+          }
+        }).then(response => {
+          return response.json()
+        }).then(data =>{
+          const names = auditorNames.slice()
+          names[i] = (data[0]).name
+          setAuditorNames(names)
+        }).catch((err) => {
+          console.log(err.message)
+        })
+      }
+      getData()
+    })
+  },[challengesState])
+
   const ChallengeTitles = () => {
     return challengesState.map((ch, i) => {
       const audit = auditState.find(a => a.hash === ch.auditHash)
+      const auditorName = auditorNames[i]
       return ( 
         <List.Item key={i}>
           <List.Content onClick={() => handleClick(ch)}>
             <List.Header as='a' className='blue'>{audit?.projectUrl} / reportId: {ch.reportId}.</List.Header>
-            <List.Description as='a'>Auditor: {ch.auditor}</List.Description>
+            <List.Description as='a'>Auditor: {auditorName || ch.auditor}</List.Description>
             <List.Description as='a'>State: {ch.state}</List.Description>
           </List.Content>
         </List.Item>
