@@ -30,9 +30,9 @@ export default function ViewChallenge(props) {
   const [reportAuditor, setReportAuditor] = useState('')
   const [challengeAuditor, setChallengeAuditor] = useState('')
   useEffect(() => {
-    getData(report.auditor, setReportAuditor)
-    getData(challenge.auditor, setChallengeAuditor)
-  },[])
+    getData(report?.auditor, setReportAuditor)
+    getData(challenge?.auditor, setChallengeAuditor)
+  },[report, challenge])
 
   return (
     <div>

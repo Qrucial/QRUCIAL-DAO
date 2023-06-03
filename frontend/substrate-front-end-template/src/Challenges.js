@@ -128,6 +128,7 @@ export default function Challenges(props) {
 
   const [auditorNames, setAuditorNames] = useState([])
   useEffect(() => {
+    const names = auditorNames.slice()
     challengesState.map((ch, i) => {
       const getData = async()=>{
         await fetch('/lar/auditor-data?' + new URLSearchParams({ address: ch.auditor }), {
@@ -138,9 +139,8 @@ export default function Challenges(props) {
         }).then(response => {
           return response.json()
         }).then(data =>{
-          const names = auditorNames.slice()
           names[i] = (data[0]).name
-          setAuditorNames(names)
+          setAuditorNames(names.slice())
         }).catch((err) => {
           console.log(err.message)
         })
