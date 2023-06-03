@@ -23,8 +23,9 @@ export default function RequestAudit(props) {
   const { txAndPost } = useTxAndPost(txAttrs, postAttrs)
 
   const onClick = async (event, data) => {
-    const txData = [url, hash, bounty, minAuditorScore]
-    const postData = { requestor, hash, projectUrl: formState.url };
+    const h256Hash = hash.startsWith('0x') ? hash : '0x' + hash
+    const txData = [url, h256Hash, bounty, minAuditorScore]
+    const postData = { requestor, hash: h256Hash, projectUrl: formState.url };
     txAndPost(txData, postData)
   }
 

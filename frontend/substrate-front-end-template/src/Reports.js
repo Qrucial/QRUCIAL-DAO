@@ -99,8 +99,7 @@ const setReportData = (auditData) => {
     setReportData(auditData)
   },[auditData])
 
-  const audits = auditData.filter(a =>
-    a.manualReport && a.manualReport !== 'In progress')
+  const audits = auditData
 
   const onAuditClick = function(audit) {
     setShowAudit(audit)
@@ -118,12 +117,14 @@ const setReportData = (auditData) => {
         <p>You can view the details of the audit and its report by clicking on the item.</p>
       </Container>
       <Grid.Column width={6} className='auditorColumn'>
+        {(reports.length > 0) && 
         <AuditList 
           auditData={audits}
           handleClick={handleChange} 
           auditsChange={auditsChange}
           onClick={onAuditClick}
           />
+        }
       </Grid.Column>
       <Grid.Column width={10}>
         <div>
