@@ -29,7 +29,14 @@ export default function CouncilPage(props) {
   return (
     <div>
       {isCouncil === false && 
-        <div>You are not yet member of the council.</div>
+        <div>
+          <p>You are not member of the council yet.</p>
+          <p>
+            <a href="" target="_blank">
+              How to become a council member?
+            </a>
+          </p>
+        </div>
       }
       {isCouncil && (
         <div>
