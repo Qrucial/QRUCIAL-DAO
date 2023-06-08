@@ -64,7 +64,7 @@ function TxButton({
 
   const setStatusState = (status) => {
     status.isFinalized
-      ? setStatus(`😉 Finalized. Block hash: ${status.asFinalized.toString()}`)
+      ? setStatus(`Finalized. Block hash: ${status.asFinalized.toString()}`)
       : setStatus(`Current transaction status: ${status.type}`)
   }
 
@@ -116,7 +116,7 @@ function TxButton({
         ({ status, dispatchError }) => {
           setStatusState(status)
           // as subscribed, every status change calls the callback fn
-          if (dispatchError && status.isFinalized) {
+          if (dispatchError && status.isInBlock) {
             if (dispatchError.isModule) {
               // We have to convert the error to the required format from the type what we get
               // needs revision at substrate updates

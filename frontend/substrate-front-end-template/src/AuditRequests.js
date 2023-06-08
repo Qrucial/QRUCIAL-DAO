@@ -6,7 +6,7 @@ import { useSubstrateState } from './substrate-lib'
 import AuditList from './AuditList'
 
 export default function AuditRequests(props) {
-  const [selected, setSelected] = useState({})
+  const [selected, setSelected] = useState({ hash: ''})
   const { currentAccount } = useSubstrateState()
 
   const [auditData, setAuditData] = useState([])
@@ -19,6 +19,9 @@ export default function AuditRequests(props) {
         'Accept': 'application/json'
        }
     }).then(response => {
+      if (!response.ok) {
+        throw Error(response.status + ' ' + response.statusText)
+      }
       return response.json()
     }
     ).then(data =>{
@@ -51,6 +54,9 @@ export default function AuditRequests(props) {
         'Accept': 'application/json'
         }
     }).then(response => {
+      if (!response.ok) {
+        throw Error(response.status + ' ' + response.statusText)
+      }
       return response.json()
     }
     ).then(data =>{
@@ -58,10 +64,10 @@ export default function AuditRequests(props) {
         (typeof data === 'string' && data.startsWith('Error'))) 
         toast.error('Error: save failed')
       else toast.success('Data saved')
-      setSelected({})
+      setSelected({ hash: '' })
       setAuditsChange(postData)
     }).catch((err) => {
-      toast.error("ERROR" + err.message)
+      toast.error("ERROR " + err.message)
     })
   }
 
@@ -104,7 +110,7 @@ export default function AuditRequests(props) {
             Also by clicking on it {description}
           </p>
           <div style={{textAlign:'center'}}>
-            <Input value={selected.projectUrl} onChange={() => setSelected({})}></Input>
+            <Input value={selected.hash} onChange={() => setSelected({hash: ''})}></Input>
             <br/>
             <Button 
               style={{margin:'10px'}} 

@@ -19,6 +19,9 @@ export default function useTxAndPost(txAttrs, postAttrs) {
         'Accept': 'application/json'
         }
     }).then(response => {
+      if (!response.ok) {
+        throw Error(response.status + ' ' + response.statusText)
+      }
       return response.json()
     }
     ).then(data =>{
@@ -28,7 +31,7 @@ export default function useTxAndPost(txAttrs, postAttrs) {
       else toast.success('Data saved')
       resCallback && typeof resCallback === 'function' && resCallback(data)
     }).catch((err) => {
-      toast.error("ERROR" + err.message)
+      toast.error("ERROR " + err.message)
     })
   }
   
@@ -49,7 +52,7 @@ export default function useTxAndPost(txAttrs, postAttrs) {
   const setStatus = createToast()
   const showStatus = (status) => {
     status.isFinalized
-      ? setStatus(`😉 Finalized. Block hash: ${status.asFinalized.toString()}`)
+      ? setStatus(`Finalized. Block hash: ${status.asFinalized.toString()}`)
       : setStatus(`Current transaction status: ${status.type}`)
   }
   const txErrHandler = err => setStatus(`😞 Transaction Failed: ${err.toString()}`)
@@ -67,7 +70,7 @@ export default function useTxAndPost(txAttrs, postAttrs) {
             sendData(postData)
             finishEvent && typeof finishEvent === 'function' && finishEvent()
           }
-          if (dispatchError && status.isFinalized) {
+          if (dispatchError && status.isInBlock) {
             if (dispatchError.isModule) {
               // We have to convert the error to the required format from the type what we get
               // needs revision at substrate updates

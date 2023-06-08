@@ -20,6 +20,9 @@ export function SendReportButton(props) {
         'Accept': 'application/json'
         }
     }).then(response => {
+      if (!response.ok) {
+        throw Error(response.status + ' ' + response.statusText)
+      }
       return response.json()
     }
     ).then(data =>{
@@ -30,7 +33,7 @@ export function SendReportButton(props) {
         setOpen(false)
         props.setState(props.audit.hash)
     }).catch((err) => {
-      toast.error("ERROR" + err.message)
+      toast.error("ERROR " + err.message)
     })
   }
 
