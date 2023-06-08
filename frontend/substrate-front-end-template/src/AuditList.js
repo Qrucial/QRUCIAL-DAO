@@ -29,7 +29,7 @@ export default function AuditList(props) {
           style={{padding: '5px', cursor: 'pointer', wordBreak: 'break-word'}}
           onClick={() => onClick(audit)}
           >
-          {audit.projectUrl}
+          {audit.hash}
         </div>
         {props.reportButton && 
           <SendReportButton audit={audit} setState={setState}/>
