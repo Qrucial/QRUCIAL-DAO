@@ -364,7 +364,35 @@ def takeAudit():
     else:
         return 'Content-Type not supported!'
 
-# Send report (1 audit can have multiple reports sent)
+# Challenge an audit
+# Test: curl -X POST -H "Content-type: application/json" -d "{\"challenger\" : \"5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY\",\"audit_hash\" : \"0x0\"}" 127.0.0.1:9999/challenge_audit
+@app.route('/lar/challenge_audit', methods=['POST'])
+def challenge_audit():
+    content_type = request.headers.get('Content-Type')
+    if (content_type == 'application/json'):
+        challenge_audit = request.json
+
+        # Check input
+        try:
+            if check_address(challenge_audit['challenger']): pass
+            else: return DontHakit
+            if check_address(challenge_audit['audit_hash']): pass
+            else: return DontHakit
+        except:
+            return DontHakit
+
+        conn = sqlite3.connect(dbFile)
+        c = conn.cursor()
+        c.execute('UPDATE auditStates SET challenger = "{}" WHERE hash = "{}"'.format(challenge_audit['challenger'],challenge_audit['audit_hash']))
+        conn.commit()
+        c.execute('SELECT * FROM auditStates')
+        auditRequests = c.fetchall()
+        conn.close()
+        return json.dumps(auditRequests)
+    else:
+        return 'Content-Type not supported!'
+
+# Send report (1 audit can have multiple reports sent), to be verified
 # Test: curl -X POST -H "Content-type: application/json" -d "{\"reportUrl\" : \"urlx\",\"audit_hash\" : \"0x001x1x0\"}" 127.0.0.1:9999/send_report
 @app.route('/lar/send_report', methods=['POST'])
 def sendReport():
