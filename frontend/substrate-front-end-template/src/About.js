@@ -1,7 +1,9 @@
 import React from 'react'
-import { Container, Segment, Header } from 'semantic-ui-react'
+import { useNavigate } from "react-router-dom";
+import { Container, Segment, Header, Button, Icon } from 'semantic-ui-react'
 
 export default function About(props) {
+  const navigate = useNavigate();
   return (
     <Container>
       <Segment raised style={{background: '#f7f7f7'}}>
@@ -15,10 +17,16 @@ export default function About(props) {
           <p>All audit reports are bound to the audited project packages themselves and results are verifiable and transparent. Audit reports can be challenged, so the better hackers can steal the reputation of others.</p>
           <Header color='blue' as='h3'>Request audit</Header>
           <p>Get QRD and request an automated audit, tools will run automatically. And someone might even do a free test audit for you in this beta instance, just for fun.</p>
-          <button primary onclick="window.location.href='/requestor';">-></button>
+          <Button icon primary size="tiny"
+            onClick={() => navigate('/requestor')}>
+            <Icon name="arrow right" />
+          </Button>
           <Header color='blue' as='h3'>Become an auditor</Header> 
           <p>Right now, in this test instance, anyone can "hack" him/herself to become an auditor. In the live system we'll add those who already proved their skills through CTF games, eg. CCTF.</p>
-          <button primary onclick="window.location.href='/auditor';">-></button>
+          <Button icon primary size="tiny"
+            onClick={() => navigate('/auditor')}>
+            <Icon name="arrow right" />
+          </Button>
           <Header color='blue' as='h3'>Become council member</Header> 
           <p>Council members overview the audit challenges and help the QDAO system to be fair play. Become a council member by hacking the beta system or asking on matrix.</p>
         </div>  
