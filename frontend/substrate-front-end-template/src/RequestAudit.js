@@ -50,14 +50,14 @@ export default function RequestAudit(props) {
           <Form>
             <Form.Field error={showError('url')}>
               <Input
-                placeholder='url of a tar file'
+                placeholder='url of file to audit'
                 type='text'
                 label='url'
                 value={url}
                 onChange={onChange}
                 onBlur={handleBlur('url')}
               />
-              <ErrorLabel field='url' text='Needs to be a url of a .tar file'/>
+              <ErrorLabel field='url' text='Needs to be a valid url'/>
             </Form.Field>
             <Form.Field error={showError('hash')}>
               <Input

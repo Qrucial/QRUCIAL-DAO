@@ -14,15 +14,26 @@ function useFormValidation(formState, setDisabledState) {
     return regex.test(str)
   }
 
+  const isValidUrl = (urlString) => {
+    const urlPattern = new RegExp('^(https?:\\/\\/)?'+ // validate protocol
+    '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|'+ // validate domain name
+    '((\\d{1,3}\\.){3}\\d{1,3}))'+ // validate OR ip (v4) address
+    '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*'+ // validate port and path
+    '(\\?[;&a-z\\d%_.~+=-]*)?'+ // validate query string
+    '(\\#[-a-z\\d_]*)?$','i'); // validate fragment locator
+    return !!urlPattern.test(urlString);
+  }
+
   function validate(formState) {
     const entries = Object.entries(formState)
     const errors = {}
     for (const [key, value] of entries) {
       switch (key) {
         case 'url': {
-          const parts = value.split('.');
+          errors.url = isValidUrl(value) ? false : true
+/*        const parts = value.split('.');
           const extension = parts.length > 1 ? parts.pop().toLowerCase() : '';
-          errors.url = extension === 'tar' ? false : true
+          errors.url = extension === 'tar' ? false : true */
           }
           break
         case 'hash':
