@@ -5,7 +5,7 @@ import { useSubstrateState } from './substrate-lib'
 import useTxAndPost from './hooks/useTxAndPost'
 import useFormValidation from './hooks/useFormValidation'
 
-const DEFAULT_STAKE = 500
+export const DEFAULT_STAKE = 500
 
 export default function RequestAudit(props) {
   const [formState, setFormState] = useState({ url: '', hash: '', bounty: DEFAULT_STAKE, minAuditorScore: DEFAULT_STAKE })
