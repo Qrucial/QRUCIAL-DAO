@@ -45,6 +45,11 @@ export default function ChallengeReportButton(props) {
     txAndPost(inputParams, postData)
   }
 
+  const [disabledRem, setDisabledRem] = useState(false)
+  const [disabledAdd, setDisabledAdd] = useState(false)
+  const [disabledPatch, setDisabledPatch] = useState(false)
+  const disabled = disabledRem || disabledAdd || disabledPatch
+
   return (  
     <div>
       <Modal
@@ -63,9 +68,9 @@ export default function ChallengeReportButton(props) {
         <Modal.Content >
           <Modal.Description>
             <Form>              
-              <RemoveVuln data={remove} setData={setRemove}/>
-              <AddVuln data={add} setData={setAdd}/>
-              <PatchVuln data={patch} setData={setPatch}/>
+              <RemoveVuln data={remove} setData={setRemove} setDisabled={setDisabledRem}/>
+              <AddVuln data={add} setData={setAdd} setDisabled={setDisabledAdd} />
+              <PatchVuln data={patch} setData={setPatch} setDisabled={setDisabledPatch}/>
             </Form>
           </Modal.Description>
         </Modal.Content>
@@ -80,6 +85,7 @@ export default function ChallengeReportButton(props) {
           <Button 
             primary
             type="submit"
+            disabled={disabled}
             onClick={onClick}
             >
             Challenge Report

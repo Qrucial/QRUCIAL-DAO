@@ -28,7 +28,7 @@ export function RemoveVuln(props){
     handleBlur,
     showError,
     ErrorLabel,
-  } = useFormValidation(data)
+  } = useFormValidation(data, props.setDisabled)
   
   return (
     <div className='RemoveVulns'>
@@ -41,7 +41,7 @@ export function RemoveVuln(props){
       {
         data.map((val,i) => 
           <div key={i}>
-            <Form.Field error={showError('text')}>
+            <Form.Field error={showError('removeId' + i)}>
               <Input
                 placeholder='0'
                 style={{width:"90%"}}
@@ -50,7 +50,7 @@ export function RemoveVuln(props){
                 name='removeId'
                 value={data[i].removeId}
                 onChange={(e)=>handleChange(e,i)}
-                onBlur={handleBlur('removeId')}         
+                onBlur={handleBlur('removeId' + i)}         
                 /> 
               <Button 
                 style={{float: "right"}}
@@ -59,7 +59,7 @@ export function RemoveVuln(props){
                 >
                 -
               </Button>
-              <ErrorLabel field={'removeId'} text='Some special characters are not allowed'/>
+              <ErrorLabel field={'removeId' + i} text='Some special characters are not allowed'/>
             </Form.Field>
             <Divider/>
           </div>
@@ -102,7 +102,7 @@ export function AddVuln(props){
     handleBlur,
     showError,
     ErrorLabel,
-  } = useFormValidation(data)
+  } = useFormValidation(data, props.setDisabled)
   
   return (
     <div className='AddVuln'>
@@ -138,7 +138,7 @@ export function AddVuln(props){
                 -
               </Button>
             </Form.Field>
-            <Form.Field error={showError('text')}> 
+            <Form.Field error={showError('addClass' + i)}> 
               <Input 
                 style={{width:"90%"}}
                 type='number'
@@ -146,11 +146,11 @@ export function AddVuln(props){
                 name='addClass'
                 value={data[i].addClass}
                 onChange={(e)=>handleChange(e,i)}
-                onBlur={handleBlur('addClass')}         
+                onBlur={handleBlur('addClass' + i)}         
                 /> 
-              <ErrorLabel field={'addClass'} text='Some special characters are not allowed'/>
+              <ErrorLabel field={'addClass' + i} text='Some special characters are not allowed'/>
             </Form.Field>
-            <Form.Field error={showError('text')}> 
+            <Form.Field error={showError('addRisk' + i)}> 
               <Input
                 style={{width:"90%"}} 
                 type='number'
@@ -158,11 +158,11 @@ export function AddVuln(props){
                 name='addRisk'
                 value={data[i].addRisk}
                 onChange={(e)=>handleChange(e,i)}
-                onBlur={handleBlur('addRisk')}         
+                onBlur={handleBlur('addRisk' + i)}         
                 /> 
-              <ErrorLabel field={'addRisk'} text='Some special characters are not allowed'/>
+              <ErrorLabel field={'addRisk' + i} text='Some special characters are not allowed'/>
             </Form.Field>
-            <Form.Field error={showError('text')}> 
+            <Form.Field error={showError('addDescrip' + i)}> 
               <Input 
                 style={{width:"90%"}}
                 type="text"
@@ -170,9 +170,9 @@ export function AddVuln(props){
                 name='addDescrip'
                 value={data[i].addDescrip}
                 onChange={(e)=>handleChange(e,i)}
-                onBlur={handleBlur('addDescrip')}         
+                onBlur={handleBlur('addDescrip' + i)}         
                 /> 
-              <ErrorLabel field={'addDescrip'} text='Some special characters are not allowed'/>
+              <ErrorLabel field={'addDescrip' + i} text='Some special characters are not allowed'/>
             </Form.Field>
             <Divider/>
           </div>
@@ -208,7 +208,7 @@ export function PatchVuln(props){
     handleBlur,
     showError,
     ErrorLabel,
-  } = useFormValidation(data)
+  } = useFormValidation(data, props.setDisabled)
   
   return (
     <div className='PatchVuln'>
@@ -221,7 +221,7 @@ export function PatchVuln(props){
       {
         data.map((val,i) => 
           <div key={i}>
-            <Form.Field error={showError('text')}> 
+            <Form.Field error={showError('patchId' + i)}> 
               <Input 
                 placeholder={0}
                 style={{width:"90%"}}
@@ -230,9 +230,9 @@ export function PatchVuln(props){
                 name='patchId'
                 value={data[i].patchId}
                 onChange={(e)=>handleChange(e,i)}
-                onBlur={handleBlur('patchId')}         
+                onBlur={handleBlur('patchId' + i)}         
                 /> 
-              <ErrorLabel field={'patchId'} text='Some special characters are not allowed'/>
+              <ErrorLabel field={'patchId' + i} text='Some special characters are not allowed'/>
               <Button 
                 style={{float: "right"}}
                 onClick={()=>handleDelete(i)} 
@@ -241,7 +241,7 @@ export function PatchVuln(props){
                 -
               </Button>
             </Form.Field>
-            <Form.Field error={showError('text')}> 
+            <Form.Field error={showError('patchClass' + i)}> 
               <Input 
                 style={{width:"90%"}}
                 type="number"
@@ -249,11 +249,11 @@ export function PatchVuln(props){
                 name='patchClass'
                 value={data[i].patchClass}
                 onChange={(e)=>handleChange(e,i)}
-                onBlur={handleBlur('patchClass')}         
+                onBlur={handleBlur('patchClass' + i)}         
                 /> 
-              <ErrorLabel field={'patchClass'} text='Some special characters are not allowed'/>
+              <ErrorLabel field={'patchClass' + i} text='Some special characters are not allowed'/>
             </Form.Field>
-            <Form.Field error={showError('text')}> 
+            <Form.Field error={showError('patchRisk' + i)}> 
               <Input
                 style={{width:"90%"}} 
                 type="number"
@@ -261,11 +261,11 @@ export function PatchVuln(props){
                 name='patchRisk'
                 value={data[i].patchRisk}
                 onChange={(e)=>handleChange(e,i)}
-                onBlur={handleBlur('patchRisk')}         
+                onBlur={handleBlur('patchRisk' + i)}         
                 /> 
-              <ErrorLabel field={'patchRisk'} text='Some special characters are not allowed'/>
+              <ErrorLabel field={'patchRisk' + i} text='Some special characters are not allowed'/>
             </Form.Field>
-            <Form.Field error={showError('text')}> 
+            <Form.Field error={showError('patchDescrip' + i)}> 
               <Input 
                 style={{width:"90%"}}
                 type="text"
@@ -273,9 +273,9 @@ export function PatchVuln(props){
                 name='patchDescrip'
                 value={data[i].patchDescrip}
                 onChange={(e)=>handleChange(e,i)}
-                onBlur={handleBlur('patchDescrip')}         
+                onBlur={handleBlur('patchDescrip' + i)}         
                 /> 
-              <ErrorLabel field={'patchDescrip'} text='Some special characters are not allowed'/>
+              <ErrorLabel field={'patchDescrip' + i} text='Some special characters are not allowed'/>
             </Form.Field>
             <Divider/>
           </div>

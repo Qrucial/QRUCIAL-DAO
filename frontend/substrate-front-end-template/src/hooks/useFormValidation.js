@@ -1,6 +1,17 @@
 import React, { useState, useEffect } from 'react'
 
-function useFormValidation(formState, setDisabledState) {
+function useFormValidation(origFormState, setDisabledState) {
+  let formState = {}
+  if (Array.isArray(origFormState)) {
+    const newArray = origFormState.map((elem) => Object.assign({}, elem))
+    newArray.forEach((elem, i) => {
+      Object.keys(elem).forEach(key => {
+        delete Object.assign(elem, {[key + i]: elem[key] })[key] 
+      })
+      Object.assign(formState, elem)
+    })
+  } else formState = origFormState
+
   const initialState = {}
   Object.keys(formState).forEach(key => initialState[key] = false)
   const [errors, setErrors] = useState(initialState)
@@ -29,12 +40,11 @@ function useFormValidation(formState, setDisabledState) {
     const errors = {}
     for (const [key, value] of entries) {
       switch (key) {
-        case 'url': {
-          errors.url = isValidUrl(value) ? false : true
-/*        const parts = value.split('.');
-          const extension = parts.length > 1 ? parts.pop().toLowerCase() : '';
-          errors.url = extension === 'tar' ? false : true */
-          }
+        case 'url':
+        case 'reportUrl':
+        case 'webUrl': 
+        case 'picUrl':
+          errors[key] = isValidUrl(value) ? false : true
           break
         case 'hash':
           errors.hash = value.length > 63 ? false : true
@@ -53,7 +63,7 @@ function useFormValidation(formState, setDisabledState) {
     setDisabled(isDisabled)
     setDisabledState && setDisabledState(isDisabled)
     setErrors(errors)
-  }, [formState])
+  }, [origFormState])
 
   const handleBlur = field => e => {
     setTouched(prev => ({ ...prev, [field]: true }))
