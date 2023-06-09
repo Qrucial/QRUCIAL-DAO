@@ -1,43 +1,48 @@
 import React,  { useEffect, useState } from 'react'
-import { Segment } from 'semantic-ui-react'
+import { Segment, Header } from 'semantic-ui-react'
 
 import { useSubstrateState } from './substrate-lib'
-import ApproveAuditor from './ApproveAuditor'
+import Challenges from './Challenges'
 
 export default function CouncilPage(props) {
   const { api, currentAccount } = useSubstrateState()
   const [details, setDetails] = useState(null)
-  
+
   useEffect(() => {
     let unsub = null  
     const query = async () => {
-      unsub = await api.query.auditModule.auditorMap(
-        currentAccount.address,
+      unsub = await api.query.challengeCouncil.members(
+        undefined,
         (result) => { 
           result.isNone ? setDetails(null) : setDetails(result.toString())
         }
       )
     }
-    if (api?.query?.auditModule?.auditorMap && currentAccount) {
+    if (currentAccount) {
       query()
     } 
     return () => unsub && unsub()
   }, [api, currentAccount])
 
-  const isAuditor = details ? true : false
+  const isCouncil = details?.includes(currentAccount.address) ? true : false
 
   return (
     <div>
-      {isAuditor === false && 
-        <div>Sign up to be an auditor first!</div>
-      }
-      {isAuditor && (
+      {isCouncil === false && 
         <div>
-          <Segment>
-            <ApproveAuditor details={details}/>
-          </Segment>
-          <Segment>
-            <h3>Verify challenge</h3>
+          <p>You are not member of the council yet.</p>
+          <p>
+            <a href="" target="_blank">
+              How to become a council member?
+            </a>
+          </p>
+        </div>
+      }
+      {isCouncil && (
+        <div>
+          <Segment style={{ backgroundColor: '#f7f7f7'}}>
+            <Header as='h3'>Verify Challenge</Header> 
+            <Challenges details={details}/>
           </Segment>
         </div>
       )}

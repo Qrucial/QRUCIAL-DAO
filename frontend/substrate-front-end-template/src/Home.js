@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { Grid, Header, Segment } from 'semantic-ui-react'
 
 import RequestAudit from './RequestAudit'
@@ -7,8 +7,40 @@ import AuditorPool from './AuditorPool'
 import AuditList from './AuditList'
 
 export default function Home(props) {  
+  const [auditData, setAuditData] = useState([])
   const [auditsChange, setAuditsChange] = useState('')
   const changeList = (latest) => setAuditsChange(latest)
+
+  const getData=()=>{
+    fetch('/lar/audit-requests', {
+      headers : { 
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+       }
+    }).then(response => {
+      if (!response.ok) {
+        throw Error(response.status + ' ' + response.statusText)
+      }
+      return response.json()
+    }
+    ).then(data =>{
+      setAuditData(data)
+    }).catch((err) => {
+      console.log(err.message)
+    })
+  }
+
+  const initialRender = useRef(true);
+  useEffect(()=>{
+    if (initialRender.current) {
+      getData()
+      initialRender.current = false;
+    } else {
+      setTimeout(() => {
+        getData()
+      }, 1000)
+    }
+  },[auditsChange])
 
   return (
     <Grid centered>
@@ -38,7 +70,7 @@ export default function Home(props) {
             Latest audits
           </Header>
           <Segment className='latestAudits' style={{paddingRight: '0'}}>
-            <AuditList auditsChange={auditsChange}/>
+            <AuditList auditData={auditData}  auditsChange={auditsChange}/>
           </Segment>
         </Grid.Column>
       </Grid.Row>

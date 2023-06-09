@@ -44,11 +44,11 @@
   font-family: 'Quicksand'
 }
 
-.selectBox div {
+.selectBox .auditorDiv {
   border: 2px solid #ffffff00;
 }
 
-.selectBox div:hover{
+.selectBox .auditorDiv:hover{
   /* background-color: #f7f7f7; */
   cursor:pointer;
   border: 2px solid #f7f7f7;
@@ -70,4 +70,9 @@
 
 .selectBox::-webkit-scrollbar-thumb:hover {
   background: #017ed8; 
+}
+
+/* Hide react errors */
+body > iframe {
+  display: none;
 }

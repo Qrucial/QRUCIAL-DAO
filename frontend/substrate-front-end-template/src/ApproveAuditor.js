@@ -22,7 +22,7 @@ export default function ApproveAuditor(props) {
     setMinScore(minScore.toJSON())
   }, [api])
 
-  const score = details && JSON.parse(details).score
+  const score = details && details.score
   const isAllowed = score >= minScore ? true : false 
   
   const approvee = currentAccount?.address
@@ -30,12 +30,15 @@ export default function ApproveAuditor(props) {
   let signedUps = []
 
   const getData= async()=>{
-    await fetch('/auditors', {
+    await fetch('/lar/auditors', {
       headers : { 
         'Content-Type': 'application/json',
         'Accept': 'application/json'
         }
     }).then(response => {
+      if (!response.ok) {
+        throw Error(response.status + ' ' + response.statusText)
+      }
       return response.json()
     }).then(data => {
       data.forEach(auditor => {

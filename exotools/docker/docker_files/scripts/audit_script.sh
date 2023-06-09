@@ -74,7 +74,10 @@ function exec_audit {
   elif [[ $(find "$EXTRACT_PATH" -name Cargo.toml) ]]; then
     TOML_FILE="$(find "$EXTRACT_PATH" -name Cargo.toml)"
   else
-    echo "Cannot Continue, neither Cargo.lock, or Cargo.toml was found"
+    echo "Neither Cargo.lock, or Cargo.toml was found, assuming EVM/Solidity project"
+    cd $EXTRACT_PATH
+    chmod +x ~/.local/bin/octopus_eth_evm
+    ~/.local/bin/octopus_eth_evm -f evm.bin
     exit 1
   fi
 
@@ -93,25 +96,11 @@ function exec_audit {
 
   ( cd $(dirname $LOCK_FILE) && cargo audit --json > "$REPORT_PATH""report.json" )
   ( cd $(dirname $LOCK_FILE) && cargo clippy &> "$REPORT_PATH""clippy.out" )
-  # cargo audit --json > "$REPORT_PATH""report.json" # better save method. (?)
+  
 
-  # cp or symlink, whatever is better
+  # cp or symlink could be an alternative
   cp -r "$REPORT_PATH" "$TIMESTAMP_PATH"
 
 }
 
-
-
-
-
-
-
-
-
 exec_audit
-
-
-
-
-
-
