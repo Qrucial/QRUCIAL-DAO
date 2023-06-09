@@ -98,6 +98,7 @@ pub mod pallet {
         StorageMap<_, Blake2_128Concat, T::AccountId, AuditorData<sp_core::H256, T::AccountId>>;
 
     #[pallet::genesis_config]
+    #[allow(clippy::type_complexity)]
     /// Allows a Genesis config with pre-assigned Auditors
     pub struct GenesisConfig<T: Config> {
         pub auditor_map: Vec<(T::AccountId, AuditorData<sp_core::H256, T::AccountId>)>,
