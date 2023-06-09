@@ -20,6 +20,9 @@ export function SendReportButton(props) {
         'Accept': 'application/json'
         }
     }).then(response => {
+      if (!response.ok) {
+        throw Error(response.status + ' ' + response.statusText)
+      }
       return response.json()
     }
     ).then(data =>{
@@ -30,7 +33,7 @@ export function SendReportButton(props) {
         setOpen(false)
         props.setState(props.audit.hash)
     }).catch((err) => {
-      toast.error("ERROR" + err.message)
+      toast.error("ERROR " + err.message)
     })
   }
 
@@ -66,7 +69,7 @@ export function SendReportButton(props) {
           <Modal.Description>
             <p>Please provide the url of your report</p>
             <Form>
-              <Form.Field error={showError('text')}>
+              <Form.Field error={showError('reportUrl')}>
                 <Input
                   type="text"
                   label="Report Url"
@@ -75,7 +78,7 @@ export function SendReportButton(props) {
                   onChange={onChange}
                   onBlur={handleBlur('reportUrl')}         
                 />
-                <ErrorLabel field={'reportUrl'} text='Some special characters are not allowed'/>
+                <ErrorLabel field={'reportUrl'} text='Needs to be a valid url'/>
               </Form.Field>
             </Form>
           </Modal.Description>

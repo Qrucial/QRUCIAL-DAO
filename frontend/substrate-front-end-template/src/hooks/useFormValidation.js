@@ -1,6 +1,17 @@
 import React, { useState, useEffect } from 'react'
 
-function useFormValidation(formState, setDisabledState) {
+function useFormValidation(origFormState, setDisabledState) {
+  let formState = {}
+  if (Array.isArray(origFormState)) {
+    const newArray = origFormState.map((elem) => Object.assign({}, elem))
+    newArray.forEach((elem, i) => {
+      Object.keys(elem).forEach(key => {
+        delete Object.assign(elem, {[key + i]: elem[key] })[key] 
+      })
+      Object.assign(formState, elem)
+    })
+  } else formState = origFormState
+
   const initialState = {}
   Object.keys(formState).forEach(key => initialState[key] = false)
   const [errors, setErrors] = useState(initialState)
@@ -14,16 +25,26 @@ function useFormValidation(formState, setDisabledState) {
     return regex.test(str)
   }
 
+  const isValidUrl = (urlString) => {
+    const urlPattern = new RegExp('^(https?:\\/\\/)?'+ // validate protocol
+    '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|'+ // validate domain name
+    '((\\d{1,3}\\.){3}\\d{1,3}))'+ // validate OR ip (v4) address
+    '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*'+ // validate port and path
+    '(\\?[;&a-z\\d%_.~+=-]*)?'+ // validate query string
+    '(\\#[-a-z\\d_]*)?$','i'); // validate fragment locator
+    return !!urlPattern.test(urlString);
+  }
+
   function validate(formState) {
     const entries = Object.entries(formState)
     const errors = {}
     for (const [key, value] of entries) {
       switch (key) {
-        case 'url': {
-          const parts = value.split('.');
-          const extension = parts.length > 1 ? parts.pop().toLowerCase() : '';
-          errors.url = extension === 'tar' ? false : true
-          }
+        case 'url':
+        case 'reportUrl':
+        case 'webUrl': 
+        case 'picUrl':
+          errors[key] = isValidUrl(value) ? false : true
           break
         case 'hash':
           errors.hash = value.length > 63 ? false : true
@@ -42,7 +63,7 @@ function useFormValidation(formState, setDisabledState) {
     setDisabled(isDisabled)
     setDisabledState && setDisabledState(isDisabled)
     setErrors(errors)
-  }, [formState])
+  }, [origFormState])
 
   const handleBlur = field => e => {
     setTouched(prev => ({ ...prev, [field]: true }))

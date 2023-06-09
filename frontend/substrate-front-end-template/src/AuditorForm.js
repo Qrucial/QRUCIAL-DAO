@@ -86,6 +86,9 @@ function FieldsFromList(props) {
 
   const fields = Object.entries(props.auditorFields).map(([key, value]) => {
     const nonModFields = ['address', 'profileHash', 'auditsDone']
+    const text = key.includes('Url')?
+      'Needs to be a valid url' :
+      'Some special characters are not allowed'
     if (nonModFields.includes(key)) return null
     else return (
       <Form.Field key={key} error={showError(key)}>
@@ -98,7 +101,7 @@ function FieldsFromList(props) {
           onChange={onFieldChange}
           onBlur={handleBlur(key)}         
         />
-        <ErrorLabel field={key} text='Some special characters are not allowed'/>
+        <ErrorLabel field={key} text={text} />
       </Form.Field>
     )
   })

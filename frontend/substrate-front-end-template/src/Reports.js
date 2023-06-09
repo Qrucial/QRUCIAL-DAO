@@ -11,7 +11,7 @@ export default function Reports(props) {
   const [auditData, setAuditData] = useState([])
   const [auditsChange, setAuditsChange] = useState('')
   const [reports, setReports] = useState([])
-  const [showAudit, setShowAudit] = useState('')
+  const [shownAudit, setShownAudit] = useState('')
   const unsubAll = []
   const auditDetails = []
 
@@ -22,6 +22,9 @@ export default function Reports(props) {
         'Accept': 'application/json'
        }
     }).then(response => {
+      if (!response.ok) {
+        throw Error(response.status + ' ' + response.statusText)
+      }
       return response.json()
     }
     ).then(data =>{
@@ -102,14 +105,14 @@ const setReportData = (auditData) => {
   const audits = auditData
 
   const onAuditClick = function(audit) {
-    setShowAudit(audit)
+    setShownAudit(audit)
   }
 
-  const auditHash = showAudit?.hash
+  const auditHash = shownAudit?.hash
   const reportsOfAudit = auditHash ? 
     reports.find(elem => elem.auditHash === auditHash)?.reports
     : []
-
+    
   return (
     <Grid>
       <Container>
@@ -128,32 +131,32 @@ const setReportData = (auditData) => {
       </Grid.Column>
       <Grid.Column width={10}>
         <div>
-          {showAudit && 
+          {shownAudit && 
             <div>
               <Table>  
                 <Table.Body>
                   <Table.Row>
                     <Table.Cell>Project Url</Table.Cell>
                     <Table.Cell style={{ wordBreak: 'break-word' }}>
-                      {showAudit.projectUrl}
+                      <a href={shownAudit.projectUrl}>{shownAudit.projectUrl}</a>
                     </Table.Cell>
                   </Table.Row>
                   <Table.Row>
                     <Table.Cell>State</Table.Cell>
                     <Table.Cell style={{ wordBreak: 'break-word' }}>
-                      {showAudit.state}
+                      {shownAudit.state}
                     </Table.Cell>
                   </Table.Row>
                   <Table.Row>
                     <Table.Cell>Auto Report</Table.Cell>
                     <Table.Cell style={{ wordBreak: 'break-word' }}>
-                      {showAudit.autoReport}
+                      {shownAudit.autoReport}
                     </Table.Cell>
                   </Table.Row>
                   <Table.Row>
                     <Table.Cell>Manual Report</Table.Cell>
                     <Table.Cell style={{ wordBreak: 'break-word' }}>
-                      {showAudit.manualReport}
+                      {shownAudit.manualReport}
                     </Table.Cell>
                   </Table.Row>
                 </Table.Body>
@@ -221,7 +224,7 @@ const setReportData = (auditData) => {
                     </Table.Cell>
                   </Table.Row>
                 )}
-                {rep.auditor !== currentAccount.address && 
+                {(rep.auditor !== currentAccount.address) &&                  
                   <Table.Row>
                     <Table.Cell colSpan='3' textAlign='right' >
                       <ChallengeReportButton 

@@ -103,6 +103,9 @@ export default function Challenges(props) {
         'Accept': 'application/json'
        }
     }).then(response => {
+      if (!response.ok) {
+        throw Error(response.status + ' ' + response.statusText)
+      }
       return response.json()
     }
     ).then(data =>{
@@ -137,6 +140,9 @@ export default function Challenges(props) {
             'Accept': 'application/json'
           }
         }).then(response => {
+          if (!response.ok) {
+            throw Error(response.status + ' ' + response.statusText)
+          }
           return response.json()
         }).then(data =>{
           names[i] = (data[0]).name
@@ -156,8 +162,8 @@ export default function Challenges(props) {
       return ( 
         <List.Item key={i}>
           <List.Content onClick={() => handleClick(ch)}>
-            <List.Header as='a' className='blue'>{audit?.projectUrl} / reportId: {ch.reportId}.</List.Header>
-            <List.Description as='a'>Auditor: {auditorName || ch.auditor}</List.Description>
+            <List.Header as='a' className='blue'>{audit?.hash} / reportId: {ch.reportId}.</List.Header>
+            <List.Description as='a'>Challenger: {auditorName || ch.auditor}</List.Description>
             <List.Description as='a'>State: {ch.state}</List.Description>
           </List.Content>
         </List.Item>

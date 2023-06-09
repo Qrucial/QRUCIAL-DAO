@@ -1,11 +1,12 @@
 import React, { useState } from 'react'
 import { Modal, Button, Form } from 'semantic-ui-react'
-import { TxButton } from './substrate-lib/components'
-import { createToast } from './toastContent'
+import useTxAndPost from './hooks/useTxAndPost'
+import { useSubstrateState } from './substrate-lib'
 import { RemoveVuln, AddVuln, PatchVuln } from './ChallengeReportInputs'
 
 export default function ChallengeReportButton(props) {
   const [open, setOpen] = useState(false)
+  const { currentAccount } = useSubstrateState()
 
   const removeInitial = [{ removeId: "" }]
   const addInitial = [{ tool: "", addClass: "", addRisk: "", addDescrip: "" }]
@@ -20,20 +21,34 @@ export default function ChallengeReportButton(props) {
   const patchParam = patch?.map((p) => [p.patchId, p.patchClass, p.patchRisk, p.patchDescrip])
     .filter((a) => { return a[0] || a[1] || a[2] || a[3] })
 
-  const inputParams = [ 
-    props.auditHash, 
-    props.reportId, 
-    removeParam, 
-    addParam, 
-    patchParam 
-  ]
-
   const closeClear = () => {
     setOpen(false)
     setRemove(removeInitial)
     setAdd(addInitial)
     setPatch(patchInitial)
   }
+
+  const postAttrs = { postUrl: '/lar/challenge_audit' }
+  const txAttrs = { palletRpc: 'exoSys', callable: 'challengeReport', finishEvent: closeClear }
+
+  const { txAndPost } = useTxAndPost(txAttrs, postAttrs)
+
+  const onClick = async (event, data) => {  
+    const inputParams = [ 
+      props.auditHash, 
+      props.reportId, 
+      removeParam, 
+      addParam, 
+      patchParam 
+    ]
+    const postData = { audit_hash: props.auditHash, challenger: currentAccount.address }
+    txAndPost(inputParams, postData)
+  }
+
+  const [disabledRem, setDisabledRem] = useState(false)
+  const [disabledAdd, setDisabledAdd] = useState(false)
+  const [disabledPatch, setDisabledPatch] = useState(false)
+  const disabled = disabledRem || disabledAdd || disabledPatch
 
   return (  
     <div>
@@ -53,9 +68,9 @@ export default function ChallengeReportButton(props) {
         <Modal.Content >
           <Modal.Description>
             <Form>              
-              <RemoveVuln data={remove} setData={setRemove}/>
-              <AddVuln data={add} setData={setAdd}/>
-              <PatchVuln data={patch} setData={setPatch}/>
+              <RemoveVuln data={remove} setData={setRemove} setDisabled={setDisabledRem}/>
+              <AddVuln data={add} setData={setAdd} setDisabled={setDisabledAdd} />
+              <PatchVuln data={patch} setData={setPatch} setDisabled={setDisabledPatch}/>
             </Form>
           </Modal.Description>
         </Modal.Content>
@@ -66,26 +81,15 @@ export default function ChallengeReportButton(props) {
             type='reset'
             >
             Cancel
-          </Button>
-          <TxButton 
-            label='Challenge Report'
-            type='SIGNED-TX' 
-            color='blue' 
-            setStatus={createToast()}
-            txOnClickHandler={closeClear}
-            attrs={{
-              palletRpc: 'exoSys',
-              callable: 'challengeReport',
-              inputParams: inputParams,
-              paramFields: [    
-                { name: 'hash' },
-                { name: 'reportId' },                
-                { name: 'remove', optional: true },
-                { name: 'add', optional: true },
-                { name: 'patch', optional: true },
-              ],
-            }} 
-          />    
+          </Button> 
+          <Button 
+            primary
+            type="submit"
+            disabled={disabled}
+            onClick={onClick}
+            >
+            Challenge Report
+          </Button> 
         </Modal.Actions>
       </Modal>
     </div>  
