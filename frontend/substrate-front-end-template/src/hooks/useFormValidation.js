@@ -42,9 +42,13 @@ function useFormValidation(origFormState, setDisabledState) {
       switch (key) {
         case 'url':
         case 'reportUrl':
-        case 'webUrl': 
-        case 'picUrl':
           errors[key] = isValidUrl(value) ? false : true
+          break
+        case 'webUrl': 
+        case 'picUrl': {
+            const acceptedValue = value ? isValidUrl(value) : true
+            errors[key] = acceptedValue ? false : true
+          }
           break
         case 'hash':
           errors.hash = value.length > 63 ? false : true
