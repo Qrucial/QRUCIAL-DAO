@@ -1,63 +1,51 @@
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useState } from 'react'
 
 import BasicModal from './BasicModal'
+import { SendReportButton } from './ReportButton.js'
 
 export default function AuditList(props) {
-  const [auditData, setAuditData] = useState([])
-
-  const getData=()=>{
-    fetch('/audit-requests', {
-      headers : { 
-        'Content-Type': 'application/json',
-        'Accept': 'application/json'
-       }
-    }).then(response => {
-      return response.json()
-    }
-    ).then(data =>{
-      setAuditData(data)
-    }).catch((err) => {
-      console.log(err.message)
-    })
-  }
-
-  const initialRender = useRef(true);
-  useEffect(()=>{
-    if (initialRender.current) {
-      getData()
-      initialRender.current = false;
-    } else {
-      setTimeout(() => {
-        getData()
-      }, 1000)
-    }
-  },[props.auditsChange])
-
   const [modalOpen, setModalOpen] = useState(false)
   const [modalValue, setModalValue] = useState('')
 
   const handleClick = props.handleClick
-  
+  const setState = props.setState
+
   function AuditElem(props) {
     const audit = props.elem;
+    const onClick = props.onClick ||
+      function(audit) {
+        setModalOpen(true);
+        setModalValue({
+          content: audit,
+          header: audit.projectUrl 
+        });
+        handleClick && handleClick(audit);
+      }
+
     return (
-      <div
+      <>
+        <div
           className='auditorDiv'
-          style={{padding: '5px', cursor: 'pointer'}}
-          onClick={() => {
-            setModalOpen(true);
-            setModalValue({
-              content: audit,
-              header: audit.projectUrl 
-            });
-            handleClick && handleClick(audit);
-          }}
-        >{audit.projectUrl}
-      </div>
+          style={{padding: '5px', cursor: 'pointer', wordBreak: 'break-word'}}
+          onClick={() => onClick(audit)}
+          >
+          {audit.hash}
+        </div>
+        {props.reportButton && 
+          <SendReportButton audit={audit} setState={setState}/>
+        }
+      </>
     )
   }
 
-  const list = auditData.map((a, i) => <AuditElem elem={a} key={i}/>)
+  const list = props.auditData.map((a, i) => (
+    <AuditElem 
+      elem={a} 
+      key={i} 
+      reportButton={props.reportButton}
+      onClick={props.onClick}
+      />)
+  )
 
   return (
     <div className='selectBox'>

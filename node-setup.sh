@@ -54,7 +54,7 @@ cd ../
 echo "> Starting the full node services in tmux sessions."
 chmod +x ./qdao-node/target/debug/qdao-node
 tmux new-session -d -s qdao-node './qdao-node/target/debug/qdao-node --dev'
-sleep 5  # Wait for node start, TBA
+sleep 7  # Wait for node start
 
 # Start ExoSys Daemon in background/tmux
 tmux new-session -d -s qdao-exosysd './exosysd/target/debug/qdao-exosysd'

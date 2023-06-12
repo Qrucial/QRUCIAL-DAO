@@ -192,7 +192,10 @@ fn testnet_genesis(
                 (endowed_accounts.get(3).unwrap().clone(), auditor_data),
             ],
         },
-        challenge_council: ChallengeCouncilConfig::default(),
+        challenge_council: ChallengeCouncilConfig {
+            members: vec![endowed_accounts.get(0).unwrap().clone()],
+            phantom: Default::default(),
+        },
         // TODO exo_sys: ExoSysConfig::default(),
     }
 }

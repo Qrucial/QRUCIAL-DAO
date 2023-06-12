@@ -5,6 +5,8 @@ import { useSubstrateState } from './substrate-lib'
 import Signup from './Signup'
 import AuditorProfile from './AuditorProfile'
 import AuditRequests from './AuditRequests'
+import ApproveAuditor from './ApproveAuditor'
+import Reports from './Reports'
 
 function AuditorTabs(props) {
   const isApproved = props.details?.score !== null ? true : false
@@ -24,12 +26,22 @@ function AuditorTabs(props) {
       render: () => (
         <Tab.Pane style={{minHeight: '300px'}}>
           { isApproved ? 
-            <AuditRequests reports={true} />
+            <Reports />
            : 'Waiting to be approved'
           }
         </Tab.Pane>
       ) 
     },
+    { menuItem: 'Approve auditor', 
+    render: () => (
+      <Tab.Pane style={{minHeight: '300px'}}>
+        { isApproved ? 
+          <ApproveAuditor details={props.details}/>
+         : 'Waiting to be approved'
+        }
+      </Tab.Pane>
+    ) 
+  },
     { menuItem: 'Profile', 
       render: () => (
         <Tab.Pane style={{minHeight: '300px'}}>
@@ -70,12 +82,15 @@ function AuditorsPage(props) {
   
   const address = currentAccount?.address
   const getData= async()=>{
-    await fetch('/auditor-data?' + new URLSearchParams({ address }), {
+    await fetch('/lar/auditor-data?' + new URLSearchParams({ address }), {
       headers : { 
         'Content-Type': 'application/json',
         'Accept': 'application/json'
        }
     }).then(response => {
+      if (!response.ok) {
+        throw Error(response.status + ' ' + response.statusText)
+      }
       return response.json()
     }
     ).then(data =>{

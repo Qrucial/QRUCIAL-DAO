@@ -1,20 +1,26 @@
 import React, { useState, useEffect } from 'react'
 import { Card, Image, Icon } from 'semantic-ui-react'
 import { useSubstrateState } from './substrate-lib'
+import BasicModal from './BasicModal'
 
 export default function AuditorPool(props) {  
   const { api } = useSubstrateState()
   const [auditors, setAuditors] = useState([])
+  const [auditorModalOpen, setAuditorModalOpen] = useState(false)
+  const [auditorModalValue, setAuditorModalValue] = useState('')
 
   const unsubAll = []
   const getData= async()=>{
     const auditorsData = []
-    await fetch('/auditors', {
+    await fetch('/lar/auditors', {
       headers : { 
         'Content-Type': 'application/json',
         'Accept': 'application/json'
        }
     }).then(response => {
+      if (!response.ok) {
+        throw Error(response.status + ' ' + response.statusText)
+      }
       return response.json()
     }
     ).then(data => {
@@ -59,7 +65,17 @@ export default function AuditorPool(props) {
   return (         
     <Card.Group itemsPerRow={4} stackable style={{minHeight: '255px'}} >
       {auditors.map((auditor) => (
-        <Card style={{boxShadow: 'none', textAlign:'center'}} key={auditor.address}>
+        <Card 
+          style={{boxShadow: 'none', textAlign:'center'}} 
+          key={auditor.address}
+          onClick={() => {
+            setAuditorModalOpen(true);
+            setAuditorModalValue({
+              content: auditor,
+              header: auditor.name 
+            });
+          }}
+          >
           <div style={{display:'flex', justifyContent: 'center'}}>
             {auditor.picUrl ?
               <Image circular 
@@ -74,6 +90,15 @@ export default function AuditorPool(props) {
           <Card.Meta>{auditor.score}</Card.Meta>
         </Card>
       ))}
+      <BasicModal
+        key="auditorModal"
+        modalOpen={auditorModalOpen}
+        handleClose={() => { 
+          setAuditorModalOpen(false)
+          setAuditorModalValue('')
+        }}
+        modalValue={auditorModalValue}
+      />
     </Card.Group>
   )
 }

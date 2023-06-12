@@ -1,17 +1,31 @@
 import React, { useState } from 'react'
 import { Modal, Button } from 'semantic-ui-react'
-import { TxButton } from './substrate-lib/components'
+import useTxAndPost from './hooks/useTxAndPost'
 
 export default function CancelAccount(props) {
   const [open, setOpen] = useState(false)
   
+  const postAttrs = { postUrl: '/lar/profile_update' }
+  const txAttrs = { palletRpc: 'auditModule', callable: 'cancelAccount', finishEvent: props.finishEvent }
+
+  const { txAndPost } = useTxAndPost(txAttrs, postAttrs)
+
+  const onClick = async (event, data) => {   
+    const profileData = {...props.auditorData}
+    Object.keys(profileData).forEach(key => {
+      if (key === 'address') return
+      profileData[key] = '' 
+    })
+    txAndPost([], profileData)
+  }
+
   return (  
     <div>
       <Modal
         onClose={() => setOpen(false)}
         onOpen={() => setOpen(true)}
         open={open}
-        trigger={<Button basic size='small' color='red'>Cancel Account</Button>}
+        trigger={<Button basic size='small' color='red'>Delete Account</Button>}
         >
         <Modal.Content >
           <Modal.Description>
@@ -19,22 +33,20 @@ export default function CancelAccount(props) {
           </Modal.Description>
         </Modal.Content>
         <Modal.Actions>
-          <Button color='grey' onClick={() => setOpen(false)}>
-            No, cancel the cancel
+          <Button 
+            primary 
+            onClick={() => setOpen(false)}
+            type='reset'
+            >
+            No, cancel
           </Button>
-          <TxButton 
-            label="Delete Account"
-            type='SIGNED-TX' 
-            color='red' 
-            setStatus={props.setStatus}
-            txOnClickHandler={() => setOpen(false)}
-            attrs={{
-              palletRpc: 'auditModule',
-              callable: 'cancelAccount',
-              inputParams: [],
-              paramFields: [],
-            }} 
-          />  
+          <Button 
+            color='red'
+            type='submit'
+            onClick={onClick}
+          >
+            Delete account
+          </Button>   
         </Modal.Actions>
       </Modal>
     </div>  

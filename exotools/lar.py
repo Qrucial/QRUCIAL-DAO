@@ -75,7 +75,7 @@ def init_db():
     c.execute('CREATE TABLE IF NOT EXISTS auditStates (requestor, hash text, projectUrl text, state text, autoReport text, manualReport text, topAuditor text, challenger text)')
     c.execute("INSERT INTO auditStates VALUES('5DAAnrj7VHTznn2AWBemMuyBwZWs6FNFjdyVXUeYum3PTXFy','0xa03f6ba3eb8141f0f8daee4ea016d4144f44fc4cba9e7477a4c1f041aaeb6c38', 'https://v-space.hu/s/exotestflipper.tar', 'In progress', 'NA', 'NA', 'NA', 'No challenger')")
     c.execute("INSERT INTO auditStates VALUES('5HGjWAeFDfFCWPsjFQdVV2Msvz2XtMktvgocEZcCj68kUMaw','0x3e2d46f07bb14bab9d623e426246ee8115f2669fa04745e51a00e18446e47df7', 'https://v-space.hu/s/exotest.tar', 'Finished', 'Submitted', 'Submitted', 'Charlie', 'No challenger')")
-    c.execute("INSERT INTO auditStates VALUES('5HGjWAeFDfFCWPsjFQdVV2Msvz2XtMktvgocEZcCj68kUMaw','0x3e2d46f07bb14bab9d623e426246ee8115f2669fa04745e51a00e18446e47df7', 'https://v-space.hu/s/exosol.tar', 'Finished', 'Submitted', 'Submitted', 'Charlie', 'No challenger')")
+    c.execute("INSERT INTO auditStates VALUES('5HGjWAeFDfFCWPsjFQdVV2Msvz2XtMktvgocEZcCj68kUMaw','0xxx2d46f07bb14bab9d623e426246ee8115f2669fa04745e51a00e18446e47dxx', 'https://v-space.hu/s/exosol.tar', 'Finished', 'Submitted', 'Submitted', 'Charlie', 'No challenger')")
     conn.commit()
     conn.close()
 init_db()
@@ -164,7 +164,7 @@ def index():
 
 # ExoTool calls this, letting lar.py know some execution has finished
 # curl -X POST "http://127.0.0.1:9999/notify_logger?key=x7roVhBsiZ18Dg3DX3iCm9pXhXdbZWx2&hash=0x9b945af23f0701cddcdb7dabcd72c9c7ffd3a155ace237a084b65460a9d36322&hash=0xa03f6ba3eb8141f0f8daee4ea016d4144f44fc4cba9e7477a4c1f041aaeb6c38&result=1"
-@app.route("/notify_logger", methods=['POST'])
+@app.route("/lar/notify_logger", methods=['POST'])
 def notif():
     if request.remote_addr == '127.0.0.1':
         pass
@@ -189,10 +189,10 @@ def notif():
         logger.info("Sending extrinsic to QDAO node.")
         call = substrate.compose_call(
         call_module='ExoSys',
-        call_function='tool_exec_auto_report',
+        call_function='tool_exec_report',  # TODO TBA review_report + tool_exec_invalid -> if fail to send: hash + result
         call_params={
             'hash': str(hash_received),
-            'result': str(result_received)
+            'result': str(result_received) # TBA TODO
         })
 
         # Create the extrinsic itself
@@ -212,11 +212,11 @@ def notif():
 
 # Return static files -> reports
 static_file_dir = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'static')
-@app.route('/dir', methods=['GET'])
+@app.route('/lar/dir', methods=['GET'])
 def serve_dir_directory_index():
     return send_from_directory(static_file_dir, 'index.html')
 
-@app.route('/dir/<path:path>', methods=['GET'])
+@app.route('/lar/dir/<path:path>', methods=['GET'])
 def serve_file_in_dir(path):
     if not os.path.isfile(os.path.join(static_file_dir, path)):
         path = os.path.join(path, 'index.html')
@@ -226,7 +226,7 @@ def serve_file_in_dir(path):
 
 # Get user data as json, ID: substrate address
 # http://127.0.0.1:9999/auditors
-@app.route('/auditors', methods=['GET'])
+@app.route('/lar/auditors', methods=['GET'])
 def get_auditors():
     conn = sqlite3.connect(dbFile)
     c = conn.cursor()
@@ -239,7 +239,7 @@ def get_auditors():
 
 # Get auditor data based on address
 # http://127.0.0.1:9999/auditor-data?address=5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY
-@app.route('/auditor-data', methods=['GET'])
+@app.route('/lar/auditor-data', methods=['GET'])
 def get_auditordata():
     address = request.args.get('address', default = "5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY", type = str)
     
@@ -250,13 +250,15 @@ def get_auditordata():
     c = conn.cursor()
     c.execute('SELECT * FROM auditors WHERE address = "%s"' % address)
     auditorData = c.fetchall()
+    column_names = [description[0] for description in c.description]
+    dict_rows = [dict(zip(column_names, row)) for row in auditorData]
     conn.close()
-    return json.dumps(auditorData)
+    return json.dumps(dict_rows)
 
 # Called at signup and profile update: Button click -> open polkadotJS -> sign message -> POST to API
 # VCN, verify from chain needed - eg. must be POST ss58 address == ss58 signer - needs to be changed in prod
 # Test: curl -X POST -H "Content-type: application/json" -d "{\"address\" : \"5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY\", \"profileHash\" : \"0x001x1x0\", \"name\" : \"n4me\", \"picUrl\" : \"userx.me/a.ng\", \"webUrl\" : \"nmexxa.org\", \"bio\" : \"Teh Bio of user aX\"}" "127.0.0.1:9999/profile_update" 
-@app.route('/profile_update', methods=['POST'])
+@app.route('/lar/profile_update', methods=['POST'])
 def profileUpdate():
     content_type = request.headers.get('Content-Type')
     if (content_type == 'application/json'):
@@ -281,6 +283,8 @@ def profileUpdate():
 
         conn = sqlite3.connect(dbFile)
         c = conn.cursor()
+        #TBA fix this awful double quickfix
+        c.execute("INSERT INTO auditors VALUES ('{}', 'x', 'x', 'x', 'x', 'x', 'x')".format(profile_data['address']))
         c.execute('UPDATE auditors SET profileHash = "{}", name = "{}", picUrl = "{}", webUrl = "{}", bio = "{}" WHERE address = "{}"'.format(profile_data['profileHash'], profile_data['name'], profile_data['picUrl'], profile_data['webUrl'], profile_data['bio'], profile_data['address']))
         conn.commit()
         conn.close()
@@ -290,19 +294,21 @@ def profileUpdate():
 
 # List all audit requests from API DB
 # 127.0.0.1:9999/audit-requests
-@app.route('/audit-requests', methods=['GET'])
+@app.route('/lar/audit-requests', methods=['GET'])
 def get_auditRequests():
     conn = sqlite3.connect(dbFile)
     c = conn.cursor()
     c.execute('SELECT * FROM auditStates')
     auditRequests = c.fetchall()
+    column_names = [description[0] for description in c.description]
+    dict_rows = [dict(zip(column_names, row)) for row in auditRequests]
     conn.close()
-    return json.dumps(auditRequests)
+    return json.dumps(dict_rows)
 
 # Request audit to be saved to DB
 # Accepted in dev, but this needs to check blockchain data because we only want to save those entries that are valid/paid, eg VCN
 # Test: curl -X POST -H "Content-type: application/json" -d "{\"requestor\" : \"5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY\", \"hash\" : \"0x001x1x0\", \"projectUrl\" : \"urleraX\"}" 127.0.0.1:9999/request-audit
-@app.route('/request-audit', methods=['POST'])
+@app.route('/lar/request-audit', methods=['POST'])
 def requestAudit():
     content_type = request.headers.get('Content-Type')
     if (content_type == 'application/json'):
@@ -332,7 +338,7 @@ def requestAudit():
 
 # Take an audit
 # Test: curl -X POST -H "Content-type: application/json" -d "{\"audit_taker\" : \"5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY\",\"audit_hash\" : \"0x001x1x0\"}" 127.0.0.1:9999/take_audit
-@app.route('/take_audit', methods=['POST'])
+@app.route('/lar/take_audit', methods=['POST'])
 def takeAudit():
     content_type = request.headers.get('Content-Type')
     if (content_type == 'application/json'):
@@ -358,9 +364,37 @@ def takeAudit():
     else:
         return 'Content-Type not supported!'
 
-# Send report (1 audit can have multiple reports sent)
+# Challenge an audit
+# Test: curl -X POST -H "Content-type: application/json" -d "{\"challenger\" : \"5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY\",\"audit_hash\" : \"0x0\"}" 127.0.0.1:9999/challenge_audit
+@app.route('/lar/challenge_audit', methods=['POST'])
+def challenge_audit():
+    content_type = request.headers.get('Content-Type')
+    if (content_type == 'application/json'):
+        challenge_audit = request.json
+
+        # Check input
+        try:
+            if check_address(challenge_audit['challenger']): pass
+            else: return DontHakit
+            if check_address(challenge_audit['audit_hash']): pass
+            else: return DontHakit
+        except:
+            return DontHakit
+
+        conn = sqlite3.connect(dbFile)
+        c = conn.cursor()
+        c.execute('UPDATE auditStates SET challenger = "{}" WHERE hash = "{}"'.format(challenge_audit['challenger'],challenge_audit['audit_hash']))
+        conn.commit()
+        c.execute('SELECT * FROM auditStates')
+        auditRequests = c.fetchall()
+        conn.close()
+        return json.dumps(auditRequests)
+    else:
+        return 'Content-Type not supported!'
+
+# Send report (1 audit can have multiple reports sent), to be verified
 # Test: curl -X POST -H "Content-type: application/json" -d "{\"reportUrl\" : \"urlx\",\"audit_hash\" : \"0x001x1x0\"}" 127.0.0.1:9999/send_report
-@app.route('/send_report', methods=['POST'])
+@app.route('/lar/send_report', methods=['POST'])
 def sendReport():
     content_type = request.headers.get('Content-Type')
     if (content_type == 'application/json'):
@@ -388,7 +422,7 @@ def sendReport():
 
 # Get reports
 # http://127.0.0.1:9999/get-reports
-@app.route('/get-reports', methods=['GET'])
+@app.route('/lar/get-reports', methods=['GET'])
 def get_report():
     conn = sqlite3.connect(dbFile)
     c = conn.cursor()

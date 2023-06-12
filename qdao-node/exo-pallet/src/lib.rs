@@ -74,10 +74,10 @@ pub struct Review<AccountId, ReviewHash, Balance> {
 #[repr(u32)]
 #[non_exhaustive]
 pub enum Tool {
-    Manual = 0,
-    Clippy = 1,
-    CargoAudit = 2,
-    Octopus = 3,
+    Manual = 0_u32,
+    Clippy = 1_u32,
+    CargoAudit = 2_u32,
+    Octopus = 3_u32,
 }
 
 #[derive(Clone, Encode, Decode, Eq, PartialEq, RuntimeDebug, TypeInfo, MaxEncodedLen)]
@@ -100,7 +100,7 @@ pub struct Vulnerability {
 #[repr(i8)]
 pub enum ReportKind {
     Invalid = -1i8,
-    Success = 0,
+    Success = 0_i8,
 }
 
 /// A report a given auditor sent for a given review.
@@ -114,9 +114,9 @@ pub struct Report<AuditorId> {
 #[repr(i8)]
 pub enum ChallengeState {
     Removed = -1i8,
-    Pending = 0,
-    Accepted = 1,
-    Rejected = 2,
+    Pending = 0_i8,
+    Accepted = 1_i8,
+    Rejected = 2_i8,
 }
 
 #[derive(Clone, Encode, Decode, Eq, PartialEq, RuntimeDebug, TypeInfo, MaxEncodedLen)]
@@ -336,7 +336,7 @@ pub mod pallet {
             let requestor = ensure_signed(origin)?;
 
             ensure!(
-                !Reviews::<T>::contains_key(&hash),
+                !Reviews::<T>::contains_key(hash),
                 Error::<T>::DuplicateReviewFound
             );
 
@@ -346,7 +346,7 @@ pub mod pallet {
                 url.try_into().map_err(|_| Error::<T>::UrlTooLong)?;
 
             Reviews::<T>::insert(
-                &hash,
+                hash,
                 Review {
                     requestor: requestor.clone(),
                     min_auditor_score,
@@ -447,7 +447,7 @@ pub mod pallet {
         ) -> DispatchResult {
             let auditor = Self::audit_review(origin, &hash)?;
             let report_auditor = Self::report_auditor(&hash, report_id)?;
-            ensure!(&report_auditor != &auditor, Error::<T>::CannotChallengeSelf);
+            ensure!(report_auditor != auditor, Error::<T>::CannotChallengeSelf);
 
             // Nice to have: check VulnerabilityIds against those in the Report not only on the frontend, but also here
             let challenge_id = Self::new_challenge_id(&auditor, &hash, report_id)?;
@@ -555,7 +555,7 @@ pub mod pallet {
             Ok(())
         }
     }
-
+    #[allow(clippy::search_is_some)]
     impl<T: Config> Pallet<T> {
         /// Makes sure the extrinsic is signed by an account who has minimum score needed to audit a review.
         fn audit_review(
