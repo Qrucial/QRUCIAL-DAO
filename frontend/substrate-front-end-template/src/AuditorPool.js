@@ -62,9 +62,19 @@ export default function AuditorPool(props) {
     }
   },[])
   
+  const sortedAuditors = auditors.slice().sort(
+    (a, b) => b.score - a.score || 
+      (!a.name ? 1 : (!b.name ? -1 : (a.name.localeCompare(b.name)))))
+  
+  const displayName = (name) => {
+    if (!name) return 'no name'
+    else if (name.length > 10) return name.slice(0, 9) + '...'
+    return name
+  }
+
   return (         
     <Card.Group itemsPerRow={4} stackable style={{minHeight: '255px'}} >
-      {auditors.map((auditor) => (
+      {sortedAuditors.map((auditor) => (
         <Card 
           style={{boxShadow: 'none', textAlign:'center'}} 
           key={auditor.address}
@@ -76,17 +86,22 @@ export default function AuditorPool(props) {
             });
           }}
           >
-          <div style={{display:'flex', justifyContent: 'center'}}>
+          <div style={{
+            display:'flex', 
+            justifyContent: 'center', 
+            alignItems: 'center', 
+            height: '80px'
+            }}>
             {auditor.picUrl ?
               <Image circular 
-                style={{width: '80%'}}
+                style={{maxWidth: '100%', maxHeight: '100%'}}
                 alt='avatar'
                 src={auditor.picUrl}/>
               :
               <Icon name='user' size='huge' color='blue'/>
             }
           </div>
-          <Card.Description>{auditor.name || 'no name'}</Card.Description>
+          <Card.Description>{displayName(auditor.name)}</Card.Description>
           <Card.Meta>{auditor.score}</Card.Meta>
         </Card>
       ))}
