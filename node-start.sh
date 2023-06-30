@@ -40,5 +40,5 @@ if [ -z "$(pgrep exosysd)" ] # We are checking exosysd, as it only runs in the n
 fi
 
 # Run health check
+sleep 8 # Need to wait for nodejs start...
 python3 node-health-check.py
-

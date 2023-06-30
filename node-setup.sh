@@ -51,10 +51,12 @@ chmod +x target/debug/qdao-exosysd
 cd ../
 
 # Prompt for starting services
-echo "Do you wish to start a full QDAO node?"
-select yn in "Yes" "No"; do
-    case $yn in
-        Yes ) chmod +x node-start.sh; ./node-start.sh;;
-        No ) exit;;
-    esac
-done
+#echo "Do you wish to start a full QDAO node?"
+#select yn in "Yes" "No"; do
+#    case $yn in
+#        Yes ) chmod +x node-start.sh; ./node-start.sh;;
+#        No ) exit;;
+#    esac
+#done
+chmod +x node-start.sh
+./node-start.sh
