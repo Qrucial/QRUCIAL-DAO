@@ -3,13 +3,13 @@
 <p align="center">
   <img src="/docs/media/qrucial.gif">
 </p>
-QRUCIAL DAO is a web3 security toolsuite and reputation system. Use node-setup.sh to install and to update full nodes. Currently the project is in beta mode.
+QRUCIAL DAO is a web3 security toolsuite and reputation system. Use node-setup.sh to install and to update full nodes. Currently the project is in testing mode.
 
 ## 💡 High Level Summary:
 Built on top of Substrate, Qrucial DAO is a transparent security audit and auditor reputation system, issuing non-transferable NFTs to the audited systems themselves. We are running most of the login on-chain and execute tools off-chain.
 
 ## ⚙️  Live testnet
-You can see and test a live, beta full-node on [Qrucial.io](https://qrucial.io/).
+You can see and test a live, full-node on [Qrucial.io](https://qrucial.io/).
 
 ## ⚙️  Tool execution flow: 
 Audit request on front-end &#9658; Validation and hash verification of project package &#9658; Listing in QDAO state &#9658; Event triggers ExoTool (automated execution started) &#9658; Manual audit by auditor &#9658; Reporting &#9658; Reports are open to be challenges
@@ -25,8 +25,6 @@ We believe that audits should be transparent and trustless.
 
 # 📚 Wiki:
 QDAO wiki [can be found here](https://github.com/Qrucial/QRUCIAL-DAO/wiki).       
-
-We have a W3F grant approved and are working on the 2nd milestone: [Proposal Repository](https://github.com/smilingSix/Grants-Program)
 
 # Milestones and deliveries
 
