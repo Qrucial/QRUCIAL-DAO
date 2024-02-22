@@ -34,5 +34,4 @@ We have a W3F grant approved and are working on the 2nd milestone: [Proposal Rep
 
 [Milestone 1 - Delivered](https://github.com/w3f/Grant-Milestone-Delivery/blob/master/deliveries/qrucial_dao_milestone_1.md)
 
-[Milestone 2 - Delivered]([https://qrucial.io/](https://github.com/w3f/Grant-Milestone-Delivery/blob/master/deliveries/qrucial_dao_milestone_2.md)https://github.com/w3f/Grant-Milestone-Delivery/blob/master/deliveries/qrucial_dao_milestone_2.md)
-
+[Milestone 2 - Delivered](https://github.com/w3f/Grant-Milestone-Delivery/blob/master/deliveries/qrucial_dao_milestone_2.md)
